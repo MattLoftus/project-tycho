@@ -12,10 +12,13 @@ import * as blackholeV2View from './views/blackhole.js';
 import * as cataclysmicView from './views/cataclysmic.js';
 import * as station3View from './views/station3.js';
 import * as station4View from './views/station4.js';
+import * as lichView from './views/lich.js';
+import * as wasp121View from './views/wasp121.js';
+import * as proximaView from './views/proxima.js';
 import { sim } from './sim.js';
 import { OBJECT_DATA } from './data.js';
 
-const views = { earth: earthView, station: stationView, station2: station2View, station3: station3View, station4: station4View, solar: solarView, trappist: trappistView, cancri: cancriView, hr8799: hr8799View, kepler16: kepler16View, blackholeV1: blackholeV1View, blackholeV2: blackholeV2View, cataclysmic: cataclysmicView };
+const views = { earth: earthView, station: stationView, station2: station2View, station3: station3View, station4: station4View, solar: solarView, trappist: trappistView, cancri: cancriView, hr8799: hr8799View, kepler16: kepler16View, lich: lichView, wasp121: wasp121View, proxima: proximaView, blackholeV1: blackholeV1View, blackholeV2: blackholeV2View, cataclysmic: cataclysmicView };
 let activeView = null;
 let active = false;
 let _renderer = null;
@@ -183,10 +186,12 @@ function populateLegend() {
 // ── Flythrough button ──
 const flythroughBtn = document.getElementById('flythrough-btn');
 const flythroughLabel = document.getElementById('flythrough-label');
+const flythroughLabels = { solar: 'Flythrough', blackholeV2: 'Descent' };
+let currentFlythroughLabel = 'Flythrough';
 
 function resetFlythroughBtn() {
   flythroughBtn.classList.remove('active');
-  flythroughLabel.textContent = 'Flythrough';
+  flythroughLabel.textContent = currentFlythroughLabel;
 }
 
 flythroughBtn.addEventListener('click', () => {
@@ -365,6 +370,7 @@ function switchView(name) {
   // Flythrough button — only for views that support it
   const supportsFlythroughViews = ['solar'];
   if (supportsFlythroughViews.includes(name)) {
+    currentFlythroughLabel = flythroughLabels[name] || 'Flythrough';
     flythroughBtn.classList.remove('hidden');
   } else {
     flythroughBtn.classList.add('hidden');
@@ -372,11 +378,30 @@ function switchView(name) {
   resetFlythroughBtn();
 
   // Mission planner button — only for solar view
-  if (supportsFlythroughViews.includes(name)) {
+  if (name === 'solar') {
     mpBtn.classList.remove('hidden');
   } else {
     mpBtn.classList.add('hidden');
     if (mpOpen) toggleMissionPlanner();
+  }
+
+  // Quality slider — only for views that support it
+  const supportsQuality = ['blackholeV2'];
+  if (supportsQuality.includes(name)) {
+    qualityControl.classList.remove('hidden');
+  } else {
+    qualityControl.classList.add('hidden');
+  }
+
+  // View description
+  viewDescriptionText.textContent = viewDescriptions[name] || '';
+
+  // System title bar data
+  const meta = viewMeta[name];
+  if (meta) {
+    spSys.textContent = meta.sys;
+    spClass.textContent = meta.cls;
+    spDist.textContent = meta.dist;
   }
 }
 
@@ -394,6 +419,62 @@ speedSlider.addEventListener('input', () => {
   sim.timeScale = Math.pow(5, (raw - 50) / 50);
   speedLabel.textContent = sim.timeScale.toFixed(2) + 'x';
 });
+
+// Quality slider (black hole views)
+const qualityControl = document.getElementById('quality-control');
+const qualitySlider = document.getElementById('quality-slider');
+const qualityLabel = document.getElementById('quality-label');
+qualitySlider.addEventListener('input', () => {
+  const val = parseInt(qualitySlider.value, 10);
+  qualityLabel.textContent = val + '%';
+  if (activeView && activeView.setQuality) {
+    activeView.setQuality(val / 250);
+  }
+});
+
+// System title bar data (SYS / CLASS / DIST)
+const spSys = document.getElementById('sp-sys');
+const spClass = document.getElementById('sp-class');
+const spDist = document.getElementById('sp-dist');
+const viewMeta = {
+  earth:        { sys: 'Sol',         cls: 'G2V',          dist: '---' },
+  solar:        { sys: 'Sol',         cls: 'G2V',          dist: '---' },
+  station:      { sys: 'Sol / LEO',   cls: 'Station',      dist: '---' },
+  station2:     { sys: 'Sol / LEO',   cls: 'Station',      dist: '---' },
+  station3:     { sys: 'Sol / LEO',   cls: 'Station',      dist: '---' },
+  station4:     { sys: 'Sol / LEO',   cls: 'Station',      dist: '---' },
+  trappist:     { sys: 'TRAPPIST-1',  cls: 'M8V',          dist: '40.7 ly' },
+  cancri:       { sys: '55 Cancri',   cls: 'G8V',          dist: '40.9 ly' },
+  hr8799:       { sys: 'HR 8799',     cls: 'A5V',          dist: '129 ly' },
+  kepler16:     { sys: 'Kepler-16',   cls: 'K+M Binary',   dist: '245 ly' },
+  lich:         { sys: 'PSR B1257+12', cls: 'Pulsar',      dist: '2,300 ly' },
+  wasp121:      { sys: 'WASP-121',    cls: 'F6V',          dist: '270 ly' },
+  proxima:      { sys: 'Proxima Cen', cls: 'M5.5Ve',       dist: '4.25 ly' },
+  blackholeV1:  { sys: 'Gargantua',   cls: 'Black Hole',   dist: '---' },
+  blackholeV2:  { sys: 'Gargantua',   cls: 'Black Hole',   dist: '---' },
+  cataclysmic:  { sys: 'T CrB',       cls: 'CV Nova',      dist: '2,630 ly' },
+};
+
+// View descriptions
+const viewDescriptionText = document.getElementById('view-description-text');
+const viewDescriptions = {
+  earth: 'Real-time model of Earth with day/night cycle, cloud layer, and atmospheric scattering. The Moon orbits at true relative distance. Textures derived from NASA Blue Marble imagery.',
+  station: 'A rotating dual-torus station inspired by 2001: A Space Odyssey. Two 274 m rings spin at ~2 RPM to produce 1 g of artificial gravity at the rim, connected by a central hub and radial spokes.',
+  station2: 'Modular variant with segmented rings \u2014 each torus is formed from 16 cylindrical habitat modules joined by pressurized collars. Same 274 m diameter and ~1 g rim gravity as Station 1.',
+  station3: 'Advanced orbital colony (c. 2230) featuring five counter-rotating ring levels, a central command spire, particle accelerator ring, and agricultural domes. 1,300 m central ring, crew capacity ~10,000.',
+  station4: 'Von Braun multi-wheel design with five identical 880 m rings connected to a central hub via 40 enclosed spoke corridors. Crew capacity 2,000\u20135,000.',
+  solar: 'The Solar System with all eight planets and their major moons on accurate Keplerian orbits. Includes a mission planner for computing Hohmann transfer windows between any two bodies.',
+  trappist: 'TRAPPIST-1 \u2014 an ultra-cool M8V red dwarf 40 light-years away hosting seven rocky planets, three within the habitable zone. Orbital periods and radii based on published discovery data.',
+  cancri: '55 Cancri (Copernicus) \u2014 a Sun-like G8V star 41 light-years away with five diverse planets, from the lava world 55 Cnc e to the outer super-Jupiter 55 Cnc d. Planet f sits in the habitable zone.',
+  hr8799: 'HR 8799 \u2014 the first multi-planet system ever directly imaged. Four self-luminous super-Jupiters orbit a young A5V star 129 light-years away in a near 1:2:4:8 resonance chain.',
+  kepler16: 'Kepler-16 \u2014 the first confirmed circumbinary "Tatooine" system. A Saturn-mass planet orbits a K-type/M-type binary pair every 229 days, with both stars eclipsing each other every 41 days.',
+  lich: 'PSR B1257+12 (Lich) \u2014 the first confirmed exoplanet system, discovered in 1992 orbiting a millisecond pulsar. Three dead worlds (Draugr, Poltergeist, Phobetor) circle a rapidly spinning neutron star 2,300 light-years away, swept by rotating radiation beams.',
+  wasp121: 'WASP-121 \u2014 an ultra-hot Jupiter so close to its F6V host star that it completes an orbit every 1.27 days. Tidally distorted into an egg shape at 2,500 K, with iron and magnesium gas escaping the atmosphere in a comet-like tail.',
+  proxima: 'Proxima Centauri \u2014 the nearest star to the Sun at 4.25 light-years. An M5.5Ve flare star with periodic brightness eruptions. Proxima b orbits in the habitable zone; the system is the primary target for interstellar missions.',
+  blackholeV1: 'Ray-marched black hole inspired by Interstellar\'s Gargantua. Rays are integrated through a Schwarzschild metric to produce the shadow, photon ring, and gravitationally lensed accretion disk.',
+  blackholeV2: 'Higher-fidelity black hole with adjustable quality. The accretion disk uses Keplerian differential rotation with FBM turbulence for realistic swirling cloud structure. Quality slider controls ray-march precision.',
+  cataclysmic: 'T Coronae Borealis \u2014 a recurrent nova system where a red giant overflows its Roche lobe, transferring mass onto a white dwarf via an accretion stream and disk. Expected to erupt again as a naked-eye nova.',
+};
 
 // ── Exported interface ──
 

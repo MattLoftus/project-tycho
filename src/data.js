@@ -959,6 +959,193 @@ export const OBJECT_DATA = {
       { label: 'Habitable Zone', value: 'No — too cold' },
     ],
   },
+
+  // ── PSR B1257+12 (Lich) system ──
+  'PSR B1257+12': {
+    type: 'Millisecond Pulsar',
+    tooltip: [
+      { label: 'Spin Period', value: '6.22 ms' },
+      { label: 'Distance',    value: '~2,300 ly' },
+      { label: 'Known Planets', value: '3' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Millisecond Pulsar (recycled neutron star)' },
+      { label: 'Spin Period',    value: '6.2185 ms (161 rotations/sec)' },
+      { label: 'Radius',         value: '~10 km' },
+      { label: 'Magnetic Field', value: '~8.8 \u00d7 10\u2078 G' },
+      { label: 'Char. Age',      value: '~3 billion years' },
+      { label: 'Known Planets',  value: '3 \u2014 first exoplanets ever confirmed (1992)' },
+      { label: 'Distance',       value: '~2,300 light-years (Virgo)' },
+      { label: 'Discovery',      value: 'Wolszczan & Frail, 1992' },
+    ],
+  },
+  'Draugr': {
+    type: 'Pulsar Planet (Lowest-mass known)',
+    tooltip: [
+      { label: 'Mass',   value: '0.020 M\u2295' },
+      { label: 'Period', value: '25.26 days' },
+      { label: 'Axis',   value: '0.19 AU' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Ultra-low-mass Pulsar Planet' },
+      { label: 'Mass',           value: '0.020 M\u2295 (~2\u00d7 Moon mass)' },
+      { label: 'Orbital Period', value: '25.262 days' },
+      { label: 'Semi-major Axis', value: '0.19 AU' },
+      { label: 'Environment',    value: 'Irradiated by pulsar wind' },
+      { label: 'Named After',    value: 'An undead creature from Norse mythology' },
+      { label: 'Note',           value: 'One of the lowest-mass exoplanets known' },
+    ],
+  },
+  'Poltergeist': {
+    type: 'Pulsar Planet (Super-Earth)',
+    tooltip: [
+      { label: 'Mass',   value: '4.3 M\u2295' },
+      { label: 'Period', value: '66.54 days' },
+      { label: 'Axis',   value: '0.36 AU' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Super-Earth Pulsar Planet' },
+      { label: 'Mass',           value: '4.3 M\u2295' },
+      { label: 'Orbital Period', value: '66.5419 days' },
+      { label: 'Semi-major Axis', value: '0.36 AU' },
+      { label: 'Environment',    value: 'Irradiated by pulsar wind' },
+      { label: 'Named After',    value: 'A type of ghost (noisy spirit)' },
+      { label: 'Discovery',      value: 'First confirmed exoplanet (with Phobetor), 1992' },
+    ],
+  },
+  'Phobetor': {
+    type: 'Pulsar Planet (Super-Earth)',
+    tooltip: [
+      { label: 'Mass',   value: '3.9 M\u2295' },
+      { label: 'Period', value: '98.21 days' },
+      { label: 'Axis',   value: '0.46 AU' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Super-Earth Pulsar Planet' },
+      { label: 'Mass',           value: '3.9 M\u2295' },
+      { label: 'Orbital Period', value: '98.2114 days' },
+      { label: 'Semi-major Axis', value: '0.46 AU' },
+      { label: 'Environment',    value: 'Irradiated by pulsar wind' },
+      { label: 'Named After',    value: 'Greek god of nightmares' },
+      { label: 'Near Resonance', value: '3:2 with Poltergeist' },
+    ],
+  },
+
+  // ── WASP-121 system ──
+  'WASP-121': {
+    type: 'F-type Main Sequence Star (F6V)',
+    tooltip: [
+      { label: 'Surface Temp', value: '6,460 K' },
+      { label: 'Luminosity',   value: '2.10 L\u2609' },
+      { label: 'Distance',     value: '~270 ly' },
+    ],
+    details: [
+      { label: 'Classification', value: 'F6V Main Sequence' },
+      { label: 'Name',           value: 'Tylos (IAU name)' },
+      { label: 'Mass',           value: '1.353 M\u2609' },
+      { label: 'Radius',         value: '1.458 R\u2609' },
+      { label: 'Surface Temp',   value: '6,460 K' },
+      { label: 'Luminosity',     value: '2.10 L\u2609' },
+      { label: 'Distance',       value: '~270 light-years (Puppis)' },
+      { label: 'Known Planets',  value: '1 (ultra-hot Jupiter)' },
+    ],
+  },
+  'WASP-121b': {
+    type: 'Ultra-hot Jupiter',
+    tooltip: [
+      { label: 'Radius',  value: '1.81 R_J' },
+      { label: 'Period',  value: '1.275 days' },
+      { label: 'Dayside', value: '~2,500 K' },
+    ],
+    details: [
+      { label: 'Classification',  value: 'Ultra-hot Jupiter' },
+      { label: 'Name',            value: 'Kua\u2019kua (IAU name)' },
+      { label: 'Mass',            value: '1.183 M_J' },
+      { label: 'Radius',          value: '1.81 R_J (highly inflated)' },
+      { label: 'Orbital Period',  value: '1.27492 days' },
+      { label: 'Semi-major Axis', value: '0.02544 AU' },
+      { label: 'Dayside Temp',    value: '~2,500\u20132,700 K' },
+      { label: 'Nightside Temp',  value: '~1,800 K' },
+      { label: 'Atmosphere',      value: 'H\u2082O, Fe, Mg, Cr, V, TiO detected' },
+      { label: 'Tidal Distortion', value: 'Roche lobe fill >1.0 \u2014 egg-shaped' },
+      { label: 'Atmospheric Escape', value: 'Heavy metals escaping in comet-like tail' },
+    ],
+  },
+
+  // ── Proxima Centauri system ──
+  'Proxima Centauri': {
+    type: 'Red Dwarf Flare Star (M5.5Ve)',
+    tooltip: [
+      { label: 'Surface Temp', value: '3,042 K' },
+      { label: 'Distance',     value: '4.2465 ly' },
+      { label: 'Known Planets', value: '3' },
+    ],
+    details: [
+      { label: 'Classification', value: 'M5.5Ve Red Dwarf (UV Ceti flare star)' },
+      { label: 'Mass',           value: '0.1221 M\u2609' },
+      { label: 'Radius',         value: '0.1542 R\u2609' },
+      { label: 'Surface Temp',   value: '3,042 K' },
+      { label: 'Luminosity',     value: '0.001567 L\u2609' },
+      { label: 'Rotation',       value: '~83 days' },
+      { label: 'Known Planets',  value: '3 (d, b, c)' },
+      { label: 'Distance',       value: '4.2465 light-years \u2014 nearest star' },
+      { label: 'Flare Activity', value: 'Superflares up to ~1000\u00d7 baseline luminosity' },
+    ],
+  },
+  'Proxima d': {
+    type: 'Sub-Earth (Hot)',
+    tooltip: [
+      { label: 'Min. Mass', value: '0.26 M\u2295' },
+      { label: 'Period',    value: '5.122 days' },
+      { label: 'Axis',      value: '0.029 AU' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Sub-Earth' },
+      { label: 'Minimum Mass',   value: '0.26 M\u2295' },
+      { label: 'Orbital Period', value: '5.122 days' },
+      { label: 'Semi-major Axis', value: '0.02885 AU' },
+      { label: 'Habitable Zone', value: 'No \u2014 too hot' },
+      { label: 'Discovery',      value: '2022 (radial velocity)' },
+      { label: 'Note',           value: 'One of the lightest exoplanets known' },
+    ],
+  },
+  'Proxima b': {
+    type: 'Habitable Zone Rocky Planet',
+    tooltip: [
+      { label: 'Min. Mass', value: '1.07 M\u2295' },
+      { label: 'Period',    value: '11.19 days' },
+      { label: 'Zone',      value: 'Habitable' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Habitable Zone Rocky' },
+      { label: 'Minimum Mass',   value: '1.07 M\u2295' },
+      { label: 'Est. Radius',    value: '~1.1 R\u2295' },
+      { label: 'Orbital Period', value: '11.186 days' },
+      { label: 'Semi-major Axis', value: '0.04857 AU' },
+      { label: 'Eq. Temperature', value: '~234 K (-39\u00b0C)' },
+      { label: 'Habitable Zone', value: 'Yes \u2014 nearest potentially habitable exoplanet' },
+      { label: 'Discovery',      value: '2016 (radial velocity)' },
+      { label: 'Concern',        value: 'Stellar flares may strip atmosphere' },
+    ],
+  },
+  'Proxima c': {
+    type: 'Super-Earth / Sub-Neptune (Cold)',
+    tooltip: [
+      { label: 'Min. Mass', value: '~7 M\u2295' },
+      { label: 'Period',    value: '~1,928 days' },
+      { label: 'Axis',      value: '~1.49 AU' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Super-Earth / Sub-Neptune' },
+      { label: 'Minimum Mass',   value: '~7 M\u2295' },
+      { label: 'Est. Radius',    value: '~1.7\u20132.0 R\u2295' },
+      { label: 'Orbital Period', value: '~1,928 days (5.28 years)' },
+      { label: 'Semi-major Axis', value: '~1.489 AU' },
+      { label: 'Habitable Zone', value: 'No \u2014 too cold' },
+      { label: 'Discovery',      value: '2020 (radial velocity + astrometry)' },
+      { label: 'Status',         value: 'Confirmed but properties uncertain' },
+    ],
+  },
 };
 
 // Generate satellite data dynamically

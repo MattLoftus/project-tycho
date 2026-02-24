@@ -404,7 +404,9 @@ function buildStreamTube() {
     }
   }
   geo.attributes.position.needsUpdate = true;
-  geo.computeVertexNormals();
+  // Don't recompute normals — the original TubeGeometry normals (radially
+  // outward) are correct; recomputing after aggressive taper produces
+  // degenerate normals that make the tube render as a dark solid cone.
 
   const mat = new THREE.ShaderMaterial({
     vertexShader: `
@@ -434,12 +436,16 @@ function buildStreamTube() {
         // Fade at start (smooth departure from RG surface) and end
         float taper = smoothstep(0.0, 0.06, t) * smoothstep(1.0, 0.88, t);
 
-        float alpha = glow * taper * 0.38;
-        gl_FragColor = vec4(col * glow * 0.75, alpha);
+        // Output premultiplied color — blending is ONE+ONE so alpha is unused
+        gl_FragColor = vec4(col * glow * taper * 0.28, 1.0);
       }
     `,
     transparent: true, side: THREE.DoubleSide,
-    blending: THREE.AdditiveBlending, depthWrite: false,
+    depthWrite: false, depthTest: false,
+    blending: THREE.CustomBlending,
+    blendEquation: THREE.AddEquation,
+    blendSrc: THREE.OneFactor,
+    blendDst: THREE.OneFactor,
   });
 
   binaryGroup.add(new THREE.Mesh(geo, mat));

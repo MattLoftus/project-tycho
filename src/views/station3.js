@@ -696,19 +696,19 @@ export function init(rendererIn) {
   // 7. LIGHTING
   // ═══════════════════════════════════════════
 
-  const keyLight = new THREE.DirectionalLight(0xfff5e8, 1.8);
+  const keyLight = new THREE.DirectionalLight(0xfff5e8, 0.95);
   keyLight.position.set(30, 20, 25);
   scene.add(keyLight);
 
-  const fillLight = new THREE.DirectionalLight(0xc8d8ff, 0.35);
+  const fillLight = new THREE.DirectionalLight(0xc8d8ff, 0.18);
   fillLight.position.set(-8, -4, -6);
   scene.add(fillLight);
 
-  const rimLight = new THREE.DirectionalLight(0x4466aa, 0.5);
+  const rimLight = new THREE.DirectionalLight(0x4466aa, 0.25);
   rimLight.position.set(-25, -10, -20);
   scene.add(rimLight);
 
-  const ambient = new THREE.AmbientLight(0x080a10, 0.6);
+  const ambient = new THREE.AmbientLight(0x080a10, 0.3);
   scene.add(ambient);
 
   // Construction lighting rigs
@@ -753,8 +753,8 @@ export function init(rendererIn) {
   }
 
   workLightSpots = [
-    addConstructionRig(new THREE.Vector3(45, 30, 20), 0xfff8e8, 3.0, Math.PI / 6),
-    addConstructionRig(new THREE.Vector3(-40, -20, 35), 0xeef5ff, 2.0, Math.PI / 5),
+    addConstructionRig(new THREE.Vector3(45, 30, 20), 0xfff8e8, 1.5, Math.PI / 6),
+    addConstructionRig(new THREE.Vector3(-40, -20, 35), 0xeef5ff, 1.0, Math.PI / 5),
   ];
 
   // ── Work-lights intensity slider ──

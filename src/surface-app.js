@@ -30,6 +30,28 @@ function onCanvasClick(e) {
   if (hits.length > 0) showDepositDetail(hits[0].object.userData.deposit)
 }
 
+const svDescriptionText = document.getElementById('sv-view-description-text')
+const svDescriptions = {
+  procedural: 'Procedurally generated terrain with simplex noise heightmaps, mineral deposits placed by geological simulation. Click deposits to analyze composition.',
+  valles: 'Valles Marineris \u2014 the solar system\'s largest canyon, stretching 4,000 km across Mars. Elevation data from NASA MOLA laser altimeter at ~460 m/pixel resolution.',
+  olympus: 'Olympus Mons \u2014 the tallest volcano in the solar system at 21.9 km. MOLA elevation data reveals the massive caldera complex and surrounding aureole deposits.',
+  hellas: 'Hellas Basin \u2014 a 2,300 km wide impact basin, the deepest point on Mars at 7.1 km below datum. MOLA data shows the basin floor and heavily eroded rim.',
+  grandcanyon: 'Grand Canyon, Arizona \u2014 277 miles of the Colorado River carved through 2 billion years of geological history. Terrain from Mapzen Terrarium elevation tiles.',
+  himalayas: 'The Himalayan range viewed from elevation tiles, showing the collision zone between the Indian and Eurasian plates. Peaks exceed 8,000 m across the range.',
+  grandcanyonv2: 'Grand Canyon from high-resolution satellite imagery draped over Mapzen Terrarium elevation data. ESRI World Imagery provides sub-meter detail.',
+  yosemite: 'Yosemite Valley \u2014 glacially carved granite walls rising 1,000 m above the valley floor. Satellite imagery over elevation data reveals Half Dome and El Capitan.',
+  craterlake: 'Crater Lake, Oregon \u2014 the deepest lake in the US at 594 m, formed in the collapsed caldera of Mount Mazama ~7,700 years ago.',
+  hawaii: 'Hawai\u02BBi \u2014 the Big Island\'s volcanic landscape, from Mauna Kea\'s summit (4,207 m) to active lava flows at K\u012Blauea. Satellite imagery over elevation data.',
+  patagonia: 'Torres del Paine, Chile \u2014 granite towers and glacial lakes in southern Patagonia. The iconic towers rise to 2,850 m above sea level.',
+  fjords: 'Geirangerfjord, Norway \u2014 a UNESCO World Heritage fjord carved by glaciers to depths of 250 m. Surrounded by 1,500 m cliffs and waterfalls.',
+  dolomites: 'The Dolomites, Italy \u2014 dramatic limestone peaks and spires in the Southern Alps, a UNESCO World Heritage site reaching 3,343 m at Marmolada.',
+  matterhorn: 'The Matterhorn (4,478 m) \u2014 one of the Alps\' most iconic peaks, straddling the Swiss-Italian border. Its pyramidal form was shaped by glacial erosion.',
+  iceland: 'Iceland\'s volcanic highlands \u2014 a landscape shaped by the Mid-Atlantic Ridge, with glaciers, lava fields, and geothermal areas visible in satellite imagery.',
+  everestv2: 'Mount Everest (8,849 m) \u2014 the highest point on Earth, viewed from satellite imagery. The Khumbu Glacier and surrounding Himalayan peaks are visible.',
+  zhangjiajie: 'Zhangjiajie, China \u2014 towering sandstone pillars that inspired the floating mountains of Avatar. Over 3,000 quartzite columns rise above subtropical forest.',
+  deadsea: 'The Dead Sea \u2014 at 430 m below sea level, the lowest point on Earth\'s surface. Satellite imagery shows the hypersaline lake and surrounding rift valley.',
+}
+
 async function switchView(name) {
   document.querySelectorAll('#surface-app .view-btn').forEach(b => { b.disabled = true })
 
@@ -44,6 +66,7 @@ async function switchView(name) {
   })
 
   updateClickTargets()
+  svDescriptionText.textContent = svDescriptions[name] || ''
 }
 
 function runLoadingAnimation() {

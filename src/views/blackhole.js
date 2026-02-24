@@ -33,6 +33,7 @@ let boundOnClick, boundOnMouseMove;
 let meshNameMap = new Map();
 let cbHover = null, cbBlur = null, cbFocus = null;
 let shadowSphere; // invisible sphere for raycasting
+let flythroughState = null;
 const TRANSITION_DURATION = 2200;
 
 // ────────────────────────────────────────────
@@ -91,6 +92,7 @@ const BlackHoleShader = {
     camRight:     { value: new THREE.Vector3() },
     camFov:       { value: 0.8 },   // half-fov in radians
     aspectRatio:  { value: 1.0 },
+    quality:      { value: 0.5 },  // 0 = low, 1 = ultra
     diskTilt:     { value: Math.PI * 0.08 },  // slight tilt so we see the disk
   },
   vertexShader: `
@@ -106,10 +108,11 @@ const BlackHoleShader = {
     uniform vec3  camPos, camDir, camUp, camRight;
     uniform float camFov, aspectRatio;
     uniform float diskTilt;
+    uniform float quality;
 
     varying vec2 vUv;
 
-    #define MAX_STEPS 768
+    #define MAX_STEPS 6144
     #define RS (2.0 * bhMass)
 
     // ── Noise for disk turbulence ──
@@ -122,7 +125,11 @@ const BlackHoleShader = {
     }
     float fbm(vec2 p){
       float v = 0.0, a = 0.5;
-      for(int i=0;i<14;i++){ v += a*noise(p); p *= 2.1; a *= 0.5; }
+      float maxIter = mix(2.0, 120.0, quality);
+      for(int i=0;i<120;i++){
+        if(float(i) >= maxIter) break;
+        v += a*noise(p); p *= 2.1; a *= 0.5;
+      }
       return v;
     }
 
@@ -239,7 +246,9 @@ const BlackHoleShader = {
       // Initial speed
       float speed = 1.0;
 
+      float maxSteps = mix(64.0, 6144.0, quality);
       for(int i = 0; i < MAX_STEPS; i++){
+        if(float(i) >= maxSteps) break;
         float r = length(pos);
         if(r > 150.0) break;    // escaped
 
@@ -262,7 +271,8 @@ const BlackHoleShader = {
         }
 
         // Step size: smaller near the BH for accuracy
-        float h = max(0.05, (r - RS) * 0.3);
+        float minStep = mix(0.5, 0.003, quality);
+        float h = max(minStep, (r - RS) * 0.3);
         h = min(h, 2.0);
 
         // Gravitational acceleration (Schwarzschild geodesic approx)
@@ -453,6 +463,65 @@ function updateBhUniforms() {
   u.camFov.value = Math.tan(THREE.MathUtils.degToRad(camera.fov * 0.5));
 }
 
+// ── Interstellar descent flythrough ──
+// Cinematic spiral descent from high above the accretion disk down toward
+// the event horizon — inspired by Cooper's approach to Gargantua.
+function buildDescentPath() {
+  const points = [];
+  const numPoints = 30;
+
+  for (let i = 0; i < numPoints; i++) {
+    const t = i / (numPoints - 1);
+
+    // 2 full rotations
+    const angle = t * Math.PI * 4;
+
+    // Radius: 55 → 8, stays well outside the event horizon
+    // Flattens out at the end for a tangential orbit rather than plunging in
+    const radius = 8 + 47 * Math.pow(1 - t, 1.4);
+
+    // Height: 25 → 0.4, drops faster than radius for the swooping effect
+    const height = 0.4 + 24.6 * Math.pow(1 - t, 2.2);
+
+    points.push(new THREE.Vector3(
+      radius * Math.cos(angle),
+      height,
+      radius * Math.sin(angle),
+    ));
+  }
+
+  return new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.3);
+}
+
+export function startFlythrough(onComplete) {
+  focusTransition = null;
+
+  const curve = buildDescentPath();
+  controls.enabled = false;
+
+  flythroughState = {
+    active: true,
+    curve,
+    startTime: performance.now(),
+    duration: 35000,
+    onComplete,
+  };
+
+  camera.position.copy(curve.getPoint(0));
+  controls.target.set(0, 0, 0);
+}
+
+export function cancelFlythrough() {
+  if (!flythroughState || !flythroughState.active) return;
+  flythroughState.active = false;
+  flythroughState = null;
+  controls.enabled = true;
+}
+
+export function isFlythroughActive() {
+  return flythroughState != null && flythroughState.active;
+}
+
 export function animate() {
   const ts = sim.timeScale;
 
@@ -460,7 +529,38 @@ export function animate() {
   updateBhUniforms();
   bhPass.uniforms.time.value += 0.048 * ts;
 
-  if (focusTransition) {
+  // ── Flythrough descent ──
+  if (flythroughState && flythroughState.active) {
+    const elapsed = performance.now() - flythroughState.startTime;
+    const rawT = Math.min(elapsed / flythroughState.duration, 1);
+
+    // Ease-out: fast start (diving in), gradual slowdown near the disk
+    const t = 1 - Math.pow(1 - rawT, 1.6);
+
+    const curve = flythroughState.curve;
+    camera.position.copy(curve.getPoint(t));
+
+    // Look tangential to the black hole surface:
+    // Blend between the flight-path tangent and a slight inward pull
+    // so the camera grazes past rather than staring at the center
+    const tangent = curve.getTangent(t).normalize();
+    const toCenter = new THREE.Vector3(0, 0, 0).sub(camera.position).normalize();
+    // Early: mostly tangent; later: more tangent with a slight inward bias
+    const inwardBias = 0.15 + 0.1 * (1 - rawT);
+    const lookDir = tangent.clone().lerp(toCenter, inwardBias).normalize();
+    const lookTarget = camera.position.clone().add(lookDir.multiplyScalar(10));
+    controls.target.lerp(lookTarget, 0.06);
+    camera.lookAt(controls.target);
+
+    if (rawT >= 1) {
+      const cb = flythroughState.onComplete;
+      flythroughState.active = false;
+      flythroughState = null;
+      controls.enabled = true;
+      controls.target.set(0, 0, 0);
+      if (cb) cb();
+    }
+  } else if (focusTransition) {
     const elapsed = performance.now() - focusTransition.startTime;
     const t = Math.min(elapsed / focusTransition.duration, 1);
     const ease = t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2) / 2;
@@ -469,8 +569,10 @@ export function animate() {
     if (t >= 1) focusTransition = null;
   }
 
-  camMove.update(0.016);
-  controls.update();
+  if (!flythroughState || !flythroughState.active) {
+    camMove.update(0.016);
+    controls.update();
+  }
   cinematicPass.uniforms.time.value = performance.now() / 1000;
   composer.render();
 }
@@ -487,8 +589,13 @@ export function dispose() {
   renderer.domElement.removeEventListener('mousemove', boundOnMouseMove);
   renderer.domElement.style.cursor = 'default';
   focusTransition = null;
+  flythroughState = null;
   camMove.dispose();
   scene.clear();
+}
+
+export function setQuality(q) {
+  if (bhPass) bhPass.uniforms.quality.value = q;
 }
 
 export function focusOn(mesh) {

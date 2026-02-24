@@ -1,10 +1,12 @@
 import * as THREE from 'three';
 import * as spaceApp from './space-app.js';
 import * as surfaceApp from './surface-app.js';
+import * as oceanApp from './ocean-app.js';
 
 const apps = {
   space:   { module: spaceApp,   container: 'space-app',   exposure: 1.2 },
   surface: { module: surfaceApp, container: 'surface-app', exposure: 1.15 },
+  ocean:   { module: oceanApp,   container: 'ocean-app',   exposure: 1.0 },
 };
 let activeApp = null;
 

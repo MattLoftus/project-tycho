@@ -56,8 +56,13 @@
       border-radius: 2px 0 0 2px;
     }
 
-    .app-switch-btn:last-child {
+    .app-switch-btn:not(:first-child):not(:last-child) {
+      border-radius: 0;
       border-left: none;
+      border-right: none;
+    }
+
+    .app-switch-btn:last-child {
       border-radius: 0 2px 2px 0;
     }
 
@@ -95,81 +100,115 @@
       pointer-events: none;
     }
 
-    /* ── Nav ── */
-    #nav {
+    /* ── System title bar (top-left, below app switcher) ── */
+    #sp-hud-top-left {
       position: fixed;
       top: 56px;
       left: 24px;
       z-index: 10;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      pointer-events: auto;
+      pointer-events: none;
+    }
+    #space-app .hud-system-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 5px;
+      color: rgba(80, 160, 220, 0.65);
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+    #space-app .hud-coords {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: rgba(140, 210, 255, 0.9);
+    }
+    #space-app .hud-coords .label {
+      color: rgba(80, 160, 220, 0.7);
+      font-size: 9px;
+      letter-spacing: 2px;
+      margin-right: 4px;
+      margin-left: 12px;
+    }
+    #space-app .hud-coords .label:first-child { margin-left: 0; }
+    #space-app .hud-coords .unit {
+      color: rgba(80, 160, 220, 0.4);
+      font-size: 10px;
     }
 
-    /* Small label above */
-    #nav-label {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.25em;
-      color: rgba(80, 160, 220, 0.5);
-      text-transform: uppercase;
-      margin-bottom: 6px;
-      padding-left: 2px;
+    /* ── Nav ── */
+    #nav {
+      position: fixed;
+      top: 116px;
+      left: 24px;
+      z-index: 10;
+      pointer-events: auto;
+      display: flex;
+      flex-direction: column;
     }
 
     #nav-buttons {
       display: flex;
       flex-direction: column;
-      gap: 1px;
+      gap: 0;
+      background: rgba(4, 12, 24, 0.75);
+      border: 1px solid rgba(80, 160, 220, 0.15);
+      border-left: 2px solid rgba(80, 160, 220, 0.3);
+      padding: 6px 0;
+      width: 195px;
+      max-height: calc(100vh - 160px);
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(80, 160, 220, 0.3) transparent;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    #nav .nav-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #nav .nav-group + .nav-group {
+      border-top: 1px solid rgba(80, 160, 220, 0.1);
+      margin-top: 2px;
+      padding-top: 2px;
+    }
+
+    #nav .nav-group-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 3px;
+      color: rgba(80, 160, 220, 0.4);
+      text-transform: uppercase;
+      padding: 6px 14px 3px;
     }
 
     #nav button {
       position: relative;
       background: transparent;
       border: none;
-      color: rgba(180, 210, 240, 0.35);
-      padding: 7px 20px 7px 12px;
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 16px;
-      font-weight: 500;
-      letter-spacing: 0.18em;
+      border-left: 2px solid transparent;
+      color: rgba(140, 200, 255, 0.45);
+      padding: 5px 14px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
       text-transform: uppercase;
       cursor: pointer;
-      transition: color 0.25s ease;
+      transition: opacity 0.18s, border-color 0.18s, background 0.18s, color 0.18s;
       text-align: left;
       white-space: nowrap;
-    }
-
-    /* Left accent bar */
-    #nav button::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 2px;
-      height: 0;
-      background: rgba(80, 160, 220, 0.7);
-      transition: height 0.25s ease;
+      width: 100%;
     }
 
     #nav button:hover {
-      color: rgba(180, 210, 240, 0.7);
-    }
-
-    #nav button:hover::before {
-      height: 60%;
+      color: rgba(140, 200, 255, 0.75);
+      background: rgba(0, 60, 100, 0.25);
     }
 
     #nav button.active {
       color: rgba(140, 210, 255, 1);
-    }
-
-    #nav button.active::before {
-      height: 100%;
-      background: rgba(80, 180, 255, 0.9);
-      box-shadow: 0 0 8px rgba(80, 180, 255, 0.6);
+      border-left-color: rgba(80, 180, 255, 0.9);
+      background: rgba(0, 60, 100, 0.3);
     }
 
     /* ── Corner decoration: top-right ── */
@@ -433,6 +472,107 @@
     }
 
     #speed-slider::-moz-range-thumb {
+      width: 10px;
+      height: 10px;
+      background: rgba(140, 210, 255, 0.9);
+      border-radius: 50%;
+      border: none;
+      box-shadow: 0 0 6px rgba(80, 180, 255, 0.7);
+      cursor: pointer;
+    }
+
+    /* ── View description tile ── */
+    #view-description {
+      position: fixed;
+      bottom: 140px;
+      right: 14px;
+      z-index: 10;
+      pointer-events: none;
+      width: 220px;
+      background: rgba(4, 12, 24, 0.75);
+      border: 1px solid rgba(80, 160, 220, 0.15);
+      border-right: 2px solid rgba(80, 160, 220, 0.3);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 12px 14px;
+      transition: opacity 0.4s ease;
+    }
+
+    #view-description p {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      line-height: 1.6;
+      color: rgba(140, 200, 255, 0.55);
+      margin: 0;
+    }
+
+    /* ── Quality slider ── */
+    #quality-control {
+      position: fixed;
+      bottom: 20px;
+      right: 180px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      pointer-events: auto;
+    }
+
+    #quality-control.hidden { display: none; }
+
+    #quality-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #quality-header span {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      color: rgba(80, 160, 220, 0.5);
+      text-transform: uppercase;
+    }
+
+    #quality-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      color: rgba(140, 210, 255, 0.9);
+      min-width: 38px;
+      text-align: right;
+    }
+
+    #quality-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 130px;
+      height: 2px;
+      background: rgba(80, 160, 220, 0.2);
+      outline: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    #quality-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 10px;
+      height: 10px;
+      background: rgba(140, 210, 255, 0.9);
+      border-radius: 50%;
+      box-shadow: 0 0 6px rgba(80, 180, 255, 0.7);
+      cursor: pointer;
+      transition: box-shadow 0.2s;
+    }
+
+    #quality-slider::-webkit-slider-thumb:hover {
+      box-shadow: 0 0 10px rgba(80, 180, 255, 1);
+    }
+
+    #quality-slider::-moz-range-thumb {
       width: 10px;
       height: 10px;
       background: rgba(140, 210, 255, 0.9);
@@ -958,9 +1098,10 @@
     #surface-app #hud-top {
       position: absolute; top: 0; left: 0; right: 0;
       display: flex; justify-content: space-between; align-items: flex-start;
-      padding: 56px 24px 20px;
+      padding: 18px 24px 20px;
       background: linear-gradient(to bottom, rgba(2, 8, 16, 0.88) 0%, transparent 100%);
     }
+    #surface-app #hud-top-left { padding-top: 38px; }
     #surface-app .hud-system-title { font-size: 10px; letter-spacing: 5px; color: var(--cyan); opacity: 0.65; margin-bottom: 7px; }
     #surface-app .hud-coords { font-size: 13px; color: var(--amber); }
     #surface-app .hud-coords .label { color: var(--cyan); font-size: 9px; letter-spacing: 2px; margin-right: 4px; margin-left: 12px; opacity: 0.7; }
@@ -979,11 +1120,11 @@
     }
     #surface-app .nav-group { display: flex; flex-direction: column; }
     #surface-app .nav-group + .nav-group { border-top: 1px solid var(--border); margin-top: 2px; padding-top: 2px; }
-    #surface-app .nav-group-label { font-size: 8px; letter-spacing: 3px; color: var(--cyan); opacity: 0.4; padding: 6px 14px 3px; }
+    #surface-app .nav-group-label { font-size: 10px; letter-spacing: 3px; color: var(--cyan); opacity: 0.4; padding: 6px 14px 3px; }
     #surface-app .view-btn {
       background: none; border: none; border-left: 2px solid transparent;
-      color: var(--cyan); font-family: 'Share Tech Mono', monospace; font-size: 9px;
-      letter-spacing: 2px; padding: 5px 14px; cursor: pointer; opacity: 0.45;
+      color: var(--cyan); font-family: 'Share Tech Mono', monospace; font-size: 11px;
+      letter-spacing: 2px; padding: 6px 14px; cursor: pointer; opacity: 0.45;
       transition: opacity 0.18s, border-color 0.18s, background 0.18s;
       text-align: left; width: 100%;
     }
@@ -997,6 +1138,32 @@
     #surface-app #status-text { font-size: 10px; letter-spacing: 3px; color: var(--cyan); }
     #surface-app .hud-time-label { font-size: 9px; letter-spacing: 3px; color: var(--cyan); opacity: 0.55; margin-bottom: 5px; text-align: right; }
     #surface-app #mission-time { font-size: 16px; letter-spacing: 2px; color: var(--amber); text-align: right; text-shadow: 0 0 10px rgba(232, 148, 26, 0.4); }
+
+    /* ─── VIEW DESCRIPTION (surface) ─── */
+    #sv-view-description {
+      position: fixed;
+      bottom: 140px;
+      right: 14px;
+      z-index: 10;
+      pointer-events: none;
+      width: 220px;
+      background: rgba(2, 8, 16, 0.75);
+      border: 1px solid var(--border);
+      border-right: 2px solid var(--cyan-dim);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 12px 14px;
+      transition: opacity 0.4s ease;
+    }
+    #sv-view-description p {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      line-height: 1.6;
+      color: var(--cyan);
+      opacity: 0.5;
+      margin: 0;
+    }
 
     /* ─── RESOURCE / MARS PANELS ─── */
     #surface-app #deposit-panel,
@@ -1081,6 +1248,218 @@
     #surface-app #close-detail { background: none; border: none; color: var(--cyan); font-size: 14px; line-height: 1; cursor: pointer; opacity: 0.5; padding: 0 0 0 8px; transition: opacity 0.15s; letter-spacing: 0; flex-shrink: 0; }
     #surface-app #close-detail:hover { opacity: 1; }
 
+    /* ══════════════════════════════════════════════════════════════════════
+       OCEAN EXPLORER STYLES (scoped under #ocean-app)
+       ══════════════════════════════════════════════════════════════════════ */
+
+    #ocean-app {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      font-family: 'Share Tech Mono', monospace;
+      color: #00e0c0;
+      pointer-events: none;
+    }
+
+    /* ─── Loading ─── */
+    #ocean-app #oc-loading {
+      position: absolute; inset: 0; background: #010408;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 100; transition: opacity 0.9s ease; pointer-events: auto;
+    }
+    #ocean-app #oc-loading.fade-out { opacity: 0; pointer-events: none; }
+    #ocean-app .loading-title { font-size: 14px; letter-spacing: 8px; color: #0080ff; margin-bottom: 6px; }
+    #ocean-app .loading-subtitle { font-size: 10px; letter-spacing: 4px; color: #005848; margin-bottom: 44px; }
+    #ocean-app .loading-bar-container { width: 320px; }
+    #ocean-app .loading-bar-outer { width: 100%; height: 2px; background: rgba(0, 40, 80, 0.5); margin-bottom: 10px; position: relative; }
+    #ocean-app .loading-bar-inner { height: 100%; background: #0080ff; width: 0%; transition: width 0.25s ease; box-shadow: 0 0 10px #0080ff, 0 0 20px #0080ff; }
+    #ocean-app .loading-status { font-size: 10px; letter-spacing: 2px; color: #0080ff; opacity: 0.55; text-align: center; }
+
+    /* ─── HUD ─── */
+    #ocean-app #oc-hud { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
+    #ocean-app #oc-hud::after {
+      content: ''; position: absolute; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px);
+      pointer-events: none;
+    }
+    #ocean-app .corner { position: absolute; width: 28px; height: 28px; border-color: #0080ff; border-style: solid; opacity: 0.4; }
+    #ocean-app .corner-tl { top: 18px; left: 18px; border-width: 2px 0 0 2px; }
+    #ocean-app .corner-tr { top: 18px; right: 18px; border-width: 2px 2px 0 0; }
+    #ocean-app .corner-bl { bottom: 18px; left: 18px; border-width: 0 0 2px 2px; }
+    #ocean-app .corner-br { bottom: 18px; right: 18px; border-width: 0 2px 2px 0; }
+
+    /* ─── Top bar ─── */
+    #ocean-app #oc-hud-top {
+      position: absolute; top: 0; left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 18px 24px 20px;
+      background: linear-gradient(to bottom, rgba(1, 4, 8, 0.90) 0%, transparent 100%);
+    }
+    #ocean-app #oc-hud-top-left { padding-top: 38px; }
+    #ocean-app .hud-system-title { font-size: 10px; letter-spacing: 5px; color: #0080ff; opacity: 0.6; margin-bottom: 7px; }
+    #ocean-app .hud-coords { font-size: 13px; color: #00e0c0; }
+    #ocean-app .hud-coords .label { color: #0080ff; font-size: 9px; letter-spacing: 2px; margin-right: 4px; margin-left: 12px; opacity: 0.65; }
+    #ocean-app .hud-coords .label:first-child { margin-left: 0; }
+    #ocean-app .hud-coords .unit { color: #005848; font-size: 10px; }
+    #ocean-app #oc-status-container { text-align: center; padding-top: 4px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    #ocean-app .status-indicator { display: inline-flex; align-items: center; gap: 9px; padding: 7px 18px; border: 1px solid #003060; background: rgba(0, 16, 40, 0.50); }
+    #ocean-app .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #0080ff; box-shadow: 0 0 6px #0080ff; animation: oc-pulse-dot 2s ease-in-out infinite; }
+    @keyframes oc-pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
+    #ocean-app #oc-status-text { font-size: 10px; letter-spacing: 3px; color: #0080ff; }
+    #ocean-app .hud-time-label { font-size: 9px; letter-spacing: 3px; color: #0080ff; opacity: 0.5; margin-bottom: 5px; text-align: right; }
+    #ocean-app #oc-mission-time { font-size: 16px; letter-spacing: 2px; color: #00e0c0; text-align: right; text-shadow: 0 0 10px rgba(0, 224, 192, 0.35); }
+
+    /* ─── View nav (left sidebar) ─── */
+    #ocean-app #oc-view-nav {
+      position: absolute; top: 116px; left: 20px;
+      display: flex; flex-direction: column; gap: 2px;
+      pointer-events: auto;
+      background: rgba(2, 8, 20, 0.92); border: 1px solid rgba(0, 128, 255, 0.18);
+      border-left: 2px solid #003060; padding: 6px 0; width: 186px;
+    }
+    #ocean-app .nav-group { display: flex; flex-direction: column; }
+    #ocean-app .nav-group + .nav-group { border-top: 1px solid rgba(0, 128, 255, 0.18); margin-top: 2px; padding-top: 2px; }
+    #ocean-app .nav-group-label { font-size: 10px; letter-spacing: 3px; color: #0080ff; opacity: 0.35; padding: 6px 14px 3px; }
+    #ocean-app .view-btn {
+      background: none; border: none; border-left: 2px solid transparent;
+      color: #0080ff; font-family: 'Share Tech Mono', monospace;
+      font-size: 11px; letter-spacing: 2px; padding: 6px 14px;
+      cursor: pointer; opacity: 0.4; transition: opacity 0.18s, border-color 0.18s, background 0.18s;
+      text-align: left; width: 100%;
+    }
+    #ocean-app .view-btn:hover { opacity: 0.7; background: rgba(0, 30, 80, 0.30); }
+    #ocean-app .view-btn.active { opacity: 1; color: #0080ff; border-left-color: #0080ff; background: rgba(0, 30, 80, 0.40); }
+    #ocean-app .view-btn:disabled { cursor: default; pointer-events: none; }
+
+    /* ─── Contact / Geo panels ─── */
+    #ocean-app #oc-contact-panel,
+    #ocean-app #oc-geo-panel {
+      position: absolute; top: 84px; right: 20px; width: 260px;
+      background: rgba(2, 8, 20, 0.92); border: 1px solid rgba(0, 128, 255, 0.18);
+      border-right: 2px solid #003060; pointer-events: auto;
+    }
+    #ocean-app .panel-region-label { padding: 6px 14px 4px; font-size: 8px; letter-spacing: 2px; color: #005848; border-bottom: 1px solid rgba(0, 128, 255, 0.18); }
+    #ocean-app .panel-header {
+      padding: 10px 14px; font-size: 9px; letter-spacing: 4px; color: #0080ff;
+      border-bottom: 1px solid rgba(0, 128, 255, 0.18); background: rgba(0, 20, 50, 0.40);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    #ocean-app #oc-contact-list,
+    #ocean-app #oc-geo-feature-list { overflow-y: auto; max-height: 400px; scrollbar-width: thin; scrollbar-color: #003060 transparent; }
+    #ocean-app .contact-item { padding: 10px 14px; border-bottom: 1px solid rgba(0, 30, 60, 0.5); cursor: pointer; transition: background 0.18s; }
+    #ocean-app .contact-item:hover { background: rgba(0, 40, 80, 0.35); }
+    #ocean-app .contact-item-header { display: flex; align-items: center; gap: 9px; margin-bottom: 5px; }
+    #ocean-app .contact-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    #ocean-app .contact-name { font-size: 11px; color: #00e0c0; letter-spacing: 0.5px; line-height: 1.3; }
+    #ocean-app .contact-meta { display: flex; justify-content: space-between; padding-left: 17px; }
+    #ocean-app .contact-depth { font-size: 11px; color: #005848; }
+    #ocean-app .contact-type { font-size: 9px; letter-spacing: 2px; padding: 1px 6px; }
+    #ocean-app .type-vent     { color: #ff6030; border: 1px solid rgba(255, 96, 48, 0.35); }
+    #ocean-app .type-creature { color: #40ff80; border: 1px solid rgba(64, 255, 128, 0.35); }
+    #ocean-app .type-nodule   { color: #e0a040; border: 1px solid rgba(224, 160, 64, 0.35); }
+    #ocean-app .type-trench   { color: #2080ff; border: 1px solid rgba(32, 128, 255, 0.35); }
+    #ocean-app .type-seamount { color: #c060ff; border: 1px solid rgba(192, 96, 255, 0.35); }
+    #ocean-app .feature-item { transition: background 0.18s, border-left 0.18s; border-left: 2px solid transparent; }
+    #ocean-app .feature-item.feature-targeted { background: rgba(0, 80, 160, 0.15) !important; border-left-color: #0080ff; }
+    #ocean-app .feature-item.feature-targeted .contact-name { color: #40ffd8; text-shadow: 0 0 8px rgba(0, 224, 192, 0.4); }
+    #ocean-app .feature-item.feature-activated { background: rgba(0, 80, 160, 0.30) !important; }
+    #ocean-app .panel-footer { padding: 8px 14px; font-size: 9px; letter-spacing: 3px; color: #0080ff; opacity: 0.5; border-top: 1px solid rgba(0, 128, 255, 0.18); background: rgba(0, 20, 50, 0.30); }
+
+    /* ─── Controls panel ─── */
+    #ocean-app #oc-controls-panel {
+      position: absolute; bottom: 80px; left: 20px; width: 186px; z-index: 1;
+      background: rgba(2, 8, 20, 0.92); border: 1px solid rgba(0, 128, 255, 0.18);
+      border-left: 2px solid #003060; pointer-events: none;
+    }
+    #ocean-app .controls-grid { display: grid; grid-template-columns: auto 1fr; gap: 5px 12px; padding: 10px 14px; align-items: center; }
+    #ocean-app .controls-grid kbd {
+      font-family: 'Share Tech Mono', monospace; font-size: 9px; color: #0080ff; letter-spacing: 1px;
+      background: rgba(0, 20, 50, 0.6); border: 1px solid #003060; padding: 2px 6px; white-space: nowrap; text-align: center;
+    }
+    #ocean-app .controls-grid span { font-size: 9px; color: #005848; letter-spacing: 2px; }
+
+    /* ─── Bottom bar — submersible gauges ─── */
+    #ocean-app #oc-hud-bottom {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      display: flex; justify-content: center; align-items: flex-end; gap: 36px;
+      padding: 16px 52px 20px;
+      background: linear-gradient(to top, rgba(1, 4, 8, 0.90) 0%, transparent 100%);
+    }
+    #ocean-app .gauge { text-align: center; }
+    #ocean-app .gauge-label { display: block; font-size: 8px; letter-spacing: 3px; color: #0080ff; opacity: 0.55; margin-bottom: 4px; }
+    #ocean-app .gauge-value { display: block; font-size: 14px; letter-spacing: 1px; color: #00e0c0; text-shadow: 0 0 8px rgba(0, 224, 192, 0.3); }
+
+    /* ─── Sonar radar ─── */
+    #ocean-app #oc-sonar-container { text-align: center; }
+    #ocean-app #oc-sonar-radar {
+      width: 68px; height: 68px; border-radius: 50%;
+      border: 1px solid rgba(0, 128, 255, 0.30); background: rgba(0, 12, 30, 0.7);
+      position: relative; margin: 0 auto 5px; overflow: hidden;
+    }
+    #ocean-app .sonar-sweep {
+      position: absolute; top: 50%; left: 50%; width: 50%; height: 2px;
+      transform-origin: 0 50%;
+      background: linear-gradient(to right, rgba(0, 128, 255, 0.6), transparent);
+      animation: oc-sonar-rotate 3s linear infinite;
+    }
+    #ocean-app .sonar-sweep::before {
+      content: ''; position: absolute; top: -16px; left: 0; width: 100%; height: 34px;
+      background: conic-gradient(from 0deg, rgba(0, 128, 255, 0.12), transparent 60deg);
+      transform-origin: 0 50%;
+    }
+    @keyframes oc-sonar-rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    #ocean-app .sonar-ring { position: absolute; border-radius: 50%; border: 1px solid rgba(0, 128, 255, 0.12); }
+    #ocean-app .sonar-ring-1 { width: 33%; height: 33%; top: 33.5%; left: 33.5%; }
+    #ocean-app .sonar-ring-2 { width: 66%; height: 66%; top: 17%; left: 17%; }
+    #ocean-app .sonar-ring-3 { width: 100%; height: 100%; top: 0; left: 0; }
+    #ocean-app .sonar-label { font-size: 8px; letter-spacing: 3px; color: #0080ff; opacity: 0.4; }
+    #ocean-app #oc-sonar-radar::after {
+      content: ''; position: absolute; width: 3px; height: 3px; border-radius: 50%;
+      background: #0080ff; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      box-shadow: 0 0 4px #0080ff;
+    }
+
+    /* ─── VIEW DESCRIPTION (ocean) ─── */
+    #oc-view-description {
+      position: fixed;
+      bottom: 140px;
+      right: 14px;
+      z-index: 10;
+      pointer-events: none;
+      width: 220px;
+      background: rgba(2, 8, 20, 0.75);
+      border: 1px solid rgba(0, 128, 255, 0.12);
+      border-right: 2px solid rgba(0, 128, 255, 0.3);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 12px 14px;
+      transition: opacity 0.4s ease;
+    }
+    #oc-view-description p {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      line-height: 1.6;
+      color: rgba(0, 200, 220, 0.5);
+      margin: 0;
+    }
+
+    /* ─── Contact detail panel ─── */
+    #ocean-app #oc-contact-detail {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 340px; background: rgba(2, 8, 20, 0.92); border: 1px solid rgba(0, 128, 255, 0.18);
+      border-top: 2px solid #0080ff; pointer-events: auto; z-index: 20;
+      box-shadow: 0 0 40px rgba(0, 128, 255, 0.10);
+    }
+    #ocean-app #oc-contact-detail.hidden { display: none; }
+    #ocean-app .detail-body { padding: 14px 16px; }
+    #ocean-app .detail-row { display: flex; justify-content: space-between; align-items: baseline; padding: 6px 0; border-bottom: 1px solid rgba(0, 30, 60, 0.4); font-size: 12px; }
+    #ocean-app .detail-row:last-child { border-bottom: none; }
+    #ocean-app .detail-row .label { color: #0080ff; font-size: 9px; letter-spacing: 2px; opacity: 0.65; }
+    #ocean-app .detail-row .value { color: #00e0c0; }
+    #ocean-app #oc-close-detail { background: none; border: none; color: #0080ff; font-size: 14px; line-height: 1; cursor: pointer; opacity: 0.5; padding: 0 0 0 8px; transition: opacity 0.15s; letter-spacing: 0; flex-shrink: 0; }
+    #ocean-app #oc-close-detail:hover { opacity: 1; }
+
   </style>
 </head>
 <body>
@@ -1092,6 +1471,7 @@
   <div id="app-switcher">
     <button class="app-switch-btn active" data-app="space">Space Sim</button>
     <button class="app-switch-btn" data-app="surface">Surface</button>
+    <button class="app-switch-btn" data-app="ocean">Ocean</button>
   </div>
 
   <!-- ════════════════════════════════════════════════════════════════════
@@ -1201,23 +1581,47 @@
     <div class="bracket bracket-bl"></div>
     <div class="bracket bracket-br"></div>
 
+    <!-- System title bar (top-left) -->
+    <div id="sp-hud-top-left">
+      <div class="hud-system-title">STELLAR NAVIGATION SYSTEM</div>
+      <div class="hud-coords">
+        <span class="label">SYS</span><span id="sp-sys">Sol</span>
+        <span class="label">CLASS</span><span id="sp-class">G2V</span>
+        <span class="label">DIST</span><span id="sp-dist">---</span>
+      </div>
+    </div>
+
     <!-- Nav -->
     <div id="nav">
-      <div id="nav-label">Navigation</div>
       <div id="nav-buttons">
-        <button class="active" data-view="earth">Earth</button>
-        <button data-view="station">Station 1</button>
-        <button data-view="station2">Station 2</button>
-        <button data-view="station3">Station 3</button>
-        <button data-view="station4">Station 4</button>
-        <button data-view="solar">Solar System</button>
-        <button data-view="trappist">TRAPPIST-1</button>
-        <button data-view="cancri">55 Cancri</button>
-        <button data-view="hr8799">HR 8799</button>
-        <button data-view="kepler16">Kepler-16</button>
-        <button data-view="blackholeV1">Black Hole V1</button>
-        <button data-view="blackholeV2">Black Hole V2</button>
-        <button data-view="cataclysmic">T CrB</button>
+        <div class="nav-group">
+          <div class="nav-group-label">Solar System</div>
+          <button class="active" data-view="earth">Earth</button>
+          <button data-view="solar">Solar System</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">Stations</div>
+          <button data-view="station">Station 1</button>
+          <button data-view="station2">Station 2</button>
+          <button data-view="station3">Station 3</button>
+          <button data-view="station4">Station 4</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">Exoplanets</div>
+          <button data-view="proxima">Proxima Cen</button>
+          <button data-view="trappist">TRAPPIST-1</button>
+          <button data-view="cancri">55 Cancri</button>
+          <button data-view="hr8799">HR 8799</button>
+          <button data-view="kepler16">Kepler-16</button>
+          <button data-view="lich">PSR B1257+12</button>
+          <button data-view="wasp121">WASP-121</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">Phenomena</div>
+          <button data-view="blackholeV1">Black Hole V1</button>
+          <button data-view="blackholeV2">Black Hole V2</button>
+          <button data-view="cataclysmic">T CrB</button>
+        </div>
       </div>
     </div>
 
@@ -1231,6 +1635,18 @@
     <div id="corner-tr">
       <div id="clock">--:--:-- UTC</div>
       <div class="corner-line" style="width: 120px;"></div>
+    </div>
+
+    <!-- View description -->
+    <div id="view-description"><p id="view-description-text"></p></div>
+
+    <!-- Quality slider (black hole views) -->
+    <div id="quality-control" class="hidden">
+      <div id="quality-header">
+        <span>Quality</span>
+        <div id="quality-label">50%</div>
+      </div>
+      <input type="range" id="quality-slider" min="0" max="250" value="50" step="1">
     </div>
 
     <!-- Speed controller -->
@@ -1394,6 +1810,151 @@
         </div>
         <div id="deposit-detail-content"></div>
       </div>
+
+      <!-- View description -->
+      <div id="sv-view-description"><p id="sv-view-description-text"></p></div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       OCEAN EXPLORER UI
+       ════════════════════════════════════════════════════════════════════ -->
+  <div id="ocean-app" style="display:none">
+
+    <div id="oc-loading">
+      <div class="loading-title">DEEP OCEAN SURVEY SYSTEM</div>
+      <div class="loading-subtitle">v1.0 · BATHYMETRIC ANALYSIS MODULE</div>
+      <div class="loading-bar-container">
+        <div class="loading-bar-outer"><div class="loading-bar-inner" id="oc-loading-bar"></div></div>
+        <div class="loading-status" id="oc-loading-status">INITIALIZING SONAR ARRAY...</div>
+      </div>
+    </div>
+
+    <div id="oc-hud">
+      <div class="corner corner-tl"></div>
+      <div class="corner corner-tr"></div>
+      <div class="corner corner-bl"></div>
+      <div class="corner corner-br"></div>
+
+      <!-- Top bar -->
+      <div id="oc-hud-top">
+        <div id="oc-hud-top-left">
+          <div class="hud-system-title" id="oc-hud-system-title">DEEP OCEAN SURVEY SYSTEM</div>
+          <div class="hud-coords">
+            <span class="label">LAT</span><span id="oc-coord-lat">---</span>
+            <span class="label">LON</span><span id="oc-coord-lon">---</span>
+            <span class="label">DEPTH</span><span id="oc-coord-depth">---</span><span class="unit"> m</span>
+          </div>
+        </div>
+        <div id="oc-status-container">
+          <div class="status-indicator">
+            <div class="status-dot"></div>
+            <span id="oc-status-text">INITIALIZING...</span>
+          </div>
+        </div>
+        <div id="oc-hud-top-right">
+          <div class="hud-time-label">DIVE TIME</div>
+          <div id="oc-mission-time">T+ 00:00:00</div>
+        </div>
+      </div>
+
+      <!-- View nav (left sidebar) -->
+      <div id="oc-view-nav">
+        <div class="nav-group">
+          <div class="nav-group-label">SIMULATION</div>
+          <button class="view-btn active" data-view="procedural">PROCEDURAL</button>
+          <button class="view-btn" data-view="abyssal">ABYSSAL PLAIN</button>
+          <button class="view-btn" data-view="volcanic">VOLCANIC RIDGE</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">PACIFIC</div>
+          <button class="view-btn" data-view="mariana">MARIANA TRENCH</button>
+          <button class="view-btn" data-view="hawaiian">HAWAIIAN CHAIN</button>
+          <button class="view-btn" data-view="philippine">PHILIPPINE TRENCH</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">ATLANTIC</div>
+          <button class="view-btn" data-view="midatlantic">MID-ATLANTIC RIDGE</button>
+          <button class="view-btn" data-view="puertorico">PUERTO RICO TRENCH</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">INDIAN OCEAN</div>
+          <button class="view-btn" data-view="java">JAVA TRENCH</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">SHALLOW</div>
+          <button class="view-btn" data-view="reef">CORAL REEF</button>
+        </div>
+      </div>
+
+      <!-- Sonar contacts panel (procedural) -->
+      <div id="oc-contact-panel">
+        <div class="panel-header">SONAR CONTACTS</div>
+        <div id="oc-contact-list"></div>
+        <div class="panel-footer"><span id="oc-contact-count">0</span>&nbsp;CONTACTS IDENTIFIED</div>
+      </div>
+
+      <!-- Geological panel (real bathymetry) -->
+      <div id="oc-geo-panel" style="display:none">
+        <div class="panel-header">GEOLOGICAL FEATURES</div>
+        <div class="panel-region-label" id="oc-geo-region-label"></div>
+        <div id="oc-geo-feature-list"></div>
+        <div class="panel-footer"><span id="oc-geo-feature-count">0</span>&nbsp;FEATURES CATALOGUED</div>
+      </div>
+
+      <!-- Controls HUD -->
+      <div id="oc-controls-panel">
+        <div class="panel-header">NAVIGATION</div>
+        <div class="controls-grid">
+          <kbd>W A S D</kbd><span>MOVE</span>
+          <kbd>Q / E</kbd><span>DEPTH</span>
+          <kbd>SHIFT</kbd><span>SPRINT</span>
+          <kbd>SCROLL</kbd><span>ZOOM</span>
+          <kbd>DRAG</kbd><span>ORBIT</span>
+        </div>
+      </div>
+
+      <!-- Bottom bar — submersible gauges -->
+      <div id="oc-hud-bottom">
+        <div class="gauge">
+          <span class="gauge-label">DEPTH</span>
+          <span class="gauge-value" id="oc-gauge-depth">-0 m</span>
+        </div>
+        <div class="gauge">
+          <span class="gauge-label">PRESSURE</span>
+          <span class="gauge-value" id="oc-gauge-pressure">1.0 atm</span>
+        </div>
+        <div id="oc-sonar-container">
+          <div id="oc-sonar-radar">
+            <div class="sonar-sweep"></div>
+            <div class="sonar-ring sonar-ring-1"></div>
+            <div class="sonar-ring sonar-ring-2"></div>
+            <div class="sonar-ring sonar-ring-3"></div>
+          </div>
+          <div class="sonar-label">SONAR ACTIVE</div>
+        </div>
+        <div class="gauge">
+          <span class="gauge-label">TEMP</span>
+          <span class="gauge-value" id="oc-gauge-temp">2.1 °C</span>
+        </div>
+        <div class="gauge">
+          <span class="gauge-label">O&#x2082;</span>
+          <span class="gauge-value" id="oc-gauge-o2">98%</span>
+        </div>
+      </div>
+
+      <!-- Contact detail -->
+      <div id="oc-contact-detail" class="hidden">
+        <div class="panel-header">
+          SONAR CONTACT ANALYSIS
+          <button id="oc-close-detail">&#x2715;</button>
+        </div>
+        <div id="oc-contact-detail-content"></div>
+      </div>
+
+      <!-- View description -->
+      <div id="oc-view-description"><p id="oc-view-description-text"></p></div>
 
     </div>
   </div>
