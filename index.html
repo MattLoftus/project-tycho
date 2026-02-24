@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Space Sim</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      overflow: hidden;
+      background: #000;
+      font-family: 'Rajdhani', sans-serif;
+    }
+
+    /* ── Shared canvas ── */
+    #canvas-container {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+    }
+    #canvas-container canvas { display: block; }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       APP SWITCHER
+       ══════════════════════════════════════════════════════════════════════ */
+
+    #app-switcher {
+      position: fixed;
+      top: 16px;
+      left: 24px;
+      z-index: 25;
+      display: flex;
+      gap: 0;
+      backdrop-filter: blur(8px);
+    }
+
+    .app-switch-btn {
+      background: rgba(4, 12, 24, 0.75);
+      border: 1px solid rgba(80, 160, 220, 0.2);
+      color: rgba(140, 210, 255, 0.4);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 7px 24px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .app-switch-btn:first-child {
+      border-right: none;
+      border-radius: 2px 0 0 2px;
+    }
+
+    .app-switch-btn:last-child {
+      border-left: none;
+      border-radius: 0 2px 2px 0;
+    }
+
+    .app-switch-btn:hover {
+      color: rgba(140, 210, 255, 0.7);
+      background: rgba(4, 16, 32, 0.85);
+    }
+
+    .app-switch-btn.active {
+      background: rgba(10, 28, 55, 0.9);
+      border-color: rgba(80, 180, 255, 0.45);
+      color: rgba(140, 210, 255, 1);
+      box-shadow: 0 0 18px rgba(80, 180, 255, 0.12), inset 0 0 12px rgba(80, 180, 255, 0.06);
+    }
+
+    .app-switch-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 20%;
+      right: 20%;
+      height: 1px;
+      background: rgba(80, 180, 255, 0.8);
+      box-shadow: 0 0 8px rgba(80, 180, 255, 0.6);
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       SPACE SIM STYLES
+       ══════════════════════════════════════════════════════════════════════ */
+
+    #space-app {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* ── Nav ── */
+    #nav {
+      position: fixed;
+      top: 56px;
+      left: 24px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      pointer-events: auto;
+    }
+
+    /* Small label above */
+    #nav-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      color: rgba(80, 160, 220, 0.5);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      padding-left: 2px;
+    }
+
+    #nav-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    #nav button {
+      position: relative;
+      background: transparent;
+      border: none;
+      color: rgba(180, 210, 240, 0.35);
+      padding: 7px 20px 7px 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 0.25s ease;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    /* Left accent bar */
+    #nav button::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 2px;
+      height: 0;
+      background: rgba(80, 160, 220, 0.7);
+      transition: height 0.25s ease;
+    }
+
+    #nav button:hover {
+      color: rgba(180, 210, 240, 0.7);
+    }
+
+    #nav button:hover::before {
+      height: 60%;
+    }
+
+    #nav button.active {
+      color: rgba(140, 210, 255, 1);
+    }
+
+    #nav button.active::before {
+      height: 100%;
+      background: rgba(80, 180, 255, 0.9);
+      box-shadow: 0 0 8px rgba(80, 180, 255, 0.6);
+    }
+
+    /* ── Corner decoration: top-right ── */
+    #corner-tr {
+      position: fixed;
+      top: 20px;
+      right: 24px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      pointer-events: none;
+    }
+
+    #clock {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      color: rgba(80, 160, 220, 0.45);
+    }
+
+    .corner-line {
+      height: 1px;
+      background: linear-gradient(to left, rgba(80, 160, 220, 0.4), transparent);
+    }
+
+    /* ── Bottom-left status ── */
+    #status {
+      position: fixed;
+      bottom: 20px;
+      left: 24px;
+      z-index: 10;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .status-line {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: rgba(80, 160, 220, 0.3);
+      text-transform: uppercase;
+    }
+
+    .status-line span {
+      color: rgba(80, 160, 220, 0.55);
+    }
+
+    /* ── Corner bracket decorations ── */
+    .bracket {
+      position: fixed;
+      z-index: 10;
+      pointer-events: none;
+      width: 18px;
+      height: 18px;
+    }
+
+    .bracket-tl { top: 12px; left: 12px; border-top: 1px solid rgba(80,160,220,0.3); border-left: 1px solid rgba(80,160,220,0.3); }
+    .bracket-tr { top: 12px; right: 12px; border-top: 1px solid rgba(80,160,220,0.3); border-right: 1px solid rgba(80,160,220,0.3); }
+    .bracket-bl { bottom: 12px; left: 12px; border-bottom: 1px solid rgba(80,160,220,0.3); border-left: 1px solid rgba(80,160,220,0.3); }
+    .bracket-br { bottom: 12px; right: 12px; border-bottom: 1px solid rgba(80,160,220,0.3); border-right: 1px solid rgba(80,160,220,0.3); }
+
+    /* ── Legend ── */
+    #legend {
+      position: fixed;
+      top: 56px;
+      right: 24px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      pointer-events: auto;
+    }
+
+    #legend-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      color: rgba(80, 160, 220, 0.5);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    #legend-list {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 1px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 4px 0 4px 12px;
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .legend-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(180, 210, 240, 0.35);
+      transition: color 0.2s;
+    }
+
+    .legend-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(80, 160, 220, 0.3);
+      flex-shrink: 0;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    .legend-item:hover .legend-name {
+      color: rgba(180, 210, 240, 0.75);
+    }
+
+    .legend-item:hover .legend-dot {
+      background: rgba(140, 210, 255, 0.7);
+    }
+
+    .legend-item.active .legend-name {
+      color: rgba(140, 210, 255, 1);
+    }
+
+    .legend-item.active .legend-dot {
+      background: rgba(140, 210, 255, 0.9);
+      box-shadow: 0 0 6px rgba(80, 180, 255, 0.8);
+    }
+
+    /* ── Moon drawer ── */
+    .moon-drawer {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      padding-right: 10px;
+      border-right: 1px solid transparent;
+      transition: max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+                  opacity 0.25s ease,
+                  border-color 0.38s ease;
+    }
+
+    .moon-drawer.open {
+      max-height: 500px;
+      opacity: 1;
+      border-right-color: rgba(80, 160, 220, 0.18);
+    }
+
+    .moon-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      padding: 3px 0 3px 28px;
+    }
+
+    .moon-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: rgba(140, 190, 230, 0.28);
+      transition: color 0.18s;
+    }
+
+    .moon-dot {
+      width: 2px;
+      height: 2px;
+      border-radius: 50%;
+      background: rgba(80, 160, 220, 0.22);
+      flex-shrink: 0;
+      transition: background 0.18s, box-shadow 0.18s;
+    }
+
+    .moon-item:hover .moon-name { color: rgba(160, 210, 250, 0.72); }
+    .moon-item:hover .moon-dot  { background: rgba(120, 195, 255, 0.55); }
+
+    .moon-item.active .moon-name {
+      color: rgba(160, 220, 255, 0.98);
+    }
+    .moon-item.active .moon-dot {
+      background: rgba(140, 215, 255, 0.85);
+      box-shadow: 0 0 5px rgba(80, 180, 255, 0.65);
+    }
+
+    /* ── Speed controller ── */
+    #speed-control {
+      position: fixed;
+      bottom: 20px;
+      right: 24px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      pointer-events: auto;
+    }
+
+    #speed-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #speed-header span {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      color: rgba(80, 160, 220, 0.5);
+      text-transform: uppercase;
+    }
+
+    #speed-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      color: rgba(140, 210, 255, 0.9);
+      min-width: 38px;
+      text-align: right;
+    }
+
+    #speed-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 130px;
+      height: 2px;
+      background: rgba(80, 160, 220, 0.2);
+      outline: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    #speed-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 10px;
+      height: 10px;
+      background: rgba(140, 210, 255, 0.9);
+      border-radius: 50%;
+      box-shadow: 0 0 6px rgba(80, 180, 255, 0.7);
+      cursor: pointer;
+      transition: box-shadow 0.2s;
+    }
+
+    #speed-slider::-webkit-slider-thumb:hover {
+      box-shadow: 0 0 10px rgba(80, 180, 255, 1);
+    }
+
+    #speed-slider::-moz-range-thumb {
+      width: 10px;
+      height: 10px;
+      background: rgba(140, 210, 255, 0.9);
+      border-radius: 50%;
+      border: none;
+      box-shadow: 0 0 6px rgba(80, 180, 255, 0.7);
+      cursor: pointer;
+    }
+
+    /* ── Flythrough button ── */
+    #flythrough-btn {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(calc(-50% - 70px));
+      z-index: 15;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      pointer-events: auto;
+      background: rgba(4, 12, 24, 0.75);
+      border: 1px solid rgba(80, 160, 220, 0.3);
+      color: rgba(140, 210, 255, 0.85);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 8px 20px;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: border-color 0.25s, color 0.25s, box-shadow 0.25s,
+                  opacity 0.3s, transform 0.3s;
+    }
+
+    #flythrough-btn:hover {
+      border-color: rgba(80, 180, 255, 0.7);
+      color: rgba(180, 230, 255, 1);
+      box-shadow: 0 0 12px rgba(80, 180, 255, 0.3);
+    }
+
+    #flythrough-btn.active {
+      border-color: rgba(255, 120, 80, 0.6);
+      color: rgba(255, 180, 140, 0.95);
+    }
+
+    #flythrough-btn.active:hover {
+      border-color: rgba(255, 140, 100, 0.8);
+      box-shadow: 0 0 12px rgba(255, 120, 80, 0.3);
+    }
+
+    #flythrough-btn.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(calc(-50% - 70px)) translateY(-10px);
+    }
+
+
+    #flythrough-btn .flythrough-icon {
+      font-size: 10px;
+    }
+
+    /* ── Mission Planner toggle ── */
+    #mission-planner-btn {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(calc(-50% + 70px));
+      z-index: 15;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      pointer-events: auto;
+      background: rgba(4, 12, 24, 0.75);
+      border: 1px solid rgba(80, 160, 220, 0.3);
+      color: rgba(140, 210, 255, 0.85);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 8px 20px;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: border-color 0.25s, color 0.25s, box-shadow 0.25s, opacity 0.3s, transform 0.3s;
+    }
+    #mission-planner-btn:hover {
+      border-color: rgba(80, 180, 255, 0.7);
+      color: rgba(180, 230, 255, 1);
+      box-shadow: 0 0 12px rgba(80, 180, 255, 0.3);
+    }
+    #mission-planner-btn.active {
+      border-color: rgba(100, 220, 160, 0.6);
+      color: rgba(140, 255, 200, 0.95);
+    }
+    #mission-planner-btn.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(calc(-50% + 70px)) translateY(-10px);
+    }
+
+    /* ── Mission Planner panel ── */
+    #mission-planner {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px) translate(var(--drag-x, 0px), var(--drag-y, 0px));
+      z-index: 15;
+      width: 380px;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+    }
+    #mission-planner.visible {
+      transform: translateX(-50%) translateY(0) translate(var(--drag-x, 0px), var(--drag-y, 0px));
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #mission-planner.hidden { display: none; }
+    #mission-planner-inner {
+      position: relative;
+      background: rgba(4, 12, 24, 0.88);
+      border: 1px solid rgba(80, 160, 220, 0.2);
+      border-top: 2px solid rgba(80, 180, 255, 0.6);
+      backdrop-filter: blur(10px);
+      padding: 16px 20px;
+    }
+    #mission-planner-close {
+      position: absolute; top: 8px; right: 10px;
+      background: none; border: none;
+      font-family: 'Share Tech Mono', monospace; font-size: 14px;
+      color: rgba(80, 160, 220, 0.4); cursor: pointer; padding: 2px 6px;
+      transition: color 0.2s;
+    }
+    #mission-planner-close:hover { color: rgba(140, 210, 255, 0.9); }
+    #mp-header { margin-bottom: 14px; cursor: grab; }
+    #mp-label {
+      font-family: 'Rajdhani', sans-serif; font-size: 22px; font-weight: 600;
+      letter-spacing: 0.15em; text-transform: uppercase; color: rgba(140, 210, 255, 1);
+    }
+    #mp-subtitle {
+      font-family: 'Share Tech Mono', monospace; font-size: 11px;
+      letter-spacing: 0.2em; color: rgba(80, 160, 220, 0.45); text-transform: uppercase;
+    }
+    #mp-controls { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 12px; }
+    .mp-select-group { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .mp-field-label {
+      font-family: 'Share Tech Mono', monospace; font-size: 10px;
+      letter-spacing: 0.25em; color: rgba(80, 160, 220, 0.5); text-transform: uppercase;
+    }
+    .mp-select-group select {
+      background: rgba(4, 16, 32, 0.8);
+      border: 1px solid rgba(80, 160, 220, 0.25);
+      color: rgba(180, 220, 255, 0.9);
+      font-family: 'Share Tech Mono', monospace; font-size: 13px;
+      padding: 6px 10px; cursor: pointer; outline: none;
+      transition: border-color 0.2s;
+    }
+    .mp-select-group select:focus { border-color: rgba(80, 180, 255, 0.6); }
+    .mp-select-group select option { background: #0a1020; color: #b0d8ff; }
+    #mp-swap {
+      font-size: 18px; color: rgba(80, 160, 220, 0.5); cursor: pointer;
+      padding: 4px; transition: color 0.2s; margin-bottom: 4px; user-select: none;
+    }
+    #mp-swap:hover { color: rgba(140, 210, 255, 0.9); }
+    .mp-divider { height: 1px; background: rgba(80, 160, 220, 0.15); margin: 12px 0; }
+    .mp-stat-row {
+      display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;
+    }
+    .mp-stat-label {
+      font-family: 'Share Tech Mono', monospace; font-size: 11px;
+      letter-spacing: 0.15em; text-transform: uppercase; color: rgba(80, 160, 220, 0.45);
+    }
+    .mp-stat-value {
+      font-family: 'Share Tech Mono', monospace; font-size: 13px;
+      letter-spacing: 0.08em; color: rgba(180, 220, 255, 0.85);
+    }
+    .mp-stat-value.mp-highlight { color: rgba(140, 255, 200, 0.95); font-weight: 600; }
+    #mp-window-indicator { margin: 12px 0; }
+    #mp-window-bar {
+      height: 3px; background: rgba(80, 160, 220, 0.15); border-radius: 2px; overflow: hidden;
+    }
+    #mp-window-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, rgba(80, 180, 255, 0.6), rgba(140, 255, 200, 0.9));
+      transition: width 0.3s ease; border-radius: 2px;
+    }
+    #mp-window-status {
+      font-family: 'Share Tech Mono', monospace; font-size: 10px;
+      letter-spacing: 0.15em; color: rgba(80, 160, 220, 0.4);
+      text-transform: uppercase; margin-top: 4px; text-align: center;
+    }
+    #mp-window-status.ready { color: rgba(140, 255, 200, 0.9); }
+    #mp-actions { display: flex; gap: 10px; margin-top: 12px; }
+    .mp-btn {
+      flex: 1; background: rgba(4, 16, 32, 0.6);
+      border: 1px solid rgba(80, 180, 255, 0.4);
+      color: rgba(140, 210, 255, 0.9);
+      font-family: 'Share Tech Mono', monospace; font-size: 12px;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 8px 16px; cursor: pointer; transition: all 0.25s;
+    }
+    .mp-btn:hover:not(:disabled) {
+      border-color: rgba(80, 180, 255, 0.8);
+      box-shadow: 0 0 12px rgba(80, 180, 255, 0.3);
+      color: rgba(200, 240, 255, 1);
+    }
+    .mp-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .mp-btn-secondary {
+      border-color: rgba(255, 120, 80, 0.4) !important;
+      color: rgba(255, 180, 140, 0.9) !important;
+    }
+    .mp-btn-secondary:hover:not(:disabled) {
+      border-color: rgba(255, 140, 100, 0.8) !important;
+      box-shadow: 0 0 12px rgba(255, 120, 80, 0.3) !important;
+    }
+    .mp-btn-warp {
+      border-color: rgba(255, 200, 80, 0.4) !important;
+      color: rgba(255, 220, 120, 0.9) !important;
+    }
+    .mp-btn-warp:hover:not(:disabled) {
+      border-color: rgba(255, 200, 80, 0.8) !important;
+      box-shadow: 0 0 12px rgba(255, 200, 80, 0.3) !important;
+      color: rgba(255, 240, 180, 1) !important;
+    }
+    #mp-results.hidden { display: none; }
+    #mp-transit-info { margin-top: 8px; text-align: center; }
+    #mp-transit-progress {
+      font-family: 'Share Tech Mono', monospace; font-size: 11px;
+      letter-spacing: 0.15em; color: rgba(140, 255, 200, 0.8);
+    }
+
+    /* ── Controls legend ── */
+    #space-app #controls-panel {
+      position: fixed;
+      bottom: 64px;
+      left: 24px;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    #controls-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      color: rgba(80, 160, 220, 0.5);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      padding-left: 2px;
+    }
+
+    #space-app .controls-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 4px 12px;
+      align-items: center;
+    }
+
+    #space-app .controls-grid kbd {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      color: rgba(140, 210, 255, 0.7);
+      letter-spacing: 1px;
+      background: rgba(4, 16, 32, 0.6);
+      border: 1px solid rgba(80, 160, 220, 0.2);
+      padding: 2px 6px;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    #space-app .controls-grid span {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: rgba(80, 160, 220, 0.35);
+      text-transform: uppercase;
+    }
+
+    /* ── Hover tooltip ── */
+    #tooltip {
+      position: fixed;
+      z-index: 20;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      transform: translate(16px, -50%);
+    }
+
+    #tooltip.visible {
+      opacity: 1;
+    }
+
+    #tooltip-inner {
+      background: rgba(4, 12, 24, 0.85);
+      border: 1px solid rgba(80, 160, 220, 0.25);
+      border-left: 2px solid rgba(80, 180, 255, 0.7);
+      padding: 10px 14px;
+      min-width: 190px;
+      backdrop-filter: blur(6px);
+    }
+
+    #tooltip-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(140, 210, 255, 1);
+      margin-bottom: 8px;
+    }
+
+    .tooltip-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 4px;
+    }
+
+    .tooltip-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .tooltip-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(80, 160, 220, 0.5);
+    }
+
+    .tooltip-value {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      color: rgba(180, 220, 255, 0.85);
+      text-align: right;
+    }
+
+    /* ── Focus panel ── */
+    #focus-panel {
+      position: fixed;
+      top: 50%;
+      left: 24px;
+      transform: translateY(-50%) translateX(-280px) translate(var(--drag-x, 0px), var(--drag-y, 0px));
+      z-index: 15;
+      width: 270px;
+      pointer-events: none;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+      opacity: 0;
+    }
+
+    #focus-panel.visible {
+      transform: translateY(-50%) translateX(0) translate(var(--drag-x, 0px), var(--drag-y, 0px));
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #focus-panel-inner {
+      position: relative;
+      background: rgba(4, 12, 24, 0.82);
+      border: 1px solid rgba(80, 160, 220, 0.2);
+      border-left: 2px solid rgba(80, 180, 255, 0.6);
+      backdrop-filter: blur(8px);
+      padding: 18px 18px 16px;
+    }
+
+    #focus-panel-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      color: rgba(80, 160, 220, 0.4);
+      cursor: pointer;
+      padding: 2px 6px;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+
+    #focus-panel-close:hover {
+      color: rgba(140, 210, 255, 0.9);
+    }
+
+    #focus-panel-header {
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(80, 160, 220, 0.15);
+      cursor: grab;
+    }
+
+    #focus-panel-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(80, 160, 220, 0.45);
+      margin-bottom: 4px;
+    }
+
+    #focus-panel-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 29px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(140, 210, 255, 1);
+      line-height: 1;
+    }
+
+    #focus-panel-type {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      color: rgba(80, 160, 220, 0.5);
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+
+    #focus-panel-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .panel-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .panel-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(80, 160, 220, 0.4);
+      flex-shrink: 0;
+    }
+
+    .panel-value {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      color: rgba(180, 220, 255, 0.8);
+      text-align: right;
+    }
+
+    .panel-divider {
+      flex: 1;
+      height: 1px;
+      background: rgba(80, 160, 220, 0.08);
+      margin: 0 4px;
+      align-self: center;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       SURFACE VIEWER STYLES (scoped under #surface-app)
+       ══════════════════════════════════════════════════════════════════════ */
+
+    :root {
+      --amber:        #e8941a;
+      --amber-bright: #ffb840;
+      --amber-dim:    #7a4a08;
+      --cyan:         #00c8e0;
+      --cyan-dim:     #005060;
+      --green:        #40e068;
+      --purple:       #c060ff;
+      --red:          #ff4060;
+      --bg:           #020810;
+      --panel-bg:     rgba(3, 12, 22, 0.92);
+      --border:       rgba(0, 200, 224, 0.20);
+      --border-amber: rgba(232, 148, 26, 0.25);
+    }
+
+    #surface-app {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      font-family: 'Share Tech Mono', monospace;
+      color: var(--amber);
+      user-select: none;
+      pointer-events: none;
+    }
+
+    /* ─── LOADING ─── */
+    #surface-app #loading {
+      position: absolute;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: opacity 0.9s ease;
+      pointer-events: auto;
+    }
+    #surface-app #loading.fade-out { opacity: 0; pointer-events: none; }
+    #surface-app .loading-title { font-size: 14px; letter-spacing: 8px; color: var(--cyan); margin-bottom: 6px; }
+    #surface-app .loading-subtitle { font-size: 10px; letter-spacing: 4px; color: var(--amber-dim); margin-bottom: 44px; }
+    #surface-app .loading-bar-container { width: 320px; }
+    #surface-app .loading-bar-outer { width: 100%; height: 2px; background: rgba(0, 60, 80, 0.5); margin-bottom: 10px; position: relative; }
+    #surface-app .loading-bar-inner { height: 100%; background: var(--cyan); width: 0%; transition: width 0.25s ease; box-shadow: 0 0 10px var(--cyan), 0 0 20px var(--cyan); }
+    #surface-app .loading-status { font-size: 10px; letter-spacing: 2px; color: var(--cyan); opacity: 0.55; text-align: center; }
+
+    /* ─── HUD OVERLAY ─── */
+    #surface-app #hud { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
+    #surface-app #hud::after {
+      content: ''; position: absolute; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0, 0, 0, 0.04) 3px, rgba(0, 0, 0, 0.04) 4px);
+      pointer-events: none;
+    }
+
+    /* Corner brackets */
+    #surface-app .corner { position: absolute; width: 28px; height: 28px; border-color: var(--cyan); border-style: solid; opacity: 0.5; }
+    #surface-app .corner-tl { top: 18px; left: 18px; border-width: 2px 0 0 2px; }
+    #surface-app .corner-tr { top: 18px; right: 18px; border-width: 2px 2px 0 0; }
+    #surface-app .corner-bl { bottom: 18px; left: 18px; border-width: 0 0 2px 2px; }
+    #surface-app .corner-br { bottom: 18px; right: 18px; border-width: 0 2px 2px 0; }
+
+    /* ─── TOP BAR ─── */
+    #surface-app #hud-top {
+      position: absolute; top: 0; left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 56px 24px 20px;
+      background: linear-gradient(to bottom, rgba(2, 8, 16, 0.88) 0%, transparent 100%);
+    }
+    #surface-app .hud-system-title { font-size: 10px; letter-spacing: 5px; color: var(--cyan); opacity: 0.65; margin-bottom: 7px; }
+    #surface-app .hud-coords { font-size: 13px; color: var(--amber); }
+    #surface-app .hud-coords .label { color: var(--cyan); font-size: 9px; letter-spacing: 2px; margin-right: 4px; margin-left: 12px; opacity: 0.7; }
+    #surface-app .hud-coords .label:first-child { margin-left: 0; }
+    #surface-app .hud-coords .unit { color: var(--amber-dim); font-size: 10px; }
+    #surface-app #status-container { text-align: center; padding-top: 4px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+    /* ─── VIEW NAV ─── */
+    #surface-app #view-nav {
+      position: absolute; top: 116px; left: 20px;
+      display: flex; flex-direction: column; gap: 2px; pointer-events: auto;
+      background: var(--panel-bg); border: 1px solid var(--border); border-left: 2px solid var(--cyan-dim);
+      padding: 6px 0; width: 182px;
+      max-height: calc(100vh - 150px); overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: var(--cyan-dim) transparent;
+    }
+    #surface-app .nav-group { display: flex; flex-direction: column; }
+    #surface-app .nav-group + .nav-group { border-top: 1px solid var(--border); margin-top: 2px; padding-top: 2px; }
+    #surface-app .nav-group-label { font-size: 8px; letter-spacing: 3px; color: var(--cyan); opacity: 0.4; padding: 6px 14px 3px; }
+    #surface-app .view-btn {
+      background: none; border: none; border-left: 2px solid transparent;
+      color: var(--cyan); font-family: 'Share Tech Mono', monospace; font-size: 9px;
+      letter-spacing: 2px; padding: 5px 14px; cursor: pointer; opacity: 0.45;
+      transition: opacity 0.18s, border-color 0.18s, background 0.18s;
+      text-align: left; width: 100%;
+    }
+    #surface-app .view-btn:hover { opacity: 0.75; background: rgba(0, 55, 75, 0.25); }
+    #surface-app .view-btn.active { opacity: 1; color: var(--cyan); border-left-color: var(--cyan); background: rgba(0, 55, 75, 0.35); }
+    #surface-app .view-btn:disabled { cursor: default; pointer-events: none; }
+
+    #surface-app .status-indicator { display: inline-flex; align-items: center; gap: 9px; padding: 7px 18px; border: 1px solid var(--cyan-dim); background: rgba(0, 30, 45, 0.45); }
+    #surface-app .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 6px var(--cyan); animation: sv-pulse-dot 2s ease-in-out infinite; }
+    @keyframes sv-pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
+    #surface-app #status-text { font-size: 10px; letter-spacing: 3px; color: var(--cyan); }
+    #surface-app .hud-time-label { font-size: 9px; letter-spacing: 3px; color: var(--cyan); opacity: 0.55; margin-bottom: 5px; text-align: right; }
+    #surface-app #mission-time { font-size: 16px; letter-spacing: 2px; color: var(--amber); text-align: right; text-shadow: 0 0 10px rgba(232, 148, 26, 0.4); }
+
+    /* ─── RESOURCE / MARS PANELS ─── */
+    #surface-app #deposit-panel,
+    #surface-app #mars-panel {
+      position: absolute; top: 120px; right: 20px; width: 246px;
+      background: var(--panel-bg); border: 1px solid var(--border); border-right: 2px solid var(--cyan-dim);
+      pointer-events: auto;
+    }
+    #surface-app .panel-region-label { padding: 6px 14px 4px; font-size: 8px; letter-spacing: 2px; color: var(--amber-dim); border-bottom: 1px solid var(--border); }
+    #surface-app .feature-item { transition: background 0.18s, border-left 0.18s; border-left: 2px solid transparent; }
+    #surface-app .feature-item.feature-targeted { background: rgba(200, 68, 10, 0.12) !important; border-left-color: #c8440a; }
+    #surface-app .feature-item.feature-targeted .deposit-name { color: var(--amber-bright); text-shadow: 0 0 8px rgba(232, 148, 26, 0.5); }
+    #surface-app .feature-item.feature-targeted .deposit-dot { filter: brightness(1.6); }
+    #surface-app .feature-item.feature-activated { background: rgba(200, 68, 10, 0.28) !important; }
+
+    /* ─── CONTROLS PANEL ─── */
+    #surface-app #sv-controls-panel {
+      position: absolute; bottom: 54px; left: 20px; width: 172px; z-index: 1;
+      background: var(--panel-bg); border: 1px solid var(--border); border-left: 2px solid var(--cyan-dim);
+      pointer-events: none;
+    }
+    #surface-app .controls-grid {
+      display: grid; grid-template-columns: auto 1fr; gap: 5px 12px; padding: 10px 14px; align-items: center;
+    }
+    #surface-app .controls-grid kbd {
+      font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--cyan);
+      letter-spacing: 1px; background: rgba(0, 40, 60, 0.6); border: 1px solid var(--cyan-dim);
+      padding: 2px 6px; white-space: nowrap; text-align: center;
+    }
+    #surface-app .controls-grid span { font-size: 9px; color: var(--amber-dim); letter-spacing: 2px; }
+
+    #surface-app .panel-header {
+      padding: 10px 14px; font-size: 9px; letter-spacing: 4px; color: var(--cyan);
+      border-bottom: 1px solid var(--border); background: rgba(0, 40, 60, 0.35);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    #surface-app #deposit-list { overflow-y: auto; max-height: 370px; scrollbar-width: thin; scrollbar-color: var(--cyan-dim) transparent; }
+    #surface-app .deposit-item { padding: 10px 14px; border-bottom: 1px solid rgba(0, 40, 60, 0.5); cursor: pointer; transition: background 0.18s; }
+    #surface-app .deposit-item:hover { background: rgba(0, 55, 75, 0.35); }
+    #surface-app .deposit-item-header { display: flex; align-items: center; gap: 9px; margin-bottom: 5px; }
+    #surface-app .deposit-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    #surface-app .deposit-name { font-size: 11px; color: var(--amber); letter-spacing: 0.5px; line-height: 1.3; }
+    #surface-app .deposit-meta { display: flex; justify-content: space-between; padding-left: 17px; }
+    #surface-app .deposit-quantity { font-size: 11px; color: var(--amber-dim); }
+    #surface-app .deposit-grade { font-size: 9px; letter-spacing: 2px; padding: 1px 6px; }
+    #surface-app .grade-EXTREME  { color: #ff4060; border: 1px solid rgba(255, 64, 96, 0.35); }
+    #surface-app .grade-CRITICAL { color: #ff8020; border: 1px solid rgba(255, 128, 32, 0.35); }
+    #surface-app .grade-HIGH     { color: var(--amber); border: 1px solid var(--border-amber); }
+    #surface-app .grade-MEDIUM   { color: #80a888; border: 1px solid rgba(128, 168, 136, 0.35); }
+    #surface-app .grade-LOW      { color: #507868; border: 1px solid rgba(80, 120, 104, 0.35); }
+    #surface-app .panel-footer { padding: 8px 14px; font-size: 9px; letter-spacing: 3px; color: var(--cyan); opacity: 0.55; border-top: 1px solid var(--border); background: rgba(0, 40, 60, 0.25); }
+
+    /* ─── BOTTOM BAR ─── */
+    #surface-app #hud-bottom {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items: flex-end;
+      padding: 20px 52px;
+      background: linear-gradient(to top, rgba(2, 8, 16, 0.88) 0%, transparent 100%);
+    }
+    #surface-app .hud-stat { font-size: 11px; letter-spacing: 2px; }
+    #surface-app .hud-stat .label { color: var(--cyan); opacity: 0.65; margin-right: 7px; font-size: 9px; letter-spacing: 3px; }
+    #surface-app .hud-stat .value { color: var(--amber); }
+    #surface-app #scan-bar-container { text-align: center; padding-bottom: 2px; }
+    #surface-app .scan-bar { width: 220px; height: 2px; background: rgba(0, 80, 100, 0.4); margin: 0 auto 7px; overflow: hidden; }
+    #surface-app .scan-progress { height: 100%; background: linear-gradient(to right, transparent, var(--cyan), transparent); width: 35%; animation: sv-scan-sweep 3.2s linear infinite; }
+    @keyframes sv-scan-sweep { 0% { transform: translateX(-200%); } 100% { transform: translateX(600%); } }
+    #surface-app .scan-label { font-size: 9px; letter-spacing: 3px; color: var(--cyan); opacity: 0.45; }
+
+    /* ─── DEPOSIT DETAIL PANEL ─── */
+    #surface-app #deposit-detail {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 330px; background: var(--panel-bg); border: 1px solid var(--border);
+      border-top: 2px solid var(--cyan); pointer-events: auto; z-index: 20;
+      box-shadow: 0 0 40px rgba(0, 200, 224, 0.08);
+    }
+    #surface-app #deposit-detail.hidden { display: none; }
+    #surface-app .detail-body { padding: 14px 16px; }
+    #surface-app .detail-row { display: flex; justify-content: space-between; align-items: baseline; padding: 6px 0; border-bottom: 1px solid rgba(0, 40, 60, 0.4); font-size: 12px; }
+    #surface-app .detail-row:last-child { border-bottom: none; }
+    #surface-app .detail-row .label { color: var(--cyan); font-size: 9px; letter-spacing: 2px; opacity: 0.7; }
+    #surface-app .detail-row .value { color: var(--amber); }
+    #surface-app #close-detail { background: none; border: none; color: var(--cyan); font-size: 14px; line-height: 1; cursor: pointer; opacity: 0.5; padding: 0 0 0 8px; transition: opacity 0.15s; letter-spacing: 0; flex-shrink: 0; }
+    #surface-app #close-detail:hover { opacity: 1; }
+
+  </style>
+</head>
+<body>
+
+  <!-- Shared canvas container -->
+  <div id="canvas-container"></div>
+
+  <!-- App Switcher -->
+  <div id="app-switcher">
+    <button class="app-switch-btn active" data-app="space">Space Sim</button>
+    <button class="app-switch-btn" data-app="surface">Surface</button>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SPACE SIM UI
+       ════════════════════════════════════════════════════════════════════ -->
+  <div id="space-app">
+
+    <!-- Hover tooltip -->
+    <div id="tooltip">
+      <div id="tooltip-inner">
+        <div id="tooltip-name"></div>
+        <div id="tooltip-stats"></div>
+      </div>
+    </div>
+
+    <!-- Focus panel -->
+    <div id="focus-panel">
+      <div id="focus-panel-inner">
+        <button id="focus-panel-close">&times;</button>
+        <div id="focus-panel-header">
+          <div id="focus-panel-label">In Focus</div>
+          <div id="focus-panel-name"></div>
+          <div id="focus-panel-type"></div>
+        </div>
+        <div id="focus-panel-rows"></div>
+      </div>
+    </div>
+
+    <!-- Flythrough button -->
+    <button id="flythrough-btn" class="hidden">
+      <span class="flythrough-icon">&#9658;</span>
+      <span id="flythrough-label">Flythrough</span>
+    </button>
+
+    <!-- Mission Planner button -->
+    <button id="mission-planner-btn" class="hidden">
+      <span>&#9651;</span>
+      <span id="mp-btn-label">Mission</span>
+    </button>
+
+    <!-- Mission Planner panel -->
+    <div id="mission-planner" class="hidden">
+      <div id="mission-planner-inner">
+        <button id="mission-planner-close">&times;</button>
+        <div id="mp-header">
+          <div id="mp-label">Mission Planner</div>
+          <div id="mp-subtitle">Hohmann Transfer Calculator</div>
+        </div>
+        <div id="mp-controls">
+          <div class="mp-select-group">
+            <label class="mp-field-label">Origin</label>
+            <select id="mp-origin">
+              <option value="Mercury">Mercury</option>
+              <option value="Venus">Venus</option>
+              <option value="Earth" selected>Earth</option>
+              <option value="Mars">Mars</option>
+              <option value="Jupiter">Jupiter</option>
+              <option value="Saturn">Saturn</option>
+              <option value="Uranus">Uranus</option>
+              <option value="Neptune">Neptune</option>
+            </select>
+          </div>
+          <div id="mp-swap" title="Swap">&#x21C5;</div>
+          <div class="mp-select-group">
+            <label class="mp-field-label">Destination</label>
+            <select id="mp-dest">
+              <option value="Mercury">Mercury</option>
+              <option value="Venus">Venus</option>
+              <option value="Earth">Earth</option>
+              <option value="Mars" selected>Mars</option>
+              <option value="Jupiter">Jupiter</option>
+              <option value="Saturn">Saturn</option>
+              <option value="Uranus">Uranus</option>
+              <option value="Neptune">Neptune</option>
+            </select>
+          </div>
+        </div>
+        <div id="mp-results" class="hidden">
+          <div class="mp-divider"></div>
+          <div id="mp-stats">
+            <div class="mp-stat-row"><span class="mp-stat-label">Transfer Time</span><span class="mp-stat-value" id="mp-transfer-time">--</span></div>
+            <div class="mp-stat-row"><span class="mp-stat-label">Departure &Delta;V</span><span class="mp-stat-value" id="mp-dv-depart">--</span></div>
+            <div class="mp-stat-row"><span class="mp-stat-label">Arrival &Delta;V</span><span class="mp-stat-value" id="mp-dv-arrive">--</span></div>
+            <div class="mp-stat-row"><span class="mp-stat-label">Total &Delta;V</span><span class="mp-stat-value mp-highlight" id="mp-dv-total">--</span></div>
+            <div class="mp-stat-row"><span class="mp-stat-label">Phase Angle</span><span class="mp-stat-value" id="mp-phase">--</span></div>
+            <div class="mp-stat-row"><span class="mp-stat-label">Window In</span><span class="mp-stat-value" id="mp-window">--</span></div>
+          </div>
+          <div id="mp-window-indicator">
+            <div id="mp-window-bar"><div id="mp-window-fill"></div></div>
+            <div id="mp-window-status">Waiting for alignment...</div>
+          </div>
+          <div id="mp-actions">
+            <button id="mp-warp" class="mp-btn mp-btn-warp" style="display:none">Warp</button>
+            <button id="mp-launch" class="mp-btn" disabled>Launch</button>
+            <button id="mp-cancel" class="mp-btn mp-btn-secondary" style="display:none">Cancel</button>
+          </div>
+          <div id="mp-transit-info" style="display:none">
+            <span id="mp-transit-progress"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Corner bracket decorations -->
+    <div class="bracket bracket-tl"></div>
+    <div class="bracket bracket-tr"></div>
+    <div class="bracket bracket-bl"></div>
+    <div class="bracket bracket-br"></div>
+
+    <!-- Nav -->
+    <div id="nav">
+      <div id="nav-label">Navigation</div>
+      <div id="nav-buttons">
+        <button class="active" data-view="earth">Earth</button>
+        <button data-view="station">Station 1</button>
+        <button data-view="station2">Station 2</button>
+        <button data-view="station3">Station 3</button>
+        <button data-view="station4">Station 4</button>
+        <button data-view="solar">Solar System</button>
+        <button data-view="trappist">TRAPPIST-1</button>
+        <button data-view="cancri">55 Cancri</button>
+        <button data-view="hr8799">HR 8799</button>
+        <button data-view="kepler16">Kepler-16</button>
+        <button data-view="blackholeV1">Black Hole V1</button>
+        <button data-view="blackholeV2">Black Hole V2</button>
+        <button data-view="cataclysmic">T CrB</button>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div id="legend">
+      <div id="legend-label">Objects</div>
+      <div id="legend-list"></div>
+    </div>
+
+    <!-- Top-right clock -->
+    <div id="corner-tr">
+      <div id="clock">--:--:-- UTC</div>
+      <div class="corner-line" style="width: 120px;"></div>
+    </div>
+
+    <!-- Speed controller -->
+    <div id="speed-control">
+      <div id="speed-header">
+        <span>Time Scale</span>
+        <div id="speed-label">1.00x</div>
+      </div>
+      <input type="range" id="speed-slider" min="0" max="100" value="50" step="0.5">
+    </div>
+
+    <!-- Controls legend -->
+    <div id="controls-panel">
+      <div id="controls-label">Controls</div>
+      <div class="controls-grid">
+        <kbd>W A S D</kbd><span>Move</span>
+        <kbd>Q / E</kbd><span>Altitude</span>
+        <kbd>Shift</kbd><span>Sprint</span>
+        <kbd>Scroll</kbd><span>Zoom</span>
+        <kbd>Drag</kbd><span>Orbit</span>
+      </div>
+    </div>
+
+    <!-- Bottom-left status -->
+    <div id="status">
+      <div class="status-line">System &nbsp;<span id="status-view">Earth</span></div>
+      <div class="status-line">Simulation &nbsp;<span>Active</span></div>
+    </div>
+
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SURFACE VIEWER UI
+       ════════════════════════════════════════════════════════════════════ -->
+  <div id="surface-app" style="display:none">
+
+    <div id="loading">
+      <div class="loading-title">SURFACE ANALYSIS SYSTEM</div>
+      <div class="loading-subtitle">v2.1 · TERRAIN ANALYSIS MODULE</div>
+      <div class="loading-bar-container">
+        <div class="loading-bar-outer"><div class="loading-bar-inner" id="loading-bar"></div></div>
+        <div class="loading-status" id="loading-status">INITIALIZING TERRAIN ENGINE...</div>
+      </div>
+    </div>
+
+    <div id="hud">
+      <div class="corner corner-tl"></div>
+      <div class="corner corner-tr"></div>
+      <div class="corner corner-bl"></div>
+      <div class="corner corner-br"></div>
+
+      <!-- Top bar -->
+      <div id="hud-top">
+        <div id="hud-top-left">
+          <div class="hud-system-title" id="hud-system-title">SURFACE ANALYSIS SYSTEM</div>
+          <div class="hud-coords">
+            <span class="label">LAT</span><span id="coord-lat">---</span>
+            <span class="label">LON</span><span id="coord-lon">---</span>
+            <span class="label">ALT</span><span id="coord-alt">---</span><span class="unit"> m</span>
+          </div>
+        </div>
+        <div id="status-container">
+          <div class="status-indicator">
+            <div class="status-dot"></div>
+            <span id="status-text">INITIALIZING...</span>
+          </div>
+        </div>
+        <div id="hud-top-right">
+          <div class="hud-time-label">MISSION TIME</div>
+          <div id="mission-time">T+ 00:00:00</div>
+        </div>
+      </div>
+
+      <!-- View nav (left sidebar) -->
+      <div id="view-nav">
+        <div class="nav-group">
+          <div class="nav-group-label">SIMULATION</div>
+          <button class="view-btn active" data-view="procedural">PROCEDURAL</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">MARS</div>
+          <button class="view-btn" data-view="valles">VALLES MARINERIS</button>
+          <button class="view-btn" data-view="olympus">OLYMPUS MONS</button>
+          <button class="view-btn" data-view="hellas">HELLAS BASIN</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">EARTH</div>
+          <button class="view-btn" data-view="grandcanyon">GRAND CANYON</button>
+          <button class="view-btn" data-view="himalayas">HIMALAYAS</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">SATELLITE · AMERICAS</div>
+          <button class="view-btn" data-view="grandcanyonv2">GRAND CANYON</button>
+          <button class="view-btn" data-view="yosemite">YOSEMITE</button>
+          <button class="view-btn" data-view="craterlake">CRATER LAKE</button>
+          <button class="view-btn" data-view="hawaii">HAWAI&#x02BB;I</button>
+          <button class="view-btn" data-view="patagonia">TORRES DEL PAINE</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">SATELLITE · EUROPE</div>
+          <button class="view-btn" data-view="fjords">GEIRANGERFJORD</button>
+          <button class="view-btn" data-view="dolomites">DOLOMITES</button>
+          <button class="view-btn" data-view="matterhorn">MATTERHORN</button>
+          <button class="view-btn" data-view="iceland">ICELAND</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">SATELLITE · ASIA</div>
+          <button class="view-btn" data-view="everestv2">EVEREST</button>
+          <button class="view-btn" data-view="zhangjiajie">ZHANGJIAJIE</button>
+          <button class="view-btn" data-view="deadsea">DEAD SEA</button>
+        </div>
+      </div>
+
+      <!-- Resource panel (procedural) -->
+      <div id="deposit-panel">
+        <div class="panel-header">RESOURCE SURVEY</div>
+        <div id="deposit-list"></div>
+        <div class="panel-footer"><span id="deposit-count">0</span>&nbsp;DEPOSITS IDENTIFIED</div>
+      </div>
+
+      <!-- Geological panel (mars) -->
+      <div id="mars-panel" style="display:none">
+        <div class="panel-header">GEOLOGICAL FEATURES</div>
+        <div class="panel-region-label" id="mars-region-label"></div>
+        <div id="mars-feature-list"></div>
+        <div class="panel-footer"><span id="mars-feature-count">0</span>&nbsp;FEATURES CATALOGUED</div>
+      </div>
+
+      <!-- Controls HUD -->
+      <div id="sv-controls-panel">
+        <div class="panel-header">NAVIGATION</div>
+        <div class="controls-grid">
+          <kbd>W A S D</kbd><span>MOVE</span>
+          <kbd>Q / E</kbd><span>ALTITUDE</span>
+          <kbd>SHIFT</kbd><span>SPRINT</span>
+          <kbd>SCROLL</kbd><span>ZOOM</span>
+          <kbd>DRAG</kbd><span>ORBIT</span>
+        </div>
+      </div>
+
+      <!-- Bottom bar -->
+      <div id="hud-bottom">
+        <div class="hud-stat">
+          <span class="label">MODE</span><span class="value">ORBITAL SURVEY</span>
+        </div>
+        <div id="scan-bar-container">
+          <div class="scan-bar"><div class="scan-progress"></div></div>
+          <div class="scan-label">TERRAIN SCAN IN PROGRESS</div>
+        </div>
+        <div class="hud-stat">
+          <span class="label">TERRAIN</span>
+          <span class="value" id="terrain-label">PROCEDURAL · SIM</span>
+        </div>
+      </div>
+
+      <!-- Deposit detail -->
+      <div id="deposit-detail" class="hidden">
+        <div class="panel-header">
+          DEPOSIT ANALYSIS
+          <button id="close-detail">&#x2715;</button>
+        </div>
+        <div id="deposit-detail-content"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

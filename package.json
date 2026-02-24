@@ -1,0 +1,16 @@
+{
+  "name": "earth-sim",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "three": "^0.170.0",
+    "simplex-noise": "^4.0.1"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/mola/:path*",
+      "destination": "http://s3-eu-west-1.amazonaws.com/whereonmars.cartodb.net/:path*"
+    },
+    {
+      "source": "/terrarium/:path*",
+      "destination": "https://s3.amazonaws.com/elevation-tiles-prod/:path*"
+    },
+    {
+      "source": "/esri/:path*",
+      "destination": "https://server.arcgisonline.com/:path*"
+    }
+  ]
+}
