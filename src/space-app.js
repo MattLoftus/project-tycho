@@ -16,10 +16,11 @@ import * as lichView from './views/lich.js';
 import * as wasp121View from './views/wasp121.js';
 import * as proximaView from './views/proxima.js';
 import * as pulsarView from './views/pulsar.js';
+import * as supernovaRemnantView from './views/supernova-remnant.js';
 import { sim } from './sim.js';
 import { OBJECT_DATA } from './data.js';
 
-const views = { earth: earthView, station: stationView, station2: station2View, station3: station3View, station4: station4View, solar: solarView, trappist: trappistView, cancri: cancriView, hr8799: hr8799View, kepler16: kepler16View, lich: lichView, wasp121: wasp121View, proxima: proximaView, blackholeV1: blackholeV1View, blackholeV2: blackholeV2View, cataclysmic: cataclysmicView, pulsar: pulsarView };
+const views = { earth: earthView, station: stationView, station2: station2View, station3: station3View, station4: station4View, solar: solarView, trappist: trappistView, cancri: cancriView, hr8799: hr8799View, kepler16: kepler16View, lich: lichView, wasp121: wasp121View, proxima: proximaView, blackholeV1: blackholeV1View, blackholeV2: blackholeV2View, cataclysmic: cataclysmicView, pulsar: pulsarView, supernovaRemnant: supernovaRemnantView };
 let activeView = null;
 let active = false;
 let _renderer = null;
@@ -454,7 +455,8 @@ const viewMeta = {
   blackholeV1:  { sys: 'Gargantua',   cls: 'Black Hole',   dist: '---' },
   blackholeV2:  { sys: 'Gargantua',   cls: 'Black Hole',   dist: '---' },
   cataclysmic:  { sys: 'T CrB',       cls: 'CV Nova',      dist: '2,630 ly' },
-  pulsar:       { sys: 'PSR B0531+21', cls: 'Pulsar',      dist: '6,500 ly' },
+  pulsar:           { sys: 'PSR B0531+21', cls: 'Pulsar',            dist: '6,500 ly' },
+  supernovaRemnant: { sys: 'Cassiopeia A', cls: 'Supernova Remnant', dist: '11,000 ly' },
 };
 
 // View descriptions
@@ -477,6 +479,7 @@ const viewDescriptions = {
   blackholeV2: 'Higher-fidelity black hole with adjustable quality. The accretion disk uses Keplerian differential rotation with FBM turbulence for realistic swirling cloud structure. Quality slider controls ray-march precision.',
   cataclysmic: 'T Coronae Borealis \u2014 a recurrent nova system where a red giant overflows its Roche lobe, transferring mass onto a white dwarf via an accretion stream and disk. Expected to erupt again as a naked-eye nova.',
   pulsar: 'Crab Pulsar (PSR B0531+21) \u2014 a rapidly spinning neutron star at the heart of the Crab Nebula, rotating 30 times per second. Its misaligned magnetic field produces sweeping radiation beams visible as radio pulses. The surrounding pulsar wind nebula is powered by the pulsar\u2019s rotational energy.',
+  supernovaRemnant: 'Cassiopeia A \u2014 the youngest known supernova remnant in the Milky Way, ~340 years old. The expanding blast wave has heated surrounding gas to millions of degrees. The outer forward shock (blue-white) races ahead of the reverse shock through stellar ejecta rich in silicon, sulfur, and oxygen (red-green). A faint neutron star sits at the center.',
 };
 
 // ── Exported interface ──

@@ -1147,6 +1147,30 @@ export const OBJECT_DATA = {
     ],
   },
 
+  // ── Cassiopeia A (Supernova Remnant) ──
+  'Cassiopeia A': {
+    type: 'Supernova Remnant',
+    tooltip: [
+      { label: 'Age',      value: '~340 years' },
+      { label: 'Distance', value: '11,000 ly' },
+      { label: 'Diameter', value: '~16 ly' },
+    ],
+    details: [
+      { label: 'Designation',      value: 'Cas A (3C 461)' },
+      { label: 'Type',             value: 'Type IIb Supernova Remnant' },
+      { label: 'Supernova Date',   value: '~1681 CE (unobserved)' },
+      { label: 'Age',              value: '~340 years' },
+      { label: 'Angular Size',     value: "5\u2032 (arcminutes)" },
+      { label: 'Diameter',         value: '~16 light-years (5 pc)' },
+      { label: 'Expansion Rate',   value: '~5,000 km/s (outer shock)' },
+      { label: 'Distance',         value: '11,000 ly (3.4 kpc)' },
+      { label: 'Compact Remnant',  value: 'Neutron star (detected in X-ray)' },
+      { label: 'Temperature',      value: '~30 million K (shock-heated)' },
+      { label: 'Constellation',    value: 'Cassiopeia' },
+      { label: 'Discovery',        value: '1947 (radio); 1999 (compact object)' },
+    ],
+  },
+
   // ── Crab Pulsar (PSR B0531+21) ──
   'Crab Pulsar': {
     type: 'Pulsar (Neutron Star)',

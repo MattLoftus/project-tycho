@@ -17,6 +17,9 @@ const PLANET_DATA = [
 
 let scene, camera, controls, renderer, camMove;
 let pulsar, pulsarLight, beamGroup;
+let pulseFlashMat, bloomPass;
+let torusUniforms;
+let particleSystem, particlePositions, particleVelocities, particleSpeeds;
 let planets = [];
 let raycaster, mouse, clickableObjects;
 let focusTransition;
@@ -28,6 +31,10 @@ let boundOnClick, boundOnMouseMove;
 let meshNameMap = new Map();
 let cbHover = null, cbBlur = null, cbFocus = null;
 let clock;
+let beamAngle = 0;
+
+const BEAM_TILT = Math.PI * 0.25; // ~45° magnetic axis tilt
+const PARTICLE_COUNT = 400;
 
 export function setCallbacks(hover, blur, focus) {
   cbHover = hover; cbBlur = blur; cbFocus = focus;
@@ -51,15 +58,15 @@ export function init(rendererIn) {
   const loader = new THREE.TextureLoader();
 
   // ── Pulsar — tiny, intensely bright neutron star ──
-  const pulsarGeo = new THREE.SphereGeometry(0.15, 32, 32);
+  const pulsarGeo = new THREE.SphereGeometry(0.2, 32, 32);
   const pulsarMat = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(0.85, 0.92, 1.0),
+    color: new THREE.Color(0.9, 0.95, 1.0),
   });
   pulsar = new THREE.Mesh(pulsarGeo, pulsarMat);
   scene.add(pulsar);
 
   // Core glow — tight bright halo
-  const coreGlowGeo = new THREE.SphereGeometry(0.4, 32, 32);
+  const coreGlowGeo = new THREE.SphereGeometry(0.5, 32, 32);
   const coreGlowMat = new THREE.ShaderMaterial({
     vertexShader: `
       varying vec3 vNormal;
@@ -76,11 +83,11 @@ export function init(rendererIn) {
       varying vec3 vViewDir;
       void main() {
         float rim = 1.0 - max(dot(vViewDir, vNormal), 0.0);
-        float glow = pow(rim, 2.0) * 2.5;
-        vec3 inner = vec3(0.8, 0.9, 1.0);
-        vec3 outer = vec3(0.3, 0.5, 1.0);
+        float glow = pow(rim, 2.2) * 2.2;
+        vec3 inner = vec3(0.85, 0.92, 1.0);
+        vec3 outer = vec3(0.3, 0.45, 1.0);
         vec3 color = mix(inner, outer, rim);
-        gl_FragColor = vec4(color, glow * 0.7);
+        gl_FragColor = vec4(color, glow * 0.5);
       }
     `,
     transparent: true,
@@ -90,23 +97,62 @@ export function init(rendererIn) {
   });
   scene.add(new THREE.Mesh(coreGlowGeo, coreGlowMat));
 
-  // ── Radiation beams — two opposing cones ──
+  // Hotspot caps — bright emission at magnetic poles
+  const hotspotGeo = new THREE.SphereGeometry(0.22, 32, 32);
+  const hotspotMat = new THREE.ShaderMaterial({
+    vertexShader: `
+      varying vec3 vLocalPos;
+      void main() {
+        vLocalPos = position;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      varying vec3 vLocalPos;
+      void main() {
+        float pole = abs(vLocalPos.y) / 0.22;
+        float cap = smoothstep(0.6, 1.0, pole);
+        vec3 color = vec3(0.7, 0.85, 1.0);
+        gl_FragColor = vec4(color, cap * 0.8);
+      }
+    `,
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+  const hotspots = new THREE.Mesh(hotspotGeo, hotspotMat);
+
+  // Pulse flash — camera-facing burst when beam sweeps toward viewer
+  const pulseFlashGeo = new THREE.SphereGeometry(1.2, 16, 16);
+  pulseFlashMat = new THREE.MeshBasicMaterial({
+    color: 0xaabbff,
+    transparent: true,
+    opacity: 0,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+  scene.add(new THREE.Mesh(pulseFlashGeo, pulseFlashMat));
+
+  // ── Radiation beams — two opposing cones with spiral structure ──
   beamGroup = new THREE.Group();
-  // Tilt beam axis ~45° from orbital plane
-  beamGroup.rotation.x = Math.PI * 0.25;
+  beamGroup.rotation.x = BEAM_TILT;
+  beamAngle = 0;
 
   const beamLength = 14;
   const beamRadius = 1.2;
 
   function createBeam(direction) {
-    const beamGeo = new THREE.ConeGeometry(beamRadius, beamLength, 24, 1, true);
+    const beamGeo = new THREE.ConeGeometry(beamRadius, beamLength, 32, 1, true);
     const beamMat = new THREE.ShaderMaterial({
+      uniforms: { time: { value: 0 } },
       vertexShader: `
         varying float vY;
         varying vec3 vNormal;
         varying vec3 vViewDir;
+        varying vec3 vLocalPos;
         void main() {
           vY = position.y;
+          vLocalPos = position;
           vNormal = normalize(normalMatrix * normal);
           vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
           vViewDir = normalize(-mvPos.xyz);
@@ -114,18 +160,28 @@ export function init(rendererIn) {
         }
       `,
       fragmentShader: `
+        uniform float time;
         varying float vY;
         varying vec3 vNormal;
         varying vec3 vViewDir;
+        varying vec3 vLocalPos;
         void main() {
           float dist = abs(vY) / ${beamLength.toFixed(1)};
-          float falloff = pow(1.0 - dist, 2.5);
+          float falloff = pow(1.0 - dist, 3.0);
+
           float rim = 1.0 - max(dot(vViewDir, vNormal), 0.0);
-          float edge = pow(rim, 1.5);
-          vec3 coreColor = vec3(0.6, 0.75, 1.0);
-          vec3 edgeColor = vec3(0.25, 0.35, 0.85);
+          float edge = pow(rim, 1.2);
+
+          // Spiral internal structure
+          float angle = atan(vLocalPos.x, vLocalPos.z);
+          float spiral = sin(angle * 3.0 + dist * 12.0 - time * 8.0) * 0.5 + 0.5;
+          spiral = mix(0.7, 1.0, spiral * (1.0 - dist));
+
+          vec3 coreColor = vec3(0.5, 0.7, 1.0);
+          vec3 edgeColor = vec3(0.2, 0.3, 0.9);
           vec3 color = mix(coreColor, edgeColor, edge);
-          float alpha = falloff * (0.3 + edge * 0.4) * 0.6;
+
+          float alpha = falloff * (0.25 + edge * 0.5) * spiral * 0.7;
           gl_FragColor = vec4(color, alpha);
         }
       `,
@@ -141,26 +197,111 @@ export function init(rendererIn) {
 
   beamGroup.add(createBeam(1));   // top beam
   beamGroup.add(createBeam(-1));  // bottom beam
+  beamGroup.add(hotspots);
   scene.add(beamGroup);
 
-  // ── Equatorial torus glow (magnetosphere) ──
-  const torusGeo = new THREE.TorusGeometry(0.6, 0.12, 16, 48);
-  const torusMat = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(0.3, 0.45, 0.9),
+  // ── Streaming particles along beams ──
+  const particleGeo = new THREE.BufferGeometry();
+  particlePositions = new Float32Array(PARTICLE_COUNT * 3);
+  particleVelocities = new Float32Array(PARTICLE_COUNT);
+  particleSpeeds = new Float32Array(PARTICLE_COUNT);
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    const dir = i < PARTICLE_COUNT / 2 ? 1 : -1;
+    const axisPos = Math.random() * beamLength * dir;
+    const spread = (1.0 - Math.abs(axisPos) / beamLength) * beamRadius * 0.6;
+    const angle = Math.random() * Math.PI * 2;
+    particlePositions[i * 3]     = Math.cos(angle) * spread * Math.random();
+    particlePositions[i * 3 + 1] = axisPos;
+    particlePositions[i * 3 + 2] = Math.sin(angle) * spread * Math.random();
+    particleVelocities[i] = dir;
+    particleSpeeds[i] = 8 + Math.random() * 16;
+  }
+  particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+
+  const particleMat = new THREE.PointsMaterial({
+    color: 0x6688ff,
+    size: 0.1,
     transparent: true,
-    opacity: 0.15,
+    opacity: 0.45,
     blending: THREE.AdditiveBlending,
     depthWrite: false,
   });
-  const torus = new THREE.Mesh(torusGeo, torusMat);
-  torus.rotation.x = Math.PI / 2;
-  scene.add(torus);
+  particleSystem = new THREE.Points(particleGeo, particleMat);
+  beamGroup.add(particleSystem);
+
+  // ── Magnetic field lines (dipole) ──
+  const fieldLineMat = new THREE.MeshBasicMaterial({
+    color: 0x7788dd,
+    transparent: true,
+    opacity: 0.25,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  });
+
+  const R_MAX = 2.8; // scaled for exoplanet system (inner to Draugr orbit)
+  const TUBE_RADIUS = 0.025;
+  for (let i = 0; i < 8; i++) {
+    const phi = (i / 8) * Math.PI * 2;
+    const points = [];
+    for (let theta = 0.1; theta < Math.PI - 0.1; theta += 0.05) {
+      const r = R_MAX * Math.sin(theta) * Math.sin(theta);
+      const x = r * Math.sin(theta) * Math.cos(phi);
+      const y = r * Math.cos(theta);
+      const z = r * Math.sin(theta) * Math.sin(phi);
+      points.push(new THREE.Vector3(x, y, z));
+    }
+    const curve = new THREE.CatmullRomCurve3(points);
+    const tubeGeo = new THREE.TubeGeometry(curve, 48, TUBE_RADIUS, 5, false);
+    beamGroup.add(new THREE.Mesh(tubeGeo, fieldLineMat));
+  }
+
+  // ── Equatorial wind torus — animated ──
+  const torusGeo = new THREE.TorusGeometry(1.8, 0.4, 20, 48);
+  torusUniforms = { time: { value: 0 } };
+  const torusMat = new THREE.ShaderMaterial({
+    uniforms: torusUniforms,
+    vertexShader: `
+      varying vec2 vUv;
+      varying vec3 vNormal;
+      varying vec3 vViewDir;
+      void main() {
+        vUv = uv;
+        vNormal = normalize(normalMatrix * normal);
+        vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+        vViewDir = normalize(-mvPos.xyz);
+        gl_Position = projectionMatrix * mvPos;
+      }
+    `,
+    fragmentShader: `
+      uniform float time;
+      varying vec2 vUv;
+      varying vec3 vNormal;
+      varying vec3 vViewDir;
+      void main() {
+        float rim = 1.0 - max(dot(vViewDir, vNormal), 0.0);
+        float glow = pow(rim, 1.8);
+        float swirl = sin(vUv.x * 25.0 + time * 3.0) * 0.5 + 0.5;
+        float pulse = 0.85 + 0.15 * sin(time * 5.0);
+        vec3 color = mix(vec3(0.2, 0.35, 0.8), vec3(0.5, 0.3, 0.7), swirl);
+        float alpha = glow * 0.2 * (0.5 + swirl * 0.5) * pulse;
+        gl_FragColor = vec4(color, alpha);
+      }
+    `,
+    transparent: true,
+    side: THREE.DoubleSide,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+  const windTorus = new THREE.Mesh(torusGeo, torusMat);
+  windTorus.rotation.x = Math.PI / 2;
+  scene.add(windTorus);
 
   // ── Pulsing light ──
-  pulsarLight = new THREE.PointLight(0x8888ff, 2.0, 0, 0);
+  pulsarLight = new THREE.PointLight(0x8899ff, 2.0, 0, 0);
   scene.add(pulsarLight);
-  const ambientLight = new THREE.AmbientLight(0x080810, 0.3);
-  scene.add(ambientLight);
+  scene.add(new THREE.AmbientLight(0x080810, 0.3));
 
   // ── Planets ──
   clickableObjects = [pulsar];
@@ -240,8 +381,9 @@ export function init(rendererIn) {
   const post = createComposer(renderer, scene, camera);
   composer = post.composer;
   cinematicPass = post.cinematicPass;
-  post.bloomPass.strength = 1.8;
-  post.bloomPass.threshold = 0.35;
+  bloomPass = post.bloomPass;
+  bloomPass.strength = 1.8;
+  bloomPass.threshold = 0.35;
   // Cold blue color grading
   cinematicPass.uniforms.liftB.value = 1.10;
   cinematicPass.uniforms.liftR.value = 0.90;
@@ -251,12 +393,53 @@ export function init(rendererIn) {
 export function animate() {
   const ts = sim.timeScale;
   const t = clock.getElapsedTime();
+  const dt = 0.016;
 
   // Beam rotation — visual rate ~2.5 Hz (real: 161 Hz, slowed for display)
-  beamGroup.rotation.y += 15.7 * 0.016 * ts;
+  beamAngle += 15.7 * dt * ts;
+  beamGroup.rotation.y = beamAngle;
 
-  // Pulsing light — modulates with beam sweep
-  pulsarLight.intensity = 1.5 + 1.0 * Math.abs(Math.sin(t * 15.0 * ts));
+  // Pulsing light tied to beam sweep
+  pulsarLight.intensity = 2.0 + 1.5 * Math.abs(Math.sin(beamAngle));
+
+  // ── Camera-facing pulse flash ──
+  const beamDir = new THREE.Vector3(0, 1, 0);
+  beamDir.applyAxisAngle(new THREE.Vector3(1, 0, 0), BEAM_TILT);
+  beamDir.applyAxisAngle(new THREE.Vector3(0, 1, 0), beamAngle);
+  const camDir = camera.position.clone().normalize();
+  const dot1 = beamDir.dot(camDir);
+  const dot2 = -beamDir.dot(camDir);
+  const maxDot = Math.max(dot1, dot2);
+  const flashIntensity = Math.pow(Math.max(0, maxDot - 0.7) / 0.3, 2.0);
+  pulseFlashMat.opacity = flashIntensity * 0.3;
+  bloomPass.strength = 1.8 + flashIntensity * 0.6;
+
+  // Update beam shader time uniforms (spiral animation)
+  beamGroup.children.forEach((child) => {
+    if (child.material?.uniforms?.time) {
+      child.material.uniforms.time.value = t;
+    }
+  });
+
+  // ── Streaming particles ──
+  const posAttr = particleSystem.geometry.getAttribute('position');
+  const arr = posAttr.array;
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    const dir = particleVelocities[i];
+    const speed = particleSpeeds[i];
+    arr[i * 3 + 1] += dir * speed * dt * ts;
+    if (Math.abs(arr[i * 3 + 1]) > 14) {
+      const angle = Math.random() * Math.PI * 2;
+      const spread = Math.random() * 0.4;
+      arr[i * 3]     = Math.cos(angle) * spread;
+      arr[i * 3 + 1] = dir * Math.random() * 2;
+      arr[i * 3 + 2] = Math.sin(angle) * spread;
+    }
+  }
+  posAttr.needsUpdate = true;
+
+  // Torus animation
+  torusUniforms.time.value = t;
 
   // Planet orbits
   planets.forEach((planet) => {
