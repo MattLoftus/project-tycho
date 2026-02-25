@@ -15,10 +15,11 @@ import * as station4View from './views/station4.js';
 import * as lichView from './views/lich.js';
 import * as wasp121View from './views/wasp121.js';
 import * as proximaView from './views/proxima.js';
+import * as pulsarView from './views/pulsar.js';
 import { sim } from './sim.js';
 import { OBJECT_DATA } from './data.js';
 
-const views = { earth: earthView, station: stationView, station2: station2View, station3: station3View, station4: station4View, solar: solarView, trappist: trappistView, cancri: cancriView, hr8799: hr8799View, kepler16: kepler16View, lich: lichView, wasp121: wasp121View, proxima: proximaView, blackholeV1: blackholeV1View, blackholeV2: blackholeV2View, cataclysmic: cataclysmicView };
+const views = { earth: earthView, station: stationView, station2: station2View, station3: station3View, station4: station4View, solar: solarView, trappist: trappistView, cancri: cancriView, hr8799: hr8799View, kepler16: kepler16View, lich: lichView, wasp121: wasp121View, proxima: proximaView, blackholeV1: blackholeV1View, blackholeV2: blackholeV2View, cataclysmic: cataclysmicView, pulsar: pulsarView };
 let activeView = null;
 let active = false;
 let _renderer = null;
@@ -453,6 +454,7 @@ const viewMeta = {
   blackholeV1:  { sys: 'Gargantua',   cls: 'Black Hole',   dist: '---' },
   blackholeV2:  { sys: 'Gargantua',   cls: 'Black Hole',   dist: '---' },
   cataclysmic:  { sys: 'T CrB',       cls: 'CV Nova',      dist: '2,630 ly' },
+  pulsar:       { sys: 'PSR B0531+21', cls: 'Pulsar',      dist: '6,500 ly' },
 };
 
 // View descriptions
@@ -474,6 +476,7 @@ const viewDescriptions = {
   blackholeV1: 'Ray-marched black hole inspired by Interstellar\'s Gargantua. Rays are integrated through a Schwarzschild metric to produce the shadow, photon ring, and gravitationally lensed accretion disk.',
   blackholeV2: 'Higher-fidelity black hole with adjustable quality. The accretion disk uses Keplerian differential rotation with FBM turbulence for realistic swirling cloud structure. Quality slider controls ray-march precision.',
   cataclysmic: 'T Coronae Borealis \u2014 a recurrent nova system where a red giant overflows its Roche lobe, transferring mass onto a white dwarf via an accretion stream and disk. Expected to erupt again as a naked-eye nova.',
+  pulsar: 'Crab Pulsar (PSR B0531+21) \u2014 a rapidly spinning neutron star at the heart of the Crab Nebula, rotating 30 times per second. Its misaligned magnetic field produces sweeping radiation beams visible as radio pulses. The surrounding pulsar wind nebula is powered by the pulsar\u2019s rotational energy.',
 };
 
 // ── Exported interface ──

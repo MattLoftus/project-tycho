@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Space Sim</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><radialGradient id='g' cx='40%25' cy='38%25'><stop offset='0%25' stop-color='%2367d4ff'/><stop offset='100%25' stop-color='%230a4a7a'/></radialGradient></defs><circle cx='32' cy='32' r='14' fill='url(%23g)'/><ellipse cx='32' cy='32' rx='28' ry='8' fill='none' stroke='%2350a0dc' stroke-width='1.5' transform='rotate(-20 32 32)' opacity='0.7'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><radialGradient id='g' cx='50%25' cy='50%25' r='40%25'><stop offset='0%25' stop-color='%23000'/><stop offset='75%25' stop-color='%23000'/><stop offset='100%25' stop-color='%23fff'/></radialGradient></defs><path d='M2 32 Q16 10 32 10 Q48 10 62 32 Q48 54 32 54 Q16 54 2 32Z' fill='%23fff'/><path d='M6 32 Q17 15 32 15 Q47 15 58 32 Q47 49 32 49 Q17 49 6 32Z' fill='%23aaa'/><path d='M10 32 Q19 20 32 20 Q45 20 54 32 Q45 44 32 44 Q19 44 10 32Z' fill='%23555'/><path d='M15 32 Q22 24 32 24 Q42 24 49 32 Q42 40 32 40 Q22 40 15 32Z' fill='%23222'/><circle cx='32' cy='32' r='13' fill='url(%23g)'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
@@ -152,29 +152,28 @@
     }
 
     /* Collapse button inside nav */
-    #nav-collapse-btn {
+    #nav #nav-collapse-btn {
       display: none;
       position: absolute;
-      top: 8px;
-      right: -18px;
-      width: 18px;
-      height: 36px;
-      background: rgba(4, 12, 24, 0.75);
-      border: 1px solid rgba(80, 160, 220, 0.15);
+      top: 6px;
+      right: 6px;
+      width: 22px;
+      height: 22px;
+      background: none;
+      border: none;
       border-left: none;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
       cursor: pointer;
       padding: 0;
-      align-items: center;
-      justify-content: center;
-      color: rgba(140, 200, 255, 0.45);
-      font-size: 12px;
+      color: rgba(140, 200, 255, 0.35);
+      font-size: 10px;
       font-family: 'Share Tech Mono', monospace;
       transition: color 0.18s;
-      border-radius: 0 4px 4px 0;
+      z-index: 1;
+      letter-spacing: 0;
+      text-align: center;
+      white-space: normal;
     }
-    #nav-collapse-btn:hover { color: rgba(140, 200, 255, 0.85); }
+    #nav #nav-collapse-btn:hover { color: rgba(140, 200, 255, 0.85); }
 
     /* Pull-out tab (visible when nav is collapsed) */
     #nav-expand-tab {
@@ -545,7 +544,7 @@
     /* ── View description tile ── */
     #view-description {
       position: fixed;
-      bottom: 140px;
+      bottom: 70px;
       right: 14px;
       z-index: 10;
       pointer-events: none;
@@ -1178,7 +1177,29 @@
       padding: 6px 0; width: 182px;
       max-height: calc(100vh - 150px); overflow-y: auto;
       scrollbar-width: thin; scrollbar-color: var(--cyan-dim) transparent;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
+    #surface-app #view-nav.collapsed { transform: translateX(calc(-100% - 20px)); }
+    #surface-app #sv-nav-collapse {
+      display: none; position: absolute; top: 6px; right: 6px;
+      width: 22px; height: 22px; background: none; border: none;
+      cursor: pointer; padding: 0; color: var(--cyan); opacity: 0.35;
+      font-size: 10px; font-family: 'Share Tech Mono', monospace;
+      transition: opacity 0.18s; z-index: 1; letter-spacing: 0; text-align: center;
+    }
+    #surface-app #sv-nav-collapse:hover { opacity: 0.85; }
+    #surface-app #sv-nav-expand {
+      display: none; position: absolute; top: 116px; left: 0;
+      width: 22px; height: 48px;
+      background: var(--panel-bg); border: 1px solid var(--border); border-left: none;
+      border-radius: 0 6px 6px 0;
+      cursor: pointer; z-index: 5; pointer-events: auto;
+      color: var(--cyan); opacity: 0.35; font-size: 14px;
+      font-family: 'Share Tech Mono', monospace; padding: 0;
+      transition: opacity 0.18s;
+      align-items: center; justify-content: center;
+    }
+    #surface-app #sv-nav-expand:hover { opacity: 0.85; }
     #surface-app .nav-group { display: flex; flex-direction: column; }
     #surface-app .nav-group + .nav-group { border-top: 1px solid var(--border); margin-top: 2px; padding-top: 2px; }
     #surface-app .nav-group-label { font-size: 10px; letter-spacing: 3px; color: var(--cyan); opacity: 0.4; padding: 6px 14px 3px; }
@@ -1203,7 +1224,7 @@
     /* ─── VIEW DESCRIPTION (surface) ─── */
     #sv-view-description {
       position: fixed;
-      bottom: 140px;
+      bottom: 70px;
       right: 14px;
       z-index: 10;
       pointer-events: none;
@@ -1227,11 +1248,35 @@
     }
 
     /* ─── RESOURCE / MARS PANELS ─── */
+    #surface-app #sv-right-panels {
+      position: absolute; top: 120px; right: 20px; pointer-events: auto;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #surface-app #sv-right-panels.collapsed { transform: translateX(calc(100% + 20px)); }
+    #surface-app #sv-rpanel-collapse {
+      display: none; position: absolute; top: 6px; left: 6px;
+      width: 22px; height: 22px; background: none; border: none;
+      cursor: pointer; padding: 0; color: var(--cyan); opacity: 0.35;
+      font-size: 10px; font-family: 'Share Tech Mono', monospace;
+      transition: opacity 0.18s; z-index: 1; letter-spacing: 0; text-align: center;
+    }
+    #surface-app #sv-rpanel-collapse:hover { opacity: 0.85; }
+    #surface-app #sv-rpanel-expand {
+      display: none; position: absolute; top: 120px; right: 0;
+      width: 22px; height: 48px;
+      background: var(--panel-bg); border: 1px solid var(--border); border-right: none;
+      border-radius: 6px 0 0 6px;
+      cursor: pointer; z-index: 5; pointer-events: auto;
+      color: var(--cyan); opacity: 0.35; font-size: 14px;
+      font-family: 'Share Tech Mono', monospace; padding: 0;
+      transition: opacity 0.18s;
+      align-items: center; justify-content: center;
+    }
+    #surface-app #sv-rpanel-expand:hover { opacity: 0.85; }
     #surface-app #deposit-panel,
     #surface-app #mars-panel {
-      position: absolute; top: 120px; right: 20px; width: 246px;
+      width: 246px;
       background: var(--panel-bg); border: 1px solid var(--border); border-right: 2px solid var(--cyan-dim);
-      pointer-events: auto;
     }
     #surface-app .panel-region-label { padding: 6px 14px 4px; font-size: 8px; letter-spacing: 2px; color: var(--amber-dim); border-bottom: 1px solid var(--border); }
     #surface-app .feature-item { transition: background 0.18s, border-left 0.18s; border-left: 2px solid transparent; }
@@ -1377,7 +1422,29 @@
       pointer-events: auto;
       background: rgba(2, 8, 20, 0.92); border: 1px solid rgba(0, 128, 255, 0.18);
       border-left: 2px solid #003060; padding: 6px 0; width: 186px;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
+    #ocean-app #oc-view-nav.collapsed { transform: translateX(calc(-100% - 20px)); }
+    #ocean-app #oc-nav-collapse {
+      display: none; position: absolute; top: 6px; right: 6px;
+      width: 22px; height: 22px; background: none; border: none;
+      cursor: pointer; padding: 0; color: #0080ff; opacity: 0.35;
+      font-size: 10px; font-family: 'Share Tech Mono', monospace;
+      transition: opacity 0.18s; z-index: 1; letter-spacing: 0; text-align: center;
+    }
+    #ocean-app #oc-nav-collapse:hover { opacity: 0.85; }
+    #ocean-app #oc-nav-expand {
+      display: none; position: absolute; top: 116px; left: 0;
+      width: 22px; height: 48px;
+      background: rgba(2, 8, 20, 0.92); border: 1px solid rgba(0, 128, 255, 0.18); border-left: none;
+      border-radius: 0 6px 6px 0;
+      cursor: pointer; z-index: 5; pointer-events: auto;
+      color: #0080ff; opacity: 0.35; font-size: 14px;
+      font-family: 'Share Tech Mono', monospace; padding: 0;
+      transition: opacity 0.18s;
+      align-items: center; justify-content: center;
+    }
+    #ocean-app #oc-nav-expand:hover { opacity: 0.85; }
     #ocean-app .nav-group { display: flex; flex-direction: column; }
     #ocean-app .nav-group + .nav-group { border-top: 1px solid rgba(0, 128, 255, 0.18); margin-top: 2px; padding-top: 2px; }
     #ocean-app .nav-group-label { font-size: 10px; letter-spacing: 3px; color: #0080ff; opacity: 0.35; padding: 6px 14px 3px; }
@@ -1393,11 +1460,36 @@
     #ocean-app .view-btn:disabled { cursor: default; pointer-events: none; }
 
     /* ─── Contact / Geo panels ─── */
+    #ocean-app #oc-right-panels {
+      position: absolute; top: 84px; right: 20px; pointer-events: auto;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #ocean-app #oc-right-panels.collapsed { transform: translateX(calc(100% + 20px)); }
+    #ocean-app #oc-rpanel-collapse {
+      display: none; position: absolute; top: 6px; left: 6px;
+      width: 22px; height: 22px; background: none; border: none;
+      cursor: pointer; padding: 0; color: #0080ff; opacity: 0.35;
+      font-size: 10px; font-family: 'Share Tech Mono', monospace;
+      transition: opacity 0.18s; z-index: 1; letter-spacing: 0; text-align: center;
+    }
+    #ocean-app #oc-rpanel-collapse:hover { opacity: 0.85; }
+    #ocean-app #oc-rpanel-expand {
+      display: none; position: absolute; top: 84px; right: 0;
+      width: 22px; height: 48px;
+      background: rgba(2, 8, 20, 0.92); border: 1px solid rgba(0, 128, 255, 0.18); border-right: none;
+      border-radius: 6px 0 0 6px;
+      cursor: pointer; z-index: 5; pointer-events: auto;
+      color: #0080ff; opacity: 0.35; font-size: 14px;
+      font-family: 'Share Tech Mono', monospace; padding: 0;
+      transition: opacity 0.18s;
+      align-items: center; justify-content: center;
+    }
+    #ocean-app #oc-rpanel-expand:hover { opacity: 0.85; }
     #ocean-app #oc-contact-panel,
     #ocean-app #oc-geo-panel {
-      position: absolute; top: 84px; right: 20px; width: 260px;
+      width: 260px;
       background: rgba(2, 8, 20, 0.92); border: 1px solid rgba(0, 128, 255, 0.18);
-      border-right: 2px solid #003060; pointer-events: auto;
+      border-right: 2px solid #003060;
     }
     #ocean-app .panel-region-label { padding: 6px 14px 4px; font-size: 8px; letter-spacing: 2px; color: #005848; border-bottom: 1px solid rgba(0, 128, 255, 0.18); }
     #ocean-app .panel-header {
@@ -1483,7 +1575,7 @@
     /* ─── VIEW DESCRIPTION (ocean) ─── */
     #oc-view-description {
       position: fixed;
-      bottom: 140px;
+      bottom: 70px;
       right: 14px;
       z-index: 10;
       pointer-events: none;
@@ -1521,11 +1613,111 @@
     #ocean-app #oc-close-detail { background: none; border: none; color: #0080ff; font-size: 14px; line-height: 1; cursor: pointer; opacity: 0.5; padding: 0 0 0 8px; transition: opacity 0.15s; letter-spacing: 0; flex-shrink: 0; }
     #ocean-app #oc-close-detail:hover { opacity: 1; }
 
+    /* ── Mobile D-pad ── */
+    #mobile-dpad {
+      display: none;
+      position: fixed;
+      bottom: 80px;
+      left: 24px;
+      z-index: 30;
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: rgba(4, 12, 24, 0.6);
+      border: 1px solid rgba(80, 160, 220, 0.2);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+      touch-action: none;
+    }
+    #mobile-dpad .dpad-btn {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border: none;
+      background: none;
+      color: rgba(140, 200, 255, 0.4);
+      font-size: 16px;
+      line-height: 30px;
+      text-align: center;
+      cursor: pointer;
+      padding: 0;
+      border-radius: 50%;
+      transition: color 0.12s, background 0.12s;
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    #mobile-dpad .dpad-btn:active,
+    #mobile-dpad .dpad-btn.pressed {
+      color: rgba(140, 210, 255, 0.95);
+      background: rgba(80, 160, 220, 0.2);
+    }
+    #mobile-dpad .dpad-up    { top: 4px;  left: 50%; transform: translateX(-50%); }
+    #mobile-dpad .dpad-down  { bottom: 4px; left: 50%; transform: translateX(-50%); }
+    #mobile-dpad .dpad-left  { left: 4px; top: 50%; transform: translateY(-50%); }
+    #mobile-dpad .dpad-right { right: 4px; top: 50%; transform: translateY(-50%); }
+
     /* ── Mobile: collapsible nav ── */
     @media (max-width: 768px) {
-      #nav-collapse-btn { display: flex; }
+      /* Space nav */
+      #nav #nav-collapse-btn { display: block; }
       #nav.collapsed + #nav-expand-tab,
       #nav-expand-tab.visible { display: flex; }
+      /* Surface nav */
+      #surface-app #sv-nav-collapse { display: block; }
+      #surface-app #sv-nav-expand.visible { display: flex; }
+      /* Ocean nav */
+      #ocean-app #oc-nav-collapse { display: block; }
+      #ocean-app #oc-nav-expand.visible { display: flex; }
+      /* Surface right panels */
+      #surface-app #sv-rpanel-collapse { display: block; }
+      #surface-app #sv-rpanel-expand.visible { display: flex; }
+      /* Ocean right panels */
+      #ocean-app #oc-rpanel-collapse { display: block; }
+      #ocean-app #oc-rpanel-expand.visible { display: flex; }
+      /* Smaller fun fact */
+      #view-description, #sv-view-description, #oc-view-description { width: 160px; padding: 8px 10px; }
+      #view-description p, #sv-view-description p, #oc-view-description p { font-size: 10px; line-height: 1.5; }
+
+      /* ── Top area mobile fixes ── */
+
+      /* Compact app switcher */
+      .app-switch-btn { padding: 6px 12px; font-size: 10px; letter-spacing: 0.1em; }
+
+      /* Clock */
+      #clock { font-size: 11px; }
+
+      /* Space sim */
+      #sp-hud-top-left .hud-coords { font-size: 11px; }
+      #legend-label { font-size: 10px; }
+
+      /* Surface: hide status center, shrink text */
+      #surface-app #hud-top { padding: 14px 14px 12px; }
+      #surface-app #status-container { display: none; }
+      #surface-app #mission-time { font-size: 13px; }
+      #surface-app .hud-system-title { font-size: 9px; letter-spacing: 3px; }
+      #surface-app .hud-coords { font-size: 11px; }
+
+      /* Ocean: hide status center, shrink text */
+      #ocean-app #oc-hud-top { padding: 14px 14px 12px; }
+      #ocean-app #oc-status-container { display: none; }
+      #ocean-app #oc-mission-time { font-size: 13px; }
+      #ocean-app .hud-system-title { font-size: 9px; letter-spacing: 3px; }
+      #ocean-app .hud-coords { font-size: 11px; }
+
+      /* Hide corner brackets on mobile */
+      .bracket, #surface-app .corner, #ocean-app .corner { display: none; }
+
+      /* Hide keyboard controls guides */
+      #controls-panel, #status,
+      #surface-app #sv-controls-panel,
+      #ocean-app #oc-controls-panel { display: none !important; }
+
+      /* Show mobile d-pad */
+      #mobile-dpad { display: flex !important; }
     }
 
   </style>
@@ -1793,6 +1985,7 @@
 
       <!-- View nav (left sidebar) -->
       <div id="view-nav">
+        <button id="sv-nav-collapse" title="Collapse nav">&#x25C0;</button>
         <div class="nav-group">
           <div class="nav-group-label">SIMULATION</div>
           <button class="view-btn active" data-view="procedural">PROCEDURAL</button>
@@ -1830,21 +2023,27 @@
           <button class="view-btn" data-view="deadsea">DEAD SEA</button>
         </div>
       </div>
+      <button id="sv-nav-expand" title="Open nav">&#x25B6;</button>
 
-      <!-- Resource panel (procedural) -->
-      <div id="deposit-panel">
-        <div class="panel-header">RESOURCE SURVEY</div>
-        <div id="deposit-list"></div>
-        <div class="panel-footer"><span id="deposit-count">0</span>&nbsp;DEPOSITS IDENTIFIED</div>
-      </div>
+      <!-- Right panels wrapper -->
+      <div id="sv-right-panels">
+        <button id="sv-rpanel-collapse" title="Collapse panel">&#x25B6;</button>
+        <!-- Resource panel (procedural) -->
+        <div id="deposit-panel">
+          <div class="panel-header">RESOURCE SURVEY</div>
+          <div id="deposit-list"></div>
+          <div class="panel-footer"><span id="deposit-count">0</span>&nbsp;DEPOSITS IDENTIFIED</div>
+        </div>
 
-      <!-- Geological panel (mars) -->
-      <div id="mars-panel" style="display:none">
-        <div class="panel-header">GEOLOGICAL FEATURES</div>
-        <div class="panel-region-label" id="mars-region-label"></div>
-        <div id="mars-feature-list"></div>
-        <div class="panel-footer"><span id="mars-feature-count">0</span>&nbsp;FEATURES CATALOGUED</div>
+        <!-- Geological panel (mars) -->
+        <div id="mars-panel" style="display:none">
+          <div class="panel-header">GEOLOGICAL FEATURES</div>
+          <div class="panel-region-label" id="mars-region-label"></div>
+          <div id="mars-feature-list"></div>
+          <div class="panel-footer"><span id="mars-feature-count">0</span>&nbsp;FEATURES CATALOGUED</div>
+        </div>
       </div>
+      <button id="sv-rpanel-expand" title="Open panel">&#x25C0;</button>
 
       <!-- Controls HUD -->
       <div id="sv-controls-panel">
@@ -1932,6 +2131,7 @@
 
       <!-- View nav (left sidebar) -->
       <div id="oc-view-nav">
+        <button id="oc-nav-collapse" title="Collapse nav">&#x25C0;</button>
         <div class="nav-group">
           <div class="nav-group-label">SIMULATION</div>
           <button class="view-btn active" data-view="procedural">PROCEDURAL</button>
@@ -1958,21 +2158,27 @@
           <button class="view-btn" data-view="reef">CORAL REEF</button>
         </div>
       </div>
+      <button id="oc-nav-expand" title="Open nav">&#x25B6;</button>
 
-      <!-- Sonar contacts panel (procedural) -->
-      <div id="oc-contact-panel">
-        <div class="panel-header">SONAR CONTACTS</div>
-        <div id="oc-contact-list"></div>
-        <div class="panel-footer"><span id="oc-contact-count">0</span>&nbsp;CONTACTS IDENTIFIED</div>
-      </div>
+      <!-- Right panels wrapper -->
+      <div id="oc-right-panels">
+        <button id="oc-rpanel-collapse" title="Collapse panel">&#x25B6;</button>
+        <!-- Sonar contacts panel (procedural) -->
+        <div id="oc-contact-panel">
+          <div class="panel-header">SONAR CONTACTS</div>
+          <div id="oc-contact-list"></div>
+          <div class="panel-footer"><span id="oc-contact-count">0</span>&nbsp;CONTACTS IDENTIFIED</div>
+        </div>
 
-      <!-- Geological panel (real bathymetry) -->
-      <div id="oc-geo-panel" style="display:none">
-        <div class="panel-header">GEOLOGICAL FEATURES</div>
-        <div class="panel-region-label" id="oc-geo-region-label"></div>
-        <div id="oc-geo-feature-list"></div>
-        <div class="panel-footer"><span id="oc-geo-feature-count">0</span>&nbsp;FEATURES CATALOGUED</div>
+        <!-- Geological panel (real bathymetry) -->
+        <div id="oc-geo-panel" style="display:none">
+          <div class="panel-header">GEOLOGICAL FEATURES</div>
+          <div class="panel-region-label" id="oc-geo-region-label"></div>
+          <div id="oc-geo-feature-list"></div>
+          <div class="panel-footer"><span id="oc-geo-feature-count">0</span>&nbsp;FEATURES CATALOGUED</div>
+        </div>
       </div>
+      <button id="oc-rpanel-expand" title="Open panel">&#x25C0;</button>
 
       <!-- Controls HUD -->
       <div id="oc-controls-panel">
@@ -2028,6 +2234,14 @@
       <div id="oc-view-description"><p id="oc-view-description-text"></p></div>
 
     </div>
+  </div>
+
+  <!-- Mobile D-pad -->
+  <div id="mobile-dpad">
+    <button class="dpad-btn dpad-up" data-key="w">&#x25B2;</button>
+    <button class="dpad-btn dpad-down" data-key="s">&#x25BC;</button>
+    <button class="dpad-btn dpad-left" data-key="a">&#x25C0;</button>
+    <button class="dpad-btn dpad-right" data-key="d">&#x25B6;</button>
   </div>
 
   <script type="module" src="/src/main.js"></script>

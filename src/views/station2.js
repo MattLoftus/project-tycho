@@ -501,7 +501,7 @@ export function init(rendererIn) {
 
   const wlEl = document.createElement('div');
   Object.assign(wlEl.style, {
-    position: 'fixed', bottom: '80px', right: '24px', zIndex: '10',
+    position: 'fixed', bottom: '20px', right: '180px', zIndex: '10',
     display: 'flex', flexDirection: 'column', alignItems: 'flex-end',
     gap: '6px', pointerEvents: 'auto',
   });

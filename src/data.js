@@ -1146,6 +1146,30 @@ export const OBJECT_DATA = {
       { label: 'Status',         value: 'Confirmed but properties uncertain' },
     ],
   },
+
+  // ── Crab Pulsar (PSR B0531+21) ──
+  'Crab Pulsar': {
+    type: 'Pulsar (Neutron Star)',
+    tooltip: [
+      { label: 'Spin Period', value: '33.5 ms' },
+      { label: 'Distance',   value: '6,500 ly' },
+      { label: 'Age',        value: '~968 years' },
+    ],
+    details: [
+      { label: 'Designation',     value: 'PSR B0531+21' },
+      { label: 'Type',            value: 'Rotation-powered pulsar' },
+      { label: 'Spin Period',     value: '33.5 ms (29.9 Hz)' },
+      { label: 'Spin-down Rate',  value: '4.2 \u00D7 10\u207B\u00B9\u00B3 s/s' },
+      { label: 'Mass',            value: '~1.4 M\u2609' },
+      { label: 'Radius',          value: '~10 km' },
+      { label: 'Magnetic Field',  value: '3.78 \u00D7 10\u00B9\u00B2 G' },
+      { label: 'Distance',        value: '6,500 ly (2.0 kpc)' },
+      { label: 'Age',             value: '~968 yr (SN 1054)' },
+      { label: 'Spin-down Power', value: '4.6 \u00D7 10\u00B3\u00B8 erg/s' },
+      { label: 'Nebula',          value: 'Crab Nebula (M1)' },
+      { label: 'Discovery',       value: '1968 (optical pulsations)' },
+    ],
+  },
 };
 
 // Generate satellite data dynamically

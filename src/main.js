@@ -78,3 +78,60 @@ document.querySelectorAll('#space-app #nav button').forEach(btn => {
     if (el) el.textContent = btn.textContent;
   });
 });
+
+// Collapsible navs for mobile
+function setupCollapsibleNav(navId, collapseId, expandId) {
+  const navEl = document.getElementById(navId);
+  const collapseBtn = document.getElementById(collapseId);
+  const expandBtn = document.getElementById(expandId);
+  if (!navEl || !collapseBtn || !expandBtn) return;
+
+  collapseBtn.addEventListener('click', () => {
+    navEl.classList.add('collapsed');
+    expandBtn.classList.add('visible');
+  });
+  expandBtn.addEventListener('click', () => {
+    navEl.classList.remove('collapsed');
+    expandBtn.classList.remove('visible');
+  });
+
+  // Auto-collapse on small screens
+  if (window.matchMedia('(max-width: 768px)').matches) {
+    navEl.classList.add('collapsed');
+    expandBtn.classList.add('visible');
+  }
+}
+
+setupCollapsibleNav('nav', 'nav-collapse-btn', 'nav-expand-tab');
+setupCollapsibleNav('view-nav', 'sv-nav-collapse', 'sv-nav-expand');
+setupCollapsibleNav('oc-view-nav', 'oc-nav-collapse', 'oc-nav-expand');
+setupCollapsibleNav('sv-right-panels', 'sv-rpanel-collapse', 'sv-rpanel-expand');
+setupCollapsibleNav('oc-right-panels', 'oc-rpanel-collapse', 'oc-rpanel-expand');
+
+// Mobile D-pad
+document.querySelectorAll('#mobile-dpad .dpad-btn').forEach(btn => {
+  const key = btn.dataset.key;
+
+  function sendKey(type) {
+    window.dispatchEvent(new KeyboardEvent(type, { key, bubbles: true }));
+  }
+
+  btn.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    btn.classList.add('pressed');
+    sendKey('keydown');
+  });
+
+  btn.addEventListener('pointerup', (e) => {
+    e.preventDefault();
+    btn.classList.remove('pressed');
+    sendKey('keyup');
+  });
+
+  btn.addEventListener('pointerleave', () => {
+    if (btn.classList.contains('pressed')) {
+      btn.classList.remove('pressed');
+      sendKey('keyup');
+    }
+  });
+});
