@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Space Sim</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><radialGradient id='g' cx='50%25' cy='50%25' r='40%25'><stop offset='0%25' stop-color='%23000'/><stop offset='75%25' stop-color='%23000'/><stop offset='100%25' stop-color='%23fff'/></radialGradient></defs><path d='M2 32 Q16 10 32 10 Q48 10 62 32 Q48 54 32 54 Q16 54 2 32Z' fill='%23fff'/><path d='M6 32 Q17 15 32 15 Q47 15 58 32 Q47 49 32 49 Q17 49 6 32Z' fill='%23aaa'/><path d='M10 32 Q19 20 32 20 Q45 20 54 32 Q45 44 32 44 Q19 44 10 32Z' fill='%23555'/><path d='M15 32 Q22 24 32 24 Q42 24 49 32 Q42 40 32 40 Q22 40 15 32Z' fill='%23222'/><circle cx='32' cy='32' r='13' fill='url(%23g)'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='16' fill='%23000'/><ellipse cx='32' cy='32' rx='28' ry='8' fill='none' stroke='%23000' stroke-width='2' transform='rotate(-20 32 32)'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
@@ -1221,6 +1221,43 @@
     #surface-app .hud-time-label { font-size: 9px; letter-spacing: 3px; color: var(--cyan); opacity: 0.55; margin-bottom: 5px; text-align: right; }
     #surface-app #mission-time { font-size: 16px; letter-spacing: 2px; color: var(--amber); text-align: right; text-shadow: 0 0 10px rgba(232, 148, 26, 0.4); }
 
+    /* ─── RESOLUTION SELECTOR ─── */
+    #surface-app #sv-resolution {
+      display: none;
+      align-items: center;
+      gap: 0;
+    }
+    #surface-app .res-label {
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--cyan);
+      opacity: 0.45;
+      margin-right: 8px;
+      font-family: 'Share Tech Mono', monospace;
+    }
+    #surface-app .res-btn {
+      background: rgba(4, 12, 24, 0.75);
+      border: 1px solid rgba(80, 160, 220, 0.2);
+      color: rgba(140, 210, 255, 0.4);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      pointer-events: auto;
+    }
+    #surface-app .res-btn:first-of-type { border-radius: 2px 0 0 2px; }
+    #surface-app .res-btn:not(:first-of-type) { border-left: none; }
+    #surface-app .res-btn:last-of-type { border-radius: 0 2px 2px 0; }
+    #surface-app .res-btn:hover { color: rgba(140, 210, 255, 0.7); background: rgba(4, 16, 32, 0.85); }
+    #surface-app .res-btn.active {
+      background: rgba(10, 28, 55, 0.9);
+      border-color: rgba(80, 180, 255, 0.45);
+      color: rgba(140, 210, 255, 1);
+      box-shadow: 0 0 12px rgba(80, 180, 255, 0.1);
+    }
+
     /* ─── VIEW DESCRIPTION (surface) ─── */
     #sv-view-description {
       position: fixed;
@@ -1975,6 +2012,12 @@
           <div class="status-indicator">
             <div class="status-dot"></div>
             <span id="status-text">INITIALIZING...</span>
+          </div>
+          <div id="sv-resolution">
+            <span class="res-label">RES</span>
+            <button class="res-btn active" data-res="0">STD</button>
+            <button class="res-btn" data-res="1">HIGH</button>
+            <button class="res-btn" data-res="2">ULTRA</button>
           </div>
         </div>
         <div id="hud-top-right">

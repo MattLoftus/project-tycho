@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import * as proceduralView from './surface/views/procedural.js'
 import { createMarsView }  from './surface/views/mars.js'
 import { createEarthView } from './surface/views/earth.js'
-import { createPhotoView } from './surface/views/everest-v2.js'
+import { createPhotoView, setResolutionOffset, getResolutionOffset } from './surface/views/everest-v2.js'
 import { updateHUD, showDepositDetail } from './surface/hud.js'
 
 let _renderer = null
@@ -30,6 +30,12 @@ function onCanvasClick(e) {
   if (hits.length > 0) showDepositDetail(hits[0].object.userData.deposit)
 }
 
+const PHOTO_VIEWS = new Set([
+  'everestv2', 'grandcanyonv2', 'yosemite', 'fjords', 'craterlake',
+  'hawaii', 'patagonia', 'dolomites', 'matterhorn', 'iceland',
+  'zhangjiajie', 'deadsea',
+])
+
 const svDescriptionText = document.getElementById('sv-view-description-text')
 const svDescriptions = {
   procedural: 'Procedurally generated terrain with simplex noise heightmaps, mineral deposits placed by geological simulation. Click deposits to analyze composition.',
@@ -52,11 +58,15 @@ const svDescriptions = {
   deadsea: 'The Dead Sea \u2014 at 430 m below sea level, the lowest point on Earth\'s surface. Satellite imagery shows the hypersaline lake and surrounding rift valley.',
 }
 
+let currentViewName = null
+const resPanel = document.getElementById('sv-resolution')
+
 async function switchView(name) {
   document.querySelectorAll('#surface-app .view-btn').forEach(b => { b.disabled = true })
 
   if (activeView) activeView.dispose()
   activeView = views[name]
+  currentViewName = name
 
   await activeView.init(_renderer)
 
@@ -64,6 +74,9 @@ async function switchView(name) {
     b.disabled = false
     b.classList.toggle('active', b.dataset.view === name)
   })
+
+  // Show resolution selector only for satellite photo views
+  if (resPanel) resPanel.style.display = PHOTO_VIEWS.has(name) ? 'flex' : 'none'
 
   updateClickTargets()
   svDescriptionText.textContent = svDescriptions[name] || ''
@@ -113,6 +126,21 @@ export function init(renderer) {
     // Nav buttons
     document.querySelectorAll('#surface-app .view-btn').forEach(btn => {
       btn.addEventListener('click', () => switchView(btn.dataset.view))
+    })
+
+    // Resolution selector
+    document.querySelectorAll('#sv-resolution .res-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const offset = parseInt(btn.dataset.res)
+        if (offset === getResolutionOffset()) return
+        setResolutionOffset(offset)
+        document.querySelectorAll('#sv-resolution .res-btn').forEach(b =>
+          b.classList.toggle('active', b === btn)
+        )
+        if (currentViewName && PHOTO_VIEWS.has(currentViewName)) {
+          switchView(currentViewName)
+        }
+      })
     })
 
     // Raycaster click handler

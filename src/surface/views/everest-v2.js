@@ -14,7 +14,7 @@ const REGIONS = {
     // Elevation mesh — z=12 4x4 gives a 1024x1024 heightmap (~35 km coverage)
     z: 12, baseX: 3035, baseY: 1714, grid: 4,
     // Satellite imagery — higher zoom for sharper texture over the same area
-    // satZ=14 → 16x16 tiles → 4096x4096 texture (~8.5 m/pixel)
+    // satZ=14 → 16x16 tiles → 4096x4096 texture (~9.5 m/pixel)
     satZ: 14,
     sceneH: 52,
     camPos:    [0, 80, 180],
@@ -235,6 +235,12 @@ const REGIONS = {
   },
 }
 
+// ─── Resolution offset (applied to satZ at load time) ────────────────────────
+
+let resolutionOffset = 0
+export function getResolutionOffset() { return resolutionOffset }
+export function setResolutionOffset(n) { resolutionOffset = n }
+
 // ─── Coordinate utilities ────────────────────────────────────────────────────
 
 function gridBounds(z, baseX, baseY, grid) {
@@ -302,7 +308,7 @@ async function loadHeightmap(region, onStatus) {
 async function loadSatelliteImagery(region, onStatus) {
   // Satellite tiles at higher zoom than elevation for sharper imagery.
   // satZ=14 over the same geographic area as z=12 4x4 → 16x16 tiles → 4096x4096
-  const satZ    = region.satZ ?? region.z
+  const satZ    = (region.satZ ?? region.z) + resolutionOffset
   const ratio   = Math.pow(2, satZ - region.z)
   const satBaseX = region.baseX * ratio
   const satBaseY = region.baseY * ratio
@@ -316,6 +322,7 @@ async function loadSatelliteImagery(region, onStatus) {
 
   const tileCount = satGrid * satGrid
   let loaded = 0
+  const reportInterval = Math.max(16, Math.floor(tileCount / 16))
   onStatus(`FETCHING SATELLITE IMAGERY... 0/${tileCount}`)
 
   await Promise.all(
@@ -327,7 +334,7 @@ async function loadSatelliteImagery(region, onStatus) {
         .then(img => {
           ctx.drawImage(img, col * TILE, row * TILE)
           loaded++
-          if (loaded % 16 === 0 || loaded === tileCount) {
+          if (loaded % reportInterval === 0 || loaded === tileCount) {
             onStatus(`FETCHING SATELLITE IMAGERY... ${loaded}/${tileCount}`)
           }
         })
@@ -545,7 +552,7 @@ export function createPhotoView(regionKey) {
       // HUD
       initMarsHUD(region, featuresWithPos, 'EARTH SURFACE SURVEY')
       setStatus(`${region.label} · ACTIVE`)
-      setTerrainLabel(`EARTH · ESRI SATELLITE · Z${region.satZ ?? region.z}`)
+      setTerrainLabel(`EARTH · ESRI SATELLITE · Z${(region.satZ ?? region.z) + resolutionOffset}`)
 
       setFeatureClickCallback((feature, idx) => {
         if (feature.scenePos && camCtrl_) {
