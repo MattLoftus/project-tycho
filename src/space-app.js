@@ -17,10 +17,12 @@ import * as wasp121View from './views/wasp121.js';
 import * as proximaView from './views/proxima.js';
 import * as pulsarView from './views/pulsar.js';
 import * as supernovaRemnantView from './views/supernova-remnant.js';
+import * as hltauriView from './views/hltauri.js';
+import * as magnetarView from './views/magnetar.js';
 import { sim } from './sim.js';
 import { OBJECT_DATA } from './data.js';
 
-const views = { earth: earthView, station: stationView, station2: station2View, station3: station3View, station4: station4View, solar: solarView, trappist: trappistView, cancri: cancriView, hr8799: hr8799View, kepler16: kepler16View, lich: lichView, wasp121: wasp121View, proxima: proximaView, blackholeV1: blackholeV1View, blackholeV2: blackholeV2View, cataclysmic: cataclysmicView, pulsar: pulsarView, supernovaRemnant: supernovaRemnantView };
+const views = { earth: earthView, station: stationView, station2: station2View, station3: station3View, station4: station4View, solar: solarView, trappist: trappistView, cancri: cancriView, hr8799: hr8799View, kepler16: kepler16View, lich: lichView, wasp121: wasp121View, proxima: proximaView, blackholeV1: blackholeV1View, blackholeV2: blackholeV2View, cataclysmic: cataclysmicView, pulsar: pulsarView, supernovaRemnant: supernovaRemnantView, hltauri: hltauriView, magnetar: magnetarView };
 let activeView = null;
 let active = false;
 let _renderer = null;
@@ -457,6 +459,8 @@ const viewMeta = {
   cataclysmic:  { sys: 'T CrB',       cls: 'CV Nova',      dist: '2,630 ly' },
   pulsar:           { sys: 'PSR B0531+21', cls: 'Pulsar',            dist: '6,500 ly' },
   supernovaRemnant: { sys: 'Cassiopeia A', cls: 'Supernova Remnant', dist: '11,000 ly' },
+  hltauri:          { sys: 'HL Tauri',     cls: 'T Tauri Star',      dist: '450 ly' },
+  magnetar:         { sys: 'SGR 1806-20', cls: 'Magnetar',          dist: '50,000 ly' },
 };
 
 // View descriptions
@@ -480,6 +484,8 @@ const viewDescriptions = {
   cataclysmic: 'T Coronae Borealis \u2014 a recurrent nova system where a red giant overflows its Roche lobe, transferring mass onto a white dwarf via an accretion stream and disk. Expected to erupt again as a naked-eye nova.',
   pulsar: 'Crab Pulsar (PSR B0531+21) \u2014 a rapidly spinning neutron star at the heart of the Crab Nebula, rotating 30 times per second. Its misaligned magnetic field produces sweeping radiation beams visible as radio pulses. The surrounding pulsar wind nebula is powered by the pulsar\u2019s rotational energy.',
   supernovaRemnant: 'Cassiopeia A \u2014 the youngest known supernova remnant in the Milky Way, ~340 years old. The expanding blast wave has heated surrounding gas to millions of degrees. The outer forward shock (blue-white) races ahead of the reverse shock through stellar ejecta rich in silicon, sulfur, and oxygen (red-green). A faint neutron star sits at the center.',
+  hltauri: 'HL Tauri \u2014 a young T Tauri star (~1 million years old) 450 light-years away in the Taurus molecular cloud. ALMA\u2019s landmark 2015 observation revealed a protoplanetary disk with at least five concentric gaps, strong evidence of planets actively forming. Bipolar jets (HH 150/151) extend along the polar axis, driven by magnetic fields in the innermost disk.',
+  magnetar: 'SGR 1806-20 \u2014 an ultra-magnetized neutron star (magnetar) with a magnetic field of ~2\u00D710\u00B9\u2075 G, the strongest known in the universe. On December 27, 2004 it produced a giant flare \u2014 the brightest extragalactic event ever observed \u2014 releasing more energy in 0.2 seconds than the Sun emits in 250,000 years. The flare was detected across the galaxy and temporarily ionized Earth\u2019s upper atmosphere.',
 };
 
 // ── Exported interface ──

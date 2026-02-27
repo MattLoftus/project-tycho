@@ -1171,6 +1171,105 @@ export const OBJECT_DATA = {
     ],
   },
 
+  // ── HL Tauri (Protoplanetary Disk) ──
+  'HL Tauri': {
+    type: 'T Tauri Star',
+    tooltip: [
+      { label: 'Age',      value: '~1 Myr' },
+      { label: 'Distance', value: '450 ly' },
+      { label: 'Disk',     value: '~200 AU diameter' },
+    ],
+    details: [
+      { label: 'Spectral Type',    value: 'K5\u2013K7 (T Tauri)' },
+      { label: 'Mass',             value: '~0.55 M\u2609' },
+      { label: 'Luminosity',       value: '~3.5 L\u2609' },
+      { label: 'Age',              value: '~1 million years' },
+      { label: 'Distance',         value: '450 ly (140 pc)' },
+      { label: 'Disk Mass',        value: '~0.1 M\u2609' },
+      { label: 'Disk Radius',      value: '~100 AU' },
+      { label: 'Disk Inclination', value: '46.7\u00B0' },
+      { label: 'Gaps Observed',    value: '5+ concentric (ALMA 2015)' },
+      { label: 'Jets',             value: 'HH 150/151 (bipolar)' },
+      { label: 'Constellation',    value: 'Taurus' },
+      { label: 'Cloud',            value: 'Taurus Molecular Cloud (L1551)' },
+    ],
+  },
+
+  'HL Tau b': {
+    type: 'Protoplanet (candidate)',
+    tooltip: [
+      { label: 'Gap',      value: '#2 (~13 AU)' },
+      { label: 'Type',     value: 'Proto-gas giant' },
+      { label: 'Status',   value: 'Forming' },
+    ],
+    details: [
+      { label: 'Host Star',     value: 'HL Tauri' },
+      { label: 'Orbital Gap',   value: 'Gap 2 (~13 AU)' },
+      { label: 'Estimated Mass', value: '~0.3\u20131.0 M\u2C7F (Jupiter masses)' },
+      { label: 'Type',          value: 'Proto-gas giant' },
+      { label: 'Status',        value: 'Inferred from gap structure' },
+      { label: 'Evidence',      value: 'ALMA dust continuum gap' },
+    ],
+  },
+
+  'HL Tau c': {
+    type: 'Protoplanet (candidate)',
+    tooltip: [
+      { label: 'Gap',      value: '#3 (~32 AU)' },
+      { label: 'Type',     value: 'Rocky/icy body' },
+      { label: 'Status',   value: 'Forming' },
+    ],
+    details: [
+      { label: 'Host Star',     value: 'HL Tauri' },
+      { label: 'Orbital Gap',   value: 'Gap 3 (~32 AU)' },
+      { label: 'Estimated Mass', value: '~0.1\u20130.5 M\u2C7F (Jupiter masses)' },
+      { label: 'Type',          value: 'Rocky/icy protoplanet' },
+      { label: 'Status',        value: 'Inferred from gap structure' },
+      { label: 'Evidence',      value: 'ALMA dust continuum gap' },
+    ],
+  },
+
+  'HL Tau d': {
+    type: 'Protoplanet (candidate)',
+    tooltip: [
+      { label: 'Gap',      value: '#5 (~70 AU)' },
+      { label: 'Type',     value: 'Ice giant' },
+      { label: 'Status',   value: 'Forming' },
+    ],
+    details: [
+      { label: 'Host Star',     value: 'HL Tauri' },
+      { label: 'Orbital Gap',   value: 'Gap 5 (~70 AU)' },
+      { label: 'Estimated Mass', value: '~0.2\u20130.5 M\u2C7F (Jupiter masses)' },
+      { label: 'Type',          value: 'Proto-ice giant' },
+      { label: 'Status',        value: 'Inferred from gap structure' },
+      { label: 'Evidence',      value: 'ALMA dust continuum gap' },
+    ],
+  },
+
+  // ── SGR 1806-20 (Magnetar) ──
+  'SGR 1806-20': {
+    type: 'Magnetar',
+    tooltip: [
+      { label: 'B-Field',    value: '~2\u00D710\u00B9\u2075 G' },
+      { label: 'Spin Period', value: '7.56 s' },
+      { label: 'Distance',   value: '50,000 ly' },
+    ],
+    details: [
+      { label: 'Designation',       value: 'SGR 1806-20' },
+      { label: 'Type',              value: 'Soft Gamma Repeater / Magnetar' },
+      { label: 'Magnetic Field',    value: '~2\u00D710\u00B9\u2075 G (dipole)' },
+      { label: 'Spin Period',       value: '7.5578 s' },
+      { label: 'Spin-down Rate',    value: '~2.6\u00D710\u207B\u00B3 s/yr' },
+      { label: 'Distance',          value: '~50,000 ly (15.1 kpc)' },
+      { label: 'Association',       value: 'Massive star cluster Cl* 1806-20' },
+      { label: 'Giant Flare',       value: 'Dec 27, 2004 (peak ~2\u00D710\u2074\u2076 erg/s)' },
+      { label: 'Flare Energy',      value: '>3.7\u00D710\u2074\u2076 erg (isotropic)' },
+      { label: 'Flare Duration',    value: '~0.2 s spike + 380 s tail' },
+      { label: 'Characteristic Age', value: '~600 years' },
+      { label: 'Constellation',     value: 'Sagittarius' },
+    ],
+  },
+
   // ── Crab Pulsar (PSR B0531+21) ──
   'Crab Pulsar': {
     type: 'Pulsar (Neutron Star)',
