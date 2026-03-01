@@ -240,6 +240,34 @@
       color: rgba(80, 160, 220, 0.4);
       text-transform: uppercase;
       padding: 6px 14px 3px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+      transition: color 0.18s;
+    }
+    #nav .nav-group-label:hover {
+      color: rgba(80, 160, 220, 0.7);
+    }
+    #nav .nav-group-label::after {
+      content: '\25B4';
+      font-size: 9px;
+      transition: transform 0.25s ease;
+    }
+    #nav .nav-group.collapsed .nav-group-label::after {
+      transform: rotate(180deg);
+    }
+    #nav .nav-group .nav-group-items {
+      display: grid;
+      grid-template-rows: 1fr;
+      transition: grid-template-rows 0.25s ease;
+    }
+    #nav .nav-group.collapsed .nav-group-items {
+      grid-template-rows: 0fr;
+    }
+    #nav .nav-group .nav-group-items-inner {
+      overflow: hidden;
     }
 
     #nav button {
@@ -1202,7 +1230,17 @@
     #surface-app #sv-nav-expand:hover { opacity: 0.85; }
     #surface-app .nav-group { display: flex; flex-direction: column; }
     #surface-app .nav-group + .nav-group { border-top: 1px solid var(--border); margin-top: 2px; padding-top: 2px; }
-    #surface-app .nav-group-label { font-size: 10px; letter-spacing: 3px; color: var(--cyan); opacity: 0.4; padding: 6px 14px 3px; }
+    #surface-app .nav-group-label {
+      font-size: 10px; letter-spacing: 3px; color: var(--cyan); opacity: 0.4; padding: 6px 14px 3px;
+      cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+      user-select: none; transition: opacity 0.18s;
+    }
+    #surface-app .nav-group-label:hover { opacity: 0.7; }
+    #surface-app .nav-group-label::after { content: '\25B4'; font-size: 9px; transition: transform 0.25s ease; }
+    #surface-app .nav-group.collapsed .nav-group-label::after { transform: rotate(180deg); }
+    #surface-app .nav-group .nav-group-items { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 0.25s ease; }
+    #surface-app .nav-group.collapsed .nav-group-items { grid-template-rows: 0fr; }
+    #surface-app .nav-group .nav-group-items-inner { overflow: hidden; }
     #surface-app .view-btn {
       background: none; border: none; border-left: 2px solid transparent;
       color: var(--cyan); font-family: 'Share Tech Mono', monospace; font-size: 11px;
@@ -1484,7 +1522,17 @@
     #ocean-app #oc-nav-expand:hover { opacity: 0.85; }
     #ocean-app .nav-group { display: flex; flex-direction: column; }
     #ocean-app .nav-group + .nav-group { border-top: 1px solid rgba(0, 128, 255, 0.18); margin-top: 2px; padding-top: 2px; }
-    #ocean-app .nav-group-label { font-size: 10px; letter-spacing: 3px; color: #0080ff; opacity: 0.35; padding: 6px 14px 3px; }
+    #ocean-app .nav-group-label {
+      font-size: 10px; letter-spacing: 3px; color: #0080ff; opacity: 0.35; padding: 6px 14px 3px;
+      cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+      user-select: none; transition: opacity 0.18s;
+    }
+    #ocean-app .nav-group-label:hover { opacity: 0.65; }
+    #ocean-app .nav-group-label::after { content: '\25B4'; font-size: 9px; transition: transform 0.25s ease; }
+    #ocean-app .nav-group.collapsed .nav-group-label::after { transform: rotate(180deg); }
+    #ocean-app .nav-group .nav-group-items { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 0.25s ease; }
+    #ocean-app .nav-group.collapsed .nav-group-items { grid-template-rows: 0fr; }
+    #ocean-app .nav-group .nav-group-items-inner { overflow: hidden; }
     #ocean-app .view-btn {
       background: none; border: none; border-left: 2px solid transparent;
       color: #0080ff; font-family: 'Share Tech Mono', monospace;
@@ -1894,35 +1942,50 @@
       <div id="nav-buttons">
         <div class="nav-group">
           <div class="nav-group-label">Solar System</div>
-          <button class="active" data-view="earth">Earth</button>
-          <button data-view="solar">Solar System</button>
+          <div class="nav-group-items"><div class="nav-group-items-inner">
+            <button class="active" data-view="earth">Earth</button>
+            <button data-view="solar">Solar System</button>
+          </div></div>
         </div>
         <div class="nav-group">
           <div class="nav-group-label">Stations</div>
-          <button data-view="station">Station 1</button>
-          <button data-view="station2">Station 2</button>
-          <button data-view="station3">Station 3</button>
-          <button data-view="station4">Station 4</button>
+          <div class="nav-group-items"><div class="nav-group-items-inner">
+            <button data-view="station">Station 1</button>
+            <button data-view="station2">Station 2</button>
+            <button data-view="station3">Station 3</button>
+            <button data-view="station4">Station 4</button>
+          </div></div>
         </div>
         <div class="nav-group">
           <div class="nav-group-label">Exoplanets</div>
-          <button data-view="proxima">Proxima Cen</button>
-          <button data-view="trappist">TRAPPIST-1</button>
-          <button data-view="cancri">55 Cancri</button>
-          <button data-view="hr8799">HR 8799</button>
-          <button data-view="kepler16">Kepler-16</button>
-          <button data-view="lich">PSR B1257+12</button>
-          <button data-view="wasp121">WASP-121</button>
+          <div class="nav-group-items"><div class="nav-group-items-inner">
+            <button data-view="proxima">Proxima Cen</button>
+            <button data-view="trappist">TRAPPIST-1</button>
+            <button data-view="cancri">55 Cancri</button>
+            <button data-view="hr8799">HR 8799</button>
+            <button data-view="kepler16">Kepler-16</button>
+            <button data-view="lich">PSR B1257+12</button>
+            <button data-view="wasp121">WASP-121</button>
+            <button data-view="kepler90">Kepler-90</button>
+            <button data-view="toi700">TOI-700</button>
+            <button data-view="pegasi51">51 Pegasi</button>
+          </div></div>
         </div>
         <div class="nav-group">
           <div class="nav-group-label">Phenomena</div>
-          <button data-view="blackholeV1">Black Hole V1</button>
-          <button data-view="blackholeV2">Black Hole V2</button>
-          <button data-view="cataclysmic">T CrB</button>
-          <button data-view="pulsar">Crab Pulsar</button>
-          <button data-view="supernovaRemnant">Cassiopeia A</button>
-          <button data-view="hltauri">HL Tauri</button>
-          <button data-view="magnetar">SGR 1806-20</button>
+          <div class="nav-group-items"><div class="nav-group-items-inner">
+            <button data-view="blackholeV1">Black Hole V1</button>
+            <button data-view="blackholeV2">Black Hole V2</button>
+            <button data-view="cataclysmic">T CrB</button>
+            <button data-view="pulsar">Crab Pulsar</button>
+            <button data-view="supernovaRemnant">Cassiopeia A</button>
+            <button data-view="hltauri">HL Tauri</button>
+            <button data-view="magnetar">SGR 1806-20</button>
+            <button data-view="kilonova">GW170817</button>
+            <button data-view="planetaryNebula">Cat's Eye</button>
+            <button data-view="quasar">3C 273</button>
+            <button data-view="grb">GRB 221009A</button>
+          </div></div>
         </div>
       </div>
     </div>
@@ -2034,39 +2097,51 @@
         <button id="sv-nav-collapse" title="Collapse nav">&#x25C0;</button>
         <div class="nav-group">
           <div class="nav-group-label">SIMULATION</div>
-          <button class="view-btn active" data-view="procedural">PROCEDURAL</button>
+          <div class="nav-group-items"><div class="nav-group-items-inner">
+            <button class="view-btn active" data-view="procedural">PROCEDURAL</button>
+          </div></div>
         </div>
         <div class="nav-group">
           <div class="nav-group-label">MARS</div>
-          <button class="view-btn" data-view="valles">VALLES MARINERIS</button>
-          <button class="view-btn" data-view="olympus">OLYMPUS MONS</button>
-          <button class="view-btn" data-view="hellas">HELLAS BASIN</button>
+          <div class="nav-group-items"><div class="nav-group-items-inner">
+            <button class="view-btn" data-view="valles">VALLES MARINERIS</button>
+            <button class="view-btn" data-view="olympus">OLYMPUS MONS</button>
+            <button class="view-btn" data-view="hellas">HELLAS BASIN</button>
+          </div></div>
         </div>
         <div class="nav-group">
           <div class="nav-group-label">EARTH</div>
-          <button class="view-btn" data-view="grandcanyon">GRAND CANYON</button>
-          <button class="view-btn" data-view="himalayas">HIMALAYAS</button>
+          <div class="nav-group-items"><div class="nav-group-items-inner">
+            <button class="view-btn" data-view="grandcanyon">GRAND CANYON</button>
+            <button class="view-btn" data-view="himalayas">HIMALAYAS</button>
+          </div></div>
         </div>
         <div class="nav-group">
           <div class="nav-group-label">SATELLITE · AMERICAS</div>
-          <button class="view-btn" data-view="grandcanyonv2">GRAND CANYON</button>
-          <button class="view-btn" data-view="yosemite">YOSEMITE</button>
-          <button class="view-btn" data-view="craterlake">CRATER LAKE</button>
-          <button class="view-btn" data-view="hawaii">HAWAI&#x02BB;I</button>
-          <button class="view-btn" data-view="patagonia">TORRES DEL PAINE</button>
+          <div class="nav-group-items"><div class="nav-group-items-inner">
+            <button class="view-btn" data-view="grandcanyonv2">GRAND CANYON</button>
+            <button class="view-btn" data-view="yosemite">YOSEMITE</button>
+            <button class="view-btn" data-view="craterlake">CRATER LAKE</button>
+            <button class="view-btn" data-view="hawaii">HAWAI&#x02BB;I</button>
+            <button class="view-btn" data-view="patagonia">TORRES DEL PAINE</button>
+          </div></div>
         </div>
         <div class="nav-group">
           <div class="nav-group-label">SATELLITE · EUROPE</div>
-          <button class="view-btn" data-view="fjords">GEIRANGERFJORD</button>
-          <button class="view-btn" data-view="dolomites">DOLOMITES</button>
-          <button class="view-btn" data-view="matterhorn">MATTERHORN</button>
-          <button class="view-btn" data-view="iceland">ICELAND</button>
+          <div class="nav-group-items"><div class="nav-group-items-inner">
+            <button class="view-btn" data-view="fjords">GEIRANGERFJORD</button>
+            <button class="view-btn" data-view="dolomites">DOLOMITES</button>
+            <button class="view-btn" data-view="matterhorn">MATTERHORN</button>
+            <button class="view-btn" data-view="iceland">ICELAND</button>
+          </div></div>
         </div>
         <div class="nav-group">
           <div class="nav-group-label">SATELLITE · ASIA</div>
-          <button class="view-btn" data-view="everestv2">EVEREST</button>
-          <button class="view-btn" data-view="zhangjiajie">ZHANGJIAJIE</button>
-          <button class="view-btn" data-view="deadsea">DEAD SEA</button>
+          <div class="nav-group-items"><div class="nav-group-items-inner">
+            <button class="view-btn" data-view="everestv2">EVEREST</button>
+            <button class="view-btn" data-view="zhangjiajie">ZHANGJIAJIE</button>
+            <button class="view-btn" data-view="deadsea">DEAD SEA</button>
+          </div></div>
         </div>
       </div>
       <button id="sv-nav-expand" title="Open nav">&#x25B6;</button>
@@ -2180,28 +2255,38 @@
         <button id="oc-nav-collapse" title="Collapse nav">&#x25C0;</button>
         <div class="nav-group">
           <div class="nav-group-label">SIMULATION</div>
-          <button class="view-btn active" data-view="procedural">PROCEDURAL</button>
-          <button class="view-btn" data-view="abyssal">ABYSSAL PLAIN</button>
-          <button class="view-btn" data-view="volcanic">VOLCANIC RIDGE</button>
+          <div class="nav-group-items"><div class="nav-group-items-inner">
+            <button class="view-btn active" data-view="procedural">PROCEDURAL</button>
+            <button class="view-btn" data-view="abyssal">ABYSSAL PLAIN</button>
+            <button class="view-btn" data-view="volcanic">VOLCANIC RIDGE</button>
+          </div></div>
         </div>
         <div class="nav-group">
           <div class="nav-group-label">PACIFIC</div>
-          <button class="view-btn" data-view="mariana">MARIANA TRENCH</button>
-          <button class="view-btn" data-view="hawaiian">HAWAIIAN CHAIN</button>
-          <button class="view-btn" data-view="philippine">PHILIPPINE TRENCH</button>
+          <div class="nav-group-items"><div class="nav-group-items-inner">
+            <button class="view-btn" data-view="mariana">MARIANA TRENCH</button>
+            <button class="view-btn" data-view="hawaiian">HAWAIIAN CHAIN</button>
+            <button class="view-btn" data-view="philippine">PHILIPPINE TRENCH</button>
+          </div></div>
         </div>
         <div class="nav-group">
           <div class="nav-group-label">ATLANTIC</div>
-          <button class="view-btn" data-view="midatlantic">MID-ATLANTIC RIDGE</button>
-          <button class="view-btn" data-view="puertorico">PUERTO RICO TRENCH</button>
+          <div class="nav-group-items"><div class="nav-group-items-inner">
+            <button class="view-btn" data-view="midatlantic">MID-ATLANTIC RIDGE</button>
+            <button class="view-btn" data-view="puertorico">PUERTO RICO TRENCH</button>
+          </div></div>
         </div>
         <div class="nav-group">
           <div class="nav-group-label">INDIAN OCEAN</div>
-          <button class="view-btn" data-view="java">JAVA TRENCH</button>
+          <div class="nav-group-items"><div class="nav-group-items-inner">
+            <button class="view-btn" data-view="java">JAVA TRENCH</button>
+          </div></div>
         </div>
         <div class="nav-group">
           <div class="nav-group-label">SHALLOW</div>
-          <button class="view-btn" data-view="reef">CORAL REEF</button>
+          <div class="nav-group-items"><div class="nav-group-items-inner">
+            <button class="view-btn" data-view="reef">CORAL REEF</button>
+          </div></div>
         </div>
       </div>
       <button id="oc-nav-expand" title="Open nav">&#x25B6;</button>

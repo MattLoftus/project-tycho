@@ -55,6 +55,10 @@ async function switchView(name) {
   document.querySelectorAll('#ocean-app .view-btn').forEach(b => {
     b.disabled = false
     b.classList.toggle('active', b.dataset.view === name)
+    if (b.dataset.view === name) {
+      const pg = b.closest('.nav-group')
+      if (pg) pg.classList.remove('collapsed')
+    }
   })
 
   updateClickTargets()
@@ -99,6 +103,19 @@ export function init(renderer) {
     document.querySelectorAll('#ocean-app .view-btn').forEach(btn => {
       btn.addEventListener('click', () => switchView(btn.dataset.view))
     })
+
+    // Collapsible nav groups
+    document.querySelectorAll('#ocean-app .nav-group').forEach(group => {
+      const label = group.querySelector('.nav-group-label')
+      const buttons = group.querySelectorAll('.view-btn')
+      if (buttons.length >= 3) group.classList.add('collapsed')
+      label.addEventListener('click', () => group.classList.toggle('collapsed'))
+    })
+    const ocActiveBtn = document.querySelector('#ocean-app .view-btn.active')
+    if (ocActiveBtn) {
+      const pg = ocActiveBtn.closest('.nav-group')
+      if (pg) pg.classList.remove('collapsed')
+    }
 
     // Raycaster click handler
     _renderer.domElement.addEventListener('click', onCanvasClick)

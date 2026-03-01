@@ -15,14 +15,21 @@ import * as station4View from './views/station4.js';
 import * as lichView from './views/lich.js';
 import * as wasp121View from './views/wasp121.js';
 import * as proximaView from './views/proxima.js';
+import * as kepler90View from './views/kepler90.js';
+import * as toi700View from './views/toi700.js';
+import * as pegasi51View from './views/pegasi51.js';
 import * as pulsarView from './views/pulsar.js';
 import * as supernovaRemnantView from './views/supernova-remnant.js';
 import * as hltauriView from './views/hltauri.js';
 import * as magnetarView from './views/magnetar.js';
+import * as kilonovaView from './views/kilonova.js';
+import * as planetaryNebulaView from './views/planetary-nebula.js';
+import * as quasarView from './views/quasar.js';
+import * as grbView from './views/grb.js';
 import { sim } from './sim.js';
 import { OBJECT_DATA } from './data.js';
 
-const views = { earth: earthView, station: stationView, station2: station2View, station3: station3View, station4: station4View, solar: solarView, trappist: trappistView, cancri: cancriView, hr8799: hr8799View, kepler16: kepler16View, lich: lichView, wasp121: wasp121View, proxima: proximaView, blackholeV1: blackholeV1View, blackholeV2: blackholeV2View, cataclysmic: cataclysmicView, pulsar: pulsarView, supernovaRemnant: supernovaRemnantView, hltauri: hltauriView, magnetar: magnetarView };
+const views = { earth: earthView, station: stationView, station2: station2View, station3: station3View, station4: station4View, solar: solarView, trappist: trappistView, cancri: cancriView, hr8799: hr8799View, kepler16: kepler16View, lich: lichView, wasp121: wasp121View, proxima: proximaView, kepler90: kepler90View, toi700: toi700View, pegasi51: pegasi51View, blackholeV1: blackholeV1View, blackholeV2: blackholeV2View, cataclysmic: cataclysmicView, pulsar: pulsarView, supernovaRemnant: supernovaRemnantView, hltauri: hltauriView, magnetar: magnetarView, kilonova: kilonovaView, planetaryNebula: planetaryNebulaView, quasar: quasarView, grb: grbView };
 let activeView = null;
 let active = false;
 let _renderer = null;
@@ -367,8 +374,12 @@ function switchView(name) {
   activeView.init(_renderer);
   populateLegend();
 
-  document.querySelectorAll('#space-app #nav button').forEach((btn) => {
+  document.querySelectorAll('#space-app #nav button[data-view]').forEach((btn) => {
     btn.classList.toggle('active', btn.dataset.view === name);
+    if (btn.dataset.view === name) {
+      const parentGroup = btn.closest('.nav-group');
+      if (parentGroup) parentGroup.classList.remove('collapsed');
+    }
   });
 
   // Flythrough button — only for views that support it
@@ -410,9 +421,27 @@ function switchView(name) {
 }
 
 // Nav buttons
-document.querySelectorAll('#space-app #nav button').forEach((btn) => {
+document.querySelectorAll('#space-app #nav button[data-view]').forEach((btn) => {
   btn.addEventListener('click', () => switchView(btn.dataset.view));
 });
+
+// ── Collapsible nav groups ──
+document.querySelectorAll('#space-app #nav .nav-group').forEach((group) => {
+  const label = group.querySelector('.nav-group-label');
+  const buttons = group.querySelectorAll('button[data-view]');
+
+  // Collapse by default if >= 3 items
+  if (buttons.length >= 3) group.classList.add('collapsed');
+
+  label.addEventListener('click', () => group.classList.toggle('collapsed'));
+});
+
+// Auto-expand the group containing the initially active button
+const activeBtn = document.querySelector('#space-app #nav button.active');
+if (activeBtn) {
+  const parentGroup = activeBtn.closest('.nav-group');
+  if (parentGroup) parentGroup.classList.remove('collapsed');
+}
 
 // Speed controller
 const speedSlider = document.getElementById('speed-slider');
@@ -454,6 +483,9 @@ const viewMeta = {
   lich:         { sys: 'PSR B1257+12', cls: 'Pulsar',      dist: '2,300 ly' },
   wasp121:      { sys: 'WASP-121',    cls: 'F6V',          dist: '270 ly' },
   proxima:      { sys: 'Proxima Cen', cls: 'M5.5Ve',       dist: '4.25 ly' },
+  kepler90:     { sys: 'Kepler-90',  cls: 'G0V',          dist: '2,840 ly' },
+  toi700:       { sys: 'TOI-700',    cls: 'M2V',          dist: '101 ly' },
+  pegasi51:     { sys: '51 Pegasi',  cls: 'G2IV',         dist: '50.5 ly' },
   blackholeV1:  { sys: 'Gargantua',   cls: 'Black Hole',   dist: '---' },
   blackholeV2:  { sys: 'Gargantua',   cls: 'Black Hole',   dist: '---' },
   cataclysmic:  { sys: 'T CrB',       cls: 'CV Nova',      dist: '2,630 ly' },
@@ -461,6 +493,10 @@ const viewMeta = {
   supernovaRemnant: { sys: 'Cassiopeia A', cls: 'Supernova Remnant', dist: '11,000 ly' },
   hltauri:          { sys: 'HL Tauri',     cls: 'T Tauri Star',      dist: '450 ly' },
   magnetar:         { sys: 'SGR 1806-20', cls: 'Magnetar',          dist: '50,000 ly' },
+  kilonova:         { sys: 'GW170817',   cls: 'Kilonova',          dist: '130 Mly' },
+  planetaryNebula:  { sys: 'NGC 6543',   cls: 'Planetary Nebula',  dist: '3,300 ly' },
+  quasar:           { sys: '3C 273',     cls: 'Quasar / AGN',     dist: '2.4 Gly' },
+  grb:              { sys: 'GRB 221009A', cls: 'Gamma-Ray Burst', dist: '2.4 Gly' },
 };
 
 // View descriptions
@@ -479,6 +515,9 @@ const viewDescriptions = {
   lich: 'PSR B1257+12 (Lich) \u2014 the first confirmed exoplanet system, discovered in 1992 orbiting a millisecond pulsar. Three dead worlds (Draugr, Poltergeist, Phobetor) circle a rapidly spinning neutron star 2,300 light-years away, swept by rotating radiation beams.',
   wasp121: 'WASP-121 \u2014 an ultra-hot Jupiter so close to its F6V host star that it completes an orbit every 1.27 days. Tidally distorted into an egg shape at 2,500 K, with iron and magnesium gas escaping the atmosphere in a comet-like tail.',
   proxima: 'Proxima Centauri \u2014 the nearest star to the Sun at 4.25 light-years. An M5.5Ve flare star with periodic brightness eruptions. Proxima b orbits in the habitable zone; the system is the primary target for interstellar missions.',
+  kepler90: 'Kepler-90 \u2014 a Sun-like G0V star 2,840 light-years away in Draco with eight confirmed planets, tying our Solar System for the most known in any system. The inner six are tightly packed super-Earths and sub-Neptunes, while the outer two are gas giants. Kepler-90i was the first exoplanet discovered by artificial intelligence (Google/NASA, 2017).',
+  toi700: 'TOI-700 \u2014 a quiet M2V red dwarf 101 light-years away in Dorado with four planets, two in the habitable zone. TOI-700 d was the first Earth-size habitable-zone planet discovered by TESS (2020). TOI-700 e, confirmed in 2023, is 95% Earth\u2019s size \u2014 the smallest habitable-zone planet found by TESS.',
+  pegasi51: '51 Pegasi \u2014 the star that started it all. In 1995, Michel Mayor and Didier Queloz discovered a hot Jupiter orbiting this Sun-like G2IV star every 4.23 days \u2014 the first exoplanet found around a main-sequence star, earning the 2019 Nobel Prize in Physics. 51 Peg b "Dimidium" orbits just 0.05 AU from its host, challenging all prior models of planetary formation.',
   blackholeV1: 'Ray-marched black hole inspired by Interstellar\'s Gargantua. Rays are integrated through a Schwarzschild metric to produce the shadow, photon ring, and gravitationally lensed accretion disk.',
   blackholeV2: 'Higher-fidelity black hole with adjustable quality. The accretion disk uses Keplerian differential rotation with FBM turbulence for realistic swirling cloud structure. Quality slider controls ray-march precision.',
   cataclysmic: 'T Coronae Borealis \u2014 a recurrent nova system where a red giant overflows its Roche lobe, transferring mass onto a white dwarf via an accretion stream and disk. Expected to erupt again as a naked-eye nova.',
@@ -486,6 +525,10 @@ const viewDescriptions = {
   supernovaRemnant: 'Cassiopeia A \u2014 the youngest known supernova remnant in the Milky Way, ~340 years old. The expanding blast wave has heated surrounding gas to millions of degrees. The outer forward shock (blue-white) races ahead of the reverse shock through stellar ejecta rich in silicon, sulfur, and oxygen (red-green). A faint neutron star sits at the center.',
   hltauri: 'HL Tauri \u2014 a young T Tauri star (~1 million years old) 450 light-years away in the Taurus molecular cloud. ALMA\u2019s landmark 2015 observation revealed a protoplanetary disk with at least five concentric gaps, strong evidence of planets actively forming. Bipolar jets (HH 150/151) extend along the polar axis, driven by magnetic fields in the innermost disk.',
   magnetar: 'SGR 1806-20 \u2014 an ultra-magnetized neutron star (magnetar) with a magnetic field of ~2\u00D710\u00B9\u2075 G, the strongest known in the universe. On December 27, 2004 it produced a giant flare \u2014 the brightest extragalactic event ever observed \u2014 releasing more energy in 0.2 seconds than the Sun emits in 250,000 years. The flare was detected across the galaxy and temporarily ionized Earth\u2019s upper atmosphere.',
+  kilonova: 'GW170817 \u2014 the first observed neutron star merger, detected on August 17, 2017 by LIGO/Virgo in gravitational waves and across the electromagnetic spectrum. Two neutron stars (~1.36 + 1.17 M\u2609) spiraled inward and collided 130 million light-years away in galaxy NGC 4993, producing a kilonova \u2014 an explosion powered by the radioactive decay of r-process heavy elements like gold, platinum, and uranium. This landmark event confirmed that neutron star mergers are a major source of the universe\u2019s heaviest elements.',
+  planetaryNebula: 'NGC 6543 (Cat\u2019s Eye Nebula) \u2014 one of the most structurally complex planetary nebulae known, 3,300 light-years away in Draco. A dying Sun-like star in its final asymptotic giant branch phase has ejected concentric shells of ionized gas over thousands of years. The inner shells glow in [O III] blue-green, the main ring shows H-alpha pink, and the outer envelope radiates [N II] red. Bipolar lobes and at least 11 concentric outer rings record episodic mass-loss events. First discovered by William Herschel in 1786.',
+  quasar: '3C 273 \u2014 the first quasar ever identified, discovered in 1963 by Maarten Schmidt. A supermassive black hole (~886 million M\u2609) at the heart of a distant galaxy 2.4 billion light-years away, accreting matter at ~10 solar masses per year. The accretion process powers relativistic jets extending 200,000 light-years into intergalactic space, visible even in optical wavelengths. With an apparent magnitude of 12.9, 3C 273 is bright enough to see in amateur telescopes despite its immense distance \u2014 its luminosity exceeds 4 trillion Suns.',
+  grb: 'GRB 221009A ("BOAT" \u2014 Brightest Of All Time) \u2014 detected on October 9, 2022, this was the most energetic gamma-ray burst ever recorded, originating 2.4 billion light-years away in the constellation Sagitta. A massive Wolf\u2013Rayet star\u2019s iron core collapsed to form a black hole, launching ultra-relativistic jets (~0.9999c) that punched through the dying star\u2019s envelope. The resulting gamma-ray flash was so intense it ionized Earth\u2019s upper atmosphere and saturated every gamma-ray detector in orbit. The afterglow was visible for months across all wavelengths.',
 };
 
 // ── Exported interface ──

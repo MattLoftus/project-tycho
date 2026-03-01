@@ -73,6 +73,10 @@ async function switchView(name) {
   document.querySelectorAll('#surface-app .view-btn').forEach(b => {
     b.disabled = false
     b.classList.toggle('active', b.dataset.view === name)
+    if (b.dataset.view === name) {
+      const pg = b.closest('.nav-group')
+      if (pg) pg.classList.remove('collapsed')
+    }
   })
 
   // Show resolution selector only for satellite photo views
@@ -127,6 +131,19 @@ export function init(renderer) {
     document.querySelectorAll('#surface-app .view-btn').forEach(btn => {
       btn.addEventListener('click', () => switchView(btn.dataset.view))
     })
+
+    // Collapsible nav groups
+    document.querySelectorAll('#surface-app .nav-group').forEach(group => {
+      const label = group.querySelector('.nav-group-label')
+      const buttons = group.querySelectorAll('.view-btn')
+      if (buttons.length >= 3) group.classList.add('collapsed')
+      label.addEventListener('click', () => group.classList.toggle('collapsed'))
+    })
+    const svActiveBtn = document.querySelector('#surface-app .view-btn.active')
+    if (svActiveBtn) {
+      const pg = svActiveBtn.closest('.nav-group')
+      if (pg) pg.classList.remove('collapsed')
+    }
 
     // Resolution selector
     document.querySelectorAll('#sv-resolution .res-btn').forEach(btn => {

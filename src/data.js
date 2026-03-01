@@ -1147,6 +1147,290 @@ export const OBJECT_DATA = {
     ],
   },
 
+  // ── Kepler-90 system ──
+  'Kepler-90': {
+    type: 'Sun-like Star (G0V)',
+    tooltip: [
+      { label: 'Surface Temp', value: '5,930 K' },
+      { label: 'Distance',     value: '2,840 ly' },
+      { label: 'Known Planets', value: '8' },
+    ],
+    details: [
+      { label: 'Classification', value: 'G0V Main Sequence' },
+      { label: 'Mass',           value: '1.2 M\u2609' },
+      { label: 'Radius',         value: '1.2 R\u2609' },
+      { label: 'Surface Temp',   value: '5,930 K' },
+      { label: 'Luminosity',     value: '~1.2 L\u2609' },
+      { label: 'Known Planets',  value: '8 \u2014 most of any known system (tied with Solar System)' },
+      { label: 'Distance',       value: '2,840 light-years (Draco)' },
+      { label: 'Discovery',      value: 'Kepler mission (2013\u20132017)' },
+      { label: 'Note',           value: 'Kepler-90i discovered by Google AI neural network' },
+    ],
+  },
+  'Kepler-90b': {
+    type: 'Super-Earth (Hot)',
+    tooltip: [
+      { label: 'Radius', value: '1.31 R\u2295' },
+      { label: 'Period', value: '7.008 days' },
+      { label: 'Axis',   value: '0.074 AU' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Super-Earth' },
+      { label: 'Radius',         value: '1.31 R\u2295' },
+      { label: 'Orbital Period', value: '7.008 days' },
+      { label: 'Semi-major Axis', value: '0.074 AU' },
+      { label: 'Eq. Temperature', value: '~1,700 K' },
+      { label: 'Habitable Zone', value: 'No \u2014 far too hot' },
+      { label: 'Discovery',      value: '2013 (transit)' },
+    ],
+  },
+  'Kepler-90c': {
+    type: 'Super-Earth (Hot)',
+    tooltip: [
+      { label: 'Radius', value: '1.18 R\u2295' },
+      { label: 'Period', value: '8.719 days' },
+      { label: 'Axis',   value: '0.089 AU' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Super-Earth' },
+      { label: 'Radius',         value: '1.18 R\u2295' },
+      { label: 'Orbital Period', value: '8.719 days' },
+      { label: 'Semi-major Axis', value: '0.089 AU' },
+      { label: 'Eq. Temperature', value: '~1,550 K' },
+      { label: 'Habitable Zone', value: 'No \u2014 far too hot' },
+      { label: 'Discovery',      value: '2013 (transit)' },
+    ],
+  },
+  'Kepler-90i': {
+    type: 'Super-Earth (Hot) \u2014 AI Discovery',
+    tooltip: [
+      { label: 'Radius', value: '1.32 R\u2295' },
+      { label: 'Period', value: '14.45 days' },
+      { label: 'Found',  value: 'Google AI (2017)' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Super-Earth' },
+      { label: 'Radius',         value: '1.32 R\u2295' },
+      { label: 'Orbital Period', value: '14.45 days' },
+      { label: 'Semi-major Axis', value: '0.1234 AU' },
+      { label: 'Eq. Temperature', value: '~1,100 K' },
+      { label: 'Habitable Zone', value: 'No \u2014 too hot' },
+      { label: 'Discovery',      value: '2017 (transit \u2014 Google AI / machine learning)' },
+      { label: 'Note',           value: 'First exoplanet discovered by artificial intelligence' },
+    ],
+  },
+  'Kepler-90d': {
+    type: 'Sub-Neptune (Warm)',
+    tooltip: [
+      { label: 'Radius', value: '2.88 R\u2295' },
+      { label: 'Period', value: '59.74 days' },
+      { label: 'Axis',   value: '0.320 AU' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Sub-Neptune' },
+      { label: 'Radius',         value: '2.88 R\u2295' },
+      { label: 'Orbital Period', value: '59.74 days' },
+      { label: 'Semi-major Axis', value: '0.320 AU' },
+      { label: 'Eq. Temperature', value: '~575 K' },
+      { label: 'Discovery',      value: '2013 (transit)' },
+    ],
+  },
+  'Kepler-90e': {
+    type: 'Sub-Neptune (Warm)',
+    tooltip: [
+      { label: 'Radius', value: '2.67 R\u2295' },
+      { label: 'Period', value: '91.94 days' },
+      { label: 'Axis',   value: '0.422 AU' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Sub-Neptune' },
+      { label: 'Radius',         value: '2.67 R\u2295' },
+      { label: 'Orbital Period', value: '91.94 days' },
+      { label: 'Semi-major Axis', value: '0.422 AU' },
+      { label: 'Eq. Temperature', value: '~500 K' },
+      { label: 'Discovery',      value: '2013 (transit)' },
+    ],
+  },
+  'Kepler-90f': {
+    type: 'Sub-Neptune (Warm)',
+    tooltip: [
+      { label: 'Radius', value: '2.89 R\u2295' },
+      { label: 'Period', value: '124.91 days' },
+      { label: 'Axis',   value: '0.480 AU' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Sub-Neptune' },
+      { label: 'Radius',         value: '2.89 R\u2295' },
+      { label: 'Orbital Period', value: '124.91 days' },
+      { label: 'Semi-major Axis', value: '0.480 AU' },
+      { label: 'Eq. Temperature', value: '~430 K' },
+      { label: 'Discovery',      value: '2013 (transit)' },
+    ],
+  },
+  'Kepler-90g': {
+    type: 'Gas Giant',
+    tooltip: [
+      { label: 'Radius', value: '8.13 R\u2295' },
+      { label: 'Period', value: '210.60 days' },
+      { label: 'Axis',   value: '0.710 AU' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Gas Giant (sub-Saturn)' },
+      { label: 'Radius',         value: '8.13 R\u2295 (~0.73 R\u2643)' },
+      { label: 'Orbital Period', value: '210.60 days' },
+      { label: 'Semi-major Axis', value: '0.710 AU' },
+      { label: 'Eq. Temperature', value: '~330 K' },
+      { label: 'Discovery',      value: '2013 (transit)' },
+    ],
+  },
+  'Kepler-90h': {
+    type: 'Jupiter-Sized Gas Giant',
+    tooltip: [
+      { label: 'Radius', value: '11.32 R\u2295' },
+      { label: 'Period', value: '331.60 days' },
+      { label: 'Axis',   value: '1.01 AU' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Gas Giant (Jupiter-sized)' },
+      { label: 'Radius',         value: '11.32 R\u2295 (~1.01 R\u2643)' },
+      { label: 'Orbital Period', value: '331.60 days' },
+      { label: 'Semi-major Axis', value: '1.01 AU' },
+      { label: 'Eq. Temperature', value: '~292 K' },
+      { label: 'Discovery',      value: '2013 (transit)' },
+      { label: 'Note',           value: 'Outermost known planet \u2014 occupies position similar to Earth' },
+    ],
+  },
+
+  // ── TOI-700 system ──
+  'TOI-700': {
+    type: 'Red Dwarf (M2V)',
+    tooltip: [
+      { label: 'Surface Temp', value: '3,480 K' },
+      { label: 'Distance',     value: '101.4 ly' },
+      { label: 'Known Planets', value: '4' },
+    ],
+    details: [
+      { label: 'Classification', value: 'M2V Red Dwarf' },
+      { label: 'Mass',           value: '0.416 M\u2609' },
+      { label: 'Radius',         value: '0.420 R\u2609' },
+      { label: 'Surface Temp',   value: '3,480 K' },
+      { label: 'Luminosity',     value: '0.023 L\u2609' },
+      { label: 'Known Planets',  value: '4 (b, c, e, d)' },
+      { label: 'Distance',       value: '101.4 light-years (Dorado)' },
+      { label: 'Discovery',      value: 'TESS mission (2020)' },
+      { label: 'Note',           value: 'Quiet M-dwarf \u2014 low flare activity, good for habitability' },
+    ],
+  },
+  'TOI-700 b': {
+    type: 'Earth-Size (Hot)',
+    tooltip: [
+      { label: 'Radius', value: '1.01 R\u2295' },
+      { label: 'Period', value: '9.977 days' },
+      { label: 'Zone',   value: 'Too hot' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Earth-size rocky' },
+      { label: 'Radius',         value: '1.01 R\u2295' },
+      { label: 'Orbital Period', value: '9.977 days' },
+      { label: 'Semi-major Axis', value: '0.0633 AU' },
+      { label: 'Habitable Zone', value: 'No \u2014 too hot' },
+      { label: 'Discovery',      value: '2020 (TESS transit)' },
+    ],
+  },
+  'TOI-700 c': {
+    type: 'Mini-Neptune (Warm)',
+    tooltip: [
+      { label: 'Radius', value: '2.63 R\u2295' },
+      { label: 'Period', value: '16.051 days' },
+      { label: 'Zone',   value: 'Warm' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Mini-Neptune' },
+      { label: 'Radius',         value: '2.63 R\u2295' },
+      { label: 'Orbital Period', value: '16.051 days' },
+      { label: 'Semi-major Axis', value: '0.0929 AU' },
+      { label: 'Habitable Zone', value: 'No \u2014 interior to HZ' },
+      { label: 'Discovery',      value: '2020 (TESS transit)' },
+    ],
+  },
+  'TOI-700 e': {
+    type: 'Earth-Size (Habitable Zone)',
+    tooltip: [
+      { label: 'Radius', value: '0.953 R\u2295' },
+      { label: 'Period', value: '28.396 days' },
+      { label: 'Zone',   value: 'Habitable (optimistic)' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Earth-size rocky' },
+      { label: 'Radius',         value: '0.953 R\u2295' },
+      { label: 'Orbital Period', value: '28.396 days' },
+      { label: 'Semi-major Axis', value: '0.1340 AU' },
+      { label: 'Habitable Zone', value: 'Yes \u2014 optimistic habitable zone' },
+      { label: 'Discovery',      value: '2023 (TESS transit)' },
+      { label: 'Note',           value: '95% Earth\u2019s size \u2014 smallest HZ planet found by TESS' },
+    ],
+  },
+  'TOI-700 d': {
+    type: 'Earth-Size (Habitable Zone)',
+    tooltip: [
+      { label: 'Radius', value: '1.19 R\u2295' },
+      { label: 'Period', value: '37.426 days' },
+      { label: 'Zone',   value: 'Habitable (conservative)' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Earth-size rocky' },
+      { label: 'Radius',         value: '1.19 R\u2295' },
+      { label: 'Orbital Period', value: '37.426 days' },
+      { label: 'Semi-major Axis', value: '0.1633 AU' },
+      { label: 'Eq. Temperature', value: '~269 K (\u22124\u00b0C)' },
+      { label: 'Habitable Zone', value: 'Yes \u2014 conservative habitable zone' },
+      { label: 'Discovery',      value: '2020 (TESS transit)' },
+      { label: 'Note',           value: 'First Earth-size habitable-zone planet found by TESS' },
+    ],
+  },
+
+  // ── 51 Pegasi system ──
+  '51 Pegasi': {
+    type: 'Sun-like Sub-Giant (G2IV)',
+    tooltip: [
+      { label: 'Surface Temp', value: '5,768 K' },
+      { label: 'Distance',     value: '50.45 ly' },
+      { label: 'Known Planets', value: '1' },
+    ],
+    details: [
+      { label: 'Classification', value: 'G2IV Sub-Giant (slightly evolved)' },
+      { label: 'Mass',           value: '1.11 M\u2609' },
+      { label: 'Radius',         value: '1.266 R\u2609' },
+      { label: 'Surface Temp',   value: '5,768 K' },
+      { label: 'Luminosity',     value: '1.36 L\u2609' },
+      { label: 'Metallicity',    value: '[Fe/H] = +0.20 (metal-rich)' },
+      { label: 'Known Planets',  value: '1 (51 Peg b "Dimidium")' },
+      { label: 'Distance',       value: '50.45 light-years (Pegasus)' },
+      { label: 'Note',           value: 'First Sun-like star with a confirmed exoplanet (1995)' },
+    ],
+  },
+  '51 Peg b': {
+    type: 'Hot Jupiter \u2014 First Exoplanet',
+    tooltip: [
+      { label: 'Mass',   value: '0.472 M\u2643' },
+      { label: 'Period', value: '4.231 days' },
+      { label: 'Temp',   value: '~1,260 K' },
+    ],
+    details: [
+      { label: 'Classification', value: 'Hot Jupiter' },
+      { label: 'Formal Name',    value: 'Dimidium (IAU 2015)' },
+      { label: 'Mass',           value: '0.472 M\u2643 (150 M\u2295)' },
+      { label: 'Est. Radius',    value: '~1.9 R\u2643' },
+      { label: 'Orbital Period', value: '4.2308 days' },
+      { label: 'Semi-major Axis', value: '0.0527 AU' },
+      { label: 'Eq. Temperature', value: '~1,260 K' },
+      { label: 'Eccentricity',   value: '0.013 (nearly circular)' },
+      { label: 'Discovery',      value: '1995 (radial velocity) \u2014 Mayor & Queloz' },
+      { label: 'Significance',   value: 'First exoplanet found around a Sun-like star' },
+      { label: 'Nobel Prize',    value: '2019 Physics \u2014 Mayor & Queloz' },
+    ],
+  },
+
   // ── Cassiopeia A (Supernova Remnant) ──
   'Cassiopeia A': {
     type: 'Supernova Remnant',
@@ -1267,6 +1551,102 @@ export const OBJECT_DATA = {
       { label: 'Flare Duration',    value: '~0.2 s spike + 380 s tail' },
       { label: 'Characteristic Age', value: '~600 years' },
       { label: 'Constellation',     value: 'Sagittarius' },
+    ],
+  },
+
+  // ── GW170817 (Kilonova / Neutron Star Merger) ──
+  'GW170817': {
+    type: 'Neutron Star Merger',
+    tooltip: [
+      { label: 'Masses',    value: '1.36 + 1.17 M\u2609' },
+      { label: 'Distance',  value: '130 Mly' },
+      { label: 'Detected',  value: 'Aug 17, 2017' },
+    ],
+    details: [
+      { label: 'Designation',      value: 'GW170817 / AT 2017gfo / SSS17a' },
+      { label: 'Type',             value: 'Binary neutron star merger' },
+      { label: 'Component Masses', value: '~1.36 + 1.17 M\u2609 (total ~2.73 M\u2609)' },
+      { label: 'Host Galaxy',      value: 'NGC 4993 (elliptical)' },
+      { label: 'Distance',         value: '~130 million light-years (40 Mpc)' },
+      { label: 'GW Detection',     value: 'LIGO Hanford + Livingston, Virgo' },
+      { label: 'GRB',              value: 'GRB 170817A (Fermi GBM, 1.7 s after merger)' },
+      { label: 'Kilonova Peak',    value: '~10\u2074\u00B9 erg/s (UV/optical/IR)' },
+      { label: 'Ejecta Mass',      value: '~0.05 M\u2609 (r-process material)' },
+      { label: 'r-Process Elements', value: 'Gold, platinum, uranium confirmed' },
+      { label: 'Significance',     value: 'First multi-messenger GW+EM event' },
+      { label: 'Remnant',          value: 'Likely collapsed to black hole' },
+    ],
+  },
+
+  // ── NGC 6543 (Cat's Eye Nebula) ──
+  'NGC 6543': {
+    type: 'Planetary Nebula',
+    tooltip: [
+      { label: 'Type',      value: 'Planetary Nebula' },
+      { label: 'Distance',  value: '3,300 ly' },
+      { label: 'Star Temp', value: '~80,000 K' },
+    ],
+    details: [
+      { label: 'Designation',       value: 'NGC 6543 / Caldwell 6' },
+      { label: 'Common Name',       value: 'Cat\u2019s Eye Nebula' },
+      { label: 'Type',              value: 'Planetary nebula' },
+      { label: 'Central Star',      value: 'WR-type (Wolf\u2013Rayet features)' },
+      { label: 'Star Temperature',  value: '~80,000 K' },
+      { label: 'Star Luminosity',   value: '~10,000 L\u2609' },
+      { label: 'Nebula Age',        value: '~1,000 years (inner shell)' },
+      { label: 'Angular Size',      value: '20\u2033 (inner), 5.8\u2032 (outer halo)' },
+      { label: 'Expansion Velocity', value: '~16.4 km/s' },
+      { label: 'Distance',          value: '~3,300 light-years' },
+      { label: 'Constellation',     value: 'Draco' },
+      { label: 'Discovery',         value: 'William Herschel, Feb 15, 1786' },
+    ],
+  },
+
+  // ── 3C 273 (Quasar / AGN) ──
+  '3C 273': {
+    type: 'Quasar (Active Galactic Nucleus)',
+    tooltip: [
+      { label: 'Redshift',   value: 'z = 0.158' },
+      { label: 'Distance',   value: '2.4 Gly' },
+      { label: 'Luminosity', value: '~4 \u00D7 10\u00B9\u00B2 L\u2609' },
+    ],
+    details: [
+      { label: 'Classification',   value: 'Quasar / Type 1 AGN' },
+      { label: 'Black Hole Mass',  value: '~886 million M\u2609' },
+      { label: 'Redshift',         value: 'z = 0.158' },
+      { label: 'Distance',         value: '2.443 billion light-years' },
+      { label: 'Luminosity',       value: '~4 \u00D7 10\u00B9\u00B2 L\u2609 (4 trillion Suns)' },
+      { label: 'Apparent Mag',     value: '12.9 (visible in amateur telescopes)' },
+      { label: 'Jet Length',       value: '~200,000 light-years' },
+      { label: 'Accretion Rate',   value: '~10 M\u2609 per year' },
+      { label: 'Variability',      value: 'Days to months (optical)' },
+      { label: 'Constellation',    value: 'Virgo' },
+      { label: 'Discovery',        value: '1963, Maarten Schmidt (Palomar)' },
+    ],
+  },
+
+  // ── GRB 221009A (Gamma-Ray Burst) ──
+  'GRB 221009A': {
+    type: 'Long Gamma-Ray Burst',
+    tooltip: [
+      { label: 'Nickname', value: '"BOAT" (Brightest Of All Time)' },
+      { label: 'Distance', value: '2.4 Gly' },
+      { label: 'Duration', value: '~600 s (T90)' },
+    ],
+    details: [
+      { label: 'Designation',       value: 'GRB 221009A / Swift J1913.1+1946' },
+      { label: 'Type',              value: 'Long-duration gamma-ray burst' },
+      { label: 'Nickname',          value: '"BOAT" \u2014 Brightest Of All Time' },
+      { label: 'Redshift',          value: 'z = 0.151' },
+      { label: 'Distance',          value: '~2.4 billion light-years (0.74 Gpc)' },
+      { label: 'Isotropic Energy',  value: '~10\u2075\u2074 erg (record-breaking)' },
+      { label: 'T90 Duration',      value: '~600 seconds' },
+      { label: 'Peak Photon Energy', value: '>18 TeV (LHAASO)' },
+      { label: 'Jet Lorentz Factor', value: '\u0393 > 100 (~0.9999c)' },
+      { label: 'Progenitor',        value: 'Collapsar (massive Wolf\u2013Rayet star)' },
+      { label: 'Associated SN',     value: 'SN 2022xiw (Type Ic-BL)' },
+      { label: 'Constellation',     value: 'Sagitta' },
+      { label: 'Detection Date',    value: 'October 9, 2022' },
     ],
   },
 
