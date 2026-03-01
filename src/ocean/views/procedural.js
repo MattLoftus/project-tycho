@@ -2,7 +2,6 @@ import * as THREE from 'three'
 import { EffectComposer }  from 'three/addons/postprocessing/EffectComposer.js'
 import { RenderPass }      from 'three/addons/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
-import { isMobile } from '../../post.js'
 import { createNoise2D } from 'simplex-noise'
 import { CameraController } from '../camera.js'
 import { createSeafloor }  from '../seafloor.js'
@@ -208,16 +207,12 @@ export function createProceduralView(presetKey) {
       const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.5, 2000)
       camCtrl_ = new CameraController(camera, renderer.domElement)
 
-      if (isMobile) {
-        composer_ = { render() { renderer.render(scene_, camera) }, setSize() {}, dispose() {} }
-      } else {
-        composer_ = new EffectComposer(renderer)
-        composer_.addPass(new RenderPass(scene_, camera))
-        composer_.addPass(new UnrealBloomPass(
-          new THREE.Vector2(window.innerWidth, window.innerHeight),
-          cfg.bloomStrength, cfg.bloomRadius, cfg.bloomThreshold
-        ))
-      }
+      composer_ = new EffectComposer(renderer)
+      composer_.addPass(new RenderPass(scene_, camera))
+      composer_.addPass(new UnrealBloomPass(
+        new THREE.Vector2(window.innerWidth, window.innerHeight),
+        cfg.bloomStrength, cfg.bloomRadius, cfg.bloomThreshold
+      ))
 
       scene_.add(new THREE.AmbientLight(cfg.ambientColor, cfg.ambientIntensity))
       const sun = new THREE.DirectionalLight(cfg.sunColor, cfg.sunIntensity)

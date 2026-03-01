@@ -2,7 +2,6 @@ import * as THREE from 'three'
 import { EffectComposer }  from 'three/addons/postprocessing/EffectComposer.js'
 import { RenderPass }      from 'three/addons/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
-import { isMobile } from '../../post.js'
 import { CameraController } from '../camera.js'
 import { createTerrain }   from '../terrain.js'
 import { createDeposits }  from '../deposits.js'
@@ -20,13 +19,9 @@ export async function init(renderer) {
   const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.5, 2000)
   camCtrl = new CameraController(camera, renderer.domElement)
 
-  if (isMobile) {
-    composer = { render() { renderer.render(scene, camera) }, setSize() {}, dispose() {} }
-  } else {
-    composer = new EffectComposer(renderer)
-    composer.addPass(new RenderPass(scene, camera))
-    composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.7, 0.55, 0.80))
-  }
+  composer = new EffectComposer(renderer)
+  composer.addPass(new RenderPass(scene, camera))
+  composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.7, 0.55, 0.80))
 
   scene.add(new THREE.AmbientLight(0x0a1830, 1.6))
   const sun = new THREE.DirectionalLight(0xffe8c0, 1.8)

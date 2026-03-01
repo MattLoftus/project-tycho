@@ -2,7 +2,6 @@ import * as THREE from 'three'
 import { EffectComposer }  from 'three/addons/postprocessing/EffectComposer.js'
 import { RenderPass }      from 'three/addons/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
-import { isMobile } from '../../post.js'
 import { createNoise2D } from 'simplex-noise'
 import { CameraController } from '../camera.js'
 import { createBubbles, createMarineSnow } from '../particles.js'
@@ -121,16 +120,12 @@ export function createReefView() {
       camCtrl_ = new CameraController(camera, renderer.domElement)
       camCtrl_.camera.position.set(0, 40, 80)
 
-      if (isMobile) {
-        composer_ = { render() { renderer.render(scene_, camera) }, setSize() {}, dispose() {} }
-      } else {
-        composer_ = new EffectComposer(renderer)
-        composer_.addPass(new RenderPass(scene_, camera))
-        composer_.addPass(new UnrealBloomPass(
-          new THREE.Vector2(window.innerWidth, window.innerHeight),
-          0.6, 0.4, 0.85
-        ))
-      }
+      composer_ = new EffectComposer(renderer)
+      composer_.addPass(new RenderPass(scene_, camera))
+      composer_.addPass(new UnrealBloomPass(
+        new THREE.Vector2(window.innerWidth, window.innerHeight),
+        0.6, 0.4, 0.85
+      ))
 
       // Bright warm lighting — shallow water
       scene_.add(new THREE.AmbientLight(0x183828, 2.0))
