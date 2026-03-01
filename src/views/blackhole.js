@@ -6,7 +6,6 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { sim } from '../sim.js';
 import { createCameraMovement } from '../camera-movement.js';
-import { isMobile } from '../post.js';
 
 /*
  * Black hole visualisation inspired by the Interstellar Gargantua render.
@@ -394,32 +393,25 @@ export function init(rendererIn) {
   meshNameMap.set(shadowSphere, 'Black Hole');
 
   // ── Post-processing chain ──
-  if (isMobile) {
-    composer = { render() { renderer.render(scene, camera); }, setSize() {}, dispose() {} };
-    bhPass = null;
-    bloomPass = { strength: 0, threshold: 0, radius: 0 };
-    cinematicPass = { uniforms: { time: { value: 0 } } };
-  } else {
-    composer = new EffectComposer(renderer);
-    composer.addPass(new RenderPass(scene, camera));
+  composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
 
-    // Black hole ray-marching pass
-    bhPass = new ShaderPass(BlackHoleShader);
-    updateBhUniforms();
-    composer.addPass(bhPass);
+  // Black hole ray-marching pass
+  bhPass = new ShaderPass(BlackHoleShader);
+  updateBhUniforms();
+  composer.addPass(bhPass);
 
-    // Bloom — only the photon ring and very hottest inner disk edge glow.
-    // High threshold keeps the swirl structure sharp and readable.
-    bloomPass = new UnrealBloomPass(
-      new THREE.Vector2(window.innerWidth, window.innerHeight),
-      1.4, 0.6, 0.7,
-    );
-    composer.addPass(bloomPass);
+  // Bloom — only the photon ring and very hottest inner disk edge glow.
+  // High threshold keeps the swirl structure sharp and readable.
+  bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(window.innerWidth, window.innerHeight),
+    1.4, 0.6, 0.7,
+  );
+  composer.addPass(bloomPass);
 
-    // Cinematic color grade
-    cinematicPass = new ShaderPass(CinematicShader);
-    composer.addPass(cinematicPass);
-  }
+  // Cinematic color grade
+  cinematicPass = new ShaderPass(CinematicShader);
+  composer.addPass(cinematicPass);
 
   // ── Input ──
   raycaster = new THREE.Raycaster();

@@ -28,6 +28,7 @@ import * as quasarView from './views/quasar.js';
 import * as grbView from './views/grb.js';
 import { sim } from './sim.js';
 import { OBJECT_DATA } from './data.js';
+import { isMobile } from './post.js';
 
 const views = { earth: earthView, station: stationView, station2: station2View, station3: station3View, station4: station4View, solar: solarView, trappist: trappistView, cancri: cancriView, hr8799: hr8799View, kepler16: kepler16View, lich: lichView, wasp121: wasp121View, proxima: proximaView, kepler90: kepler90View, toi700: toi700View, pegasi51: pegasi51View, blackholeV1: blackholeV1View, blackholeV2: blackholeV2View, cataclysmic: cataclysmicView, pulsar: pulsarView, supernovaRemnant: supernovaRemnantView, hltauri: hltauriView, magnetar: magnetarView, kilonova: kilonovaView, planetaryNebula: planetaryNebulaView, quasar: quasarView, grb: grbView };
 let activeView = null;
@@ -441,6 +442,19 @@ const activeBtn = document.querySelector('#space-app #nav button.active');
 if (activeBtn) {
   const parentGroup = activeBtn.closest('.nav-group');
   if (parentGroup) parentGroup.classList.remove('collapsed');
+}
+
+// Mobile: hide all views except Earth (other views crash on mobile GPUs)
+if (isMobile) {
+  document.querySelectorAll('#space-app #nav .nav-group').forEach((group) => {
+    const buttons = group.querySelectorAll('button[data-view]');
+    const hasEarth = Array.from(buttons).some((b) => b.dataset.view === 'earth');
+    if (!hasEarth) {
+      group.style.display = 'none';
+    } else {
+      buttons.forEach((b) => { if (b.dataset.view !== 'earth') b.style.display = 'none'; });
+    }
+  });
 }
 
 // Speed controller
