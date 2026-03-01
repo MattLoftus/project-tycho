@@ -27,6 +27,7 @@ const CinematicShader = {
     }
   `,
   fragmentShader: `
+      precision mediump float;
     uniform sampler2D tDiffuse;
     uniform float time;
     uniform float vignetteIntensity;

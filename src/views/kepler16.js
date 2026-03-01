@@ -76,6 +76,7 @@ export function init(rendererIn) {
         }
       `,
       fragmentShader: `
+      precision mediump float;
         varying vec3 vNormal; varying vec3 vViewDir;
         void main() {
           float rim = 1.0 - max(dot(vViewDir, vNormal), 0.0);
@@ -116,6 +117,7 @@ export function init(rendererIn) {
         }
       `,
       fragmentShader: `
+      precision mediump float;
         varying vec3 vNormal; varying vec3 vViewDir;
         void main() {
           float rim = 1.0 - max(dot(vViewDir, vNormal), 0.0);

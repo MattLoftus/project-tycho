@@ -110,6 +110,7 @@ export function init(sharedRenderer) {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       varying vec3 vNormal;
       varying vec3 vPosition;
       void main() {
@@ -165,6 +166,7 @@ export function init(sharedRenderer) {
           }
         `,
         fragmentShader: `
+      precision mediump float;
           varying vec3 vNormal;
           varying vec3 vPosition;
           void main() {

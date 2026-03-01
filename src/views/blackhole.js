@@ -51,6 +51,7 @@ const CinematicShader = {
     void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }
   `,
   fragmentShader: `
+      precision mediump float;
     uniform sampler2D tDiffuse;
     uniform float time, vignetteIntensity, grainIntensity;
     varying vec2 vUv;
@@ -100,6 +101,7 @@ const BlackHoleShader = {
     void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }
   `,
   fragmentShader: `
+      precision mediump float;
     uniform sampler2D tDiffuse;
     uniform vec3  bhPos;
     uniform float bhMass;

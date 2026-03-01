@@ -17,6 +17,7 @@ const VERT = /* glsl */`
 `
 
 const FRAG = /* glsl */`
+  precision mediump float;
   uniform float uTime;
   uniform float uMinH;
   uniform float uMaxH;

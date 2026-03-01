@@ -184,6 +184,7 @@ function buildMagnetar() {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       uniform float time;
       uniform float flareIntensity;
       varying vec3 vNormal;
@@ -268,6 +269,7 @@ function buildMagnetar() {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       uniform float flareIntensity;
       varying vec3 vNormal, vViewDir;
       void main() {
@@ -336,6 +338,7 @@ function buildMagnetosphere() {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       uniform float time;
       uniform float flareIntensity;
       varying vec3 vPosition;
@@ -411,6 +414,7 @@ function buildFireball() {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       uniform float time, intensity;
       varying vec3 vNormal, vViewDir;
       void main() {

@@ -70,6 +70,7 @@ export function init(rendererIn) {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       varying vec3 vNormal;
       varying vec3 vViewDir;
       void main() {
@@ -123,6 +124,7 @@ export function init(rendererIn) {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       uniform sampler2D uTex;
       uniform vec3 uStarDir;
       varying vec2 vUv;
@@ -169,6 +171,7 @@ export function init(rendererIn) {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       uniform vec3 uStarDir;
       varying vec3 vNormal;
       varying vec3 vViewDir;
@@ -294,6 +297,7 @@ function buildTailParticles() {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       varying vec3  vColor;
       varying float vAlpha;
       void main() {

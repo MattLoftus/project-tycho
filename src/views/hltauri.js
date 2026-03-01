@@ -53,6 +53,7 @@ const DiskShader = {
     }
   `,
   fragmentShader: `
+      precision mediump float;
     uniform float innerR, outerR, time;
     varying vec2 vPolar;
 
@@ -160,6 +161,7 @@ const JetShader = {
     }
   `,
   fragmentShader: `
+      precision mediump float;
     uniform float time;
     uniform float jetSign; // +1 or -1
     varying vec3 vPos;
@@ -344,6 +346,7 @@ function buildStar() {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       varying vec3 vNormal, vViewDir;
       void main() {
         float rim = 1.0 - max(dot(vViewDir, vNormal), 0.0);
@@ -414,6 +417,7 @@ function buildScatterHaze() {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       varying float vRadius;
       void main() {
         float t = clamp((vRadius - 0.8) / 41.2, 0.0, 1.0);
@@ -483,6 +487,7 @@ function buildProtoplanets() {
         }
       `,
       fragmentShader: `
+      precision mediump float;
         varying vec3 vNormal, vViewDir;
         void main() {
           float rim = 1.0 - max(dot(vViewDir, vNormal), 0.0);
@@ -575,6 +580,7 @@ function buildDustEnvelope() {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       varying vec3 vNormal, vViewDir;
       void main() {
         float rim = 1.0 - max(dot(vViewDir, vNormal), 0.0);

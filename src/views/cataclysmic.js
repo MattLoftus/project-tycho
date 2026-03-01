@@ -48,6 +48,7 @@ const DiskShader = {
     }
   `,
   fragmentShader: `
+      precision mediump float;
     uniform float innerR, outerR, time;
     varying vec2 vPolar;
 
@@ -201,6 +202,7 @@ function buildRedGiant() {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       uniform sampler2D sunTex;
       varying vec2 vUv;
       varying vec3 vNormal;
@@ -253,6 +255,7 @@ function buildRedGiant() {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       varying vec3 vNormal, vViewDir;
       void main() {
         float rim = 1.0 - max(dot(vViewDir, vNormal), 0.0);
@@ -286,6 +289,7 @@ function buildRedGiant() {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       varying vec3 vNormal, vViewDir;
       void main() {
         float rim = 1.0 - max(dot(vViewDir, vNormal), 0.0);
@@ -327,6 +331,7 @@ function buildWhiteDwarf() {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       varying vec3 vNormal, vViewDir;
       void main() {
         float rim = 1.0 - max(dot(vViewDir, vNormal), 0.0);
@@ -421,6 +426,7 @@ function buildStreamTube() {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       varying vec2 vUv;
       varying vec3 vNormal, vViewDir;
       void main() {
@@ -492,6 +498,7 @@ function buildStreamParticles() {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       varying vec3  vColor;
       varying float vAlpha;
       void main() {

@@ -87,6 +87,7 @@ export function init(rendererIn) {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       varying vec3 vNormal;
       varying vec3 vViewDir;
       void main() {
@@ -150,6 +151,7 @@ export function init(rendererIn) {
           }
         `,
         fragmentShader: `
+      precision mediump float;
           varying vec3 vNormal;
           varying vec3 vPosition;
           void main() {

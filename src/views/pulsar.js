@@ -73,6 +73,7 @@ export function init(rendererIn) {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       varying vec3 vNormal;
       varying vec3 vViewDir;
       void main() {
@@ -102,6 +103,7 @@ export function init(rendererIn) {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       varying vec3 vLocalPos;
       void main() {
         float poleFactor = abs(vLocalPos.y) / 0.28;
@@ -153,6 +155,7 @@ export function init(rendererIn) {
         }
       `,
       fragmentShader: `
+      precision mediump float;
         uniform float time;
         varying float vY;
         varying vec3 vNormal;
@@ -269,6 +272,7 @@ export function init(rendererIn) {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       uniform float time;
       varying vec3 vNormal;
       varying vec3 vViewDir;
@@ -310,6 +314,7 @@ export function init(rendererIn) {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       uniform float time;
       varying vec3 vPosition;
       varying vec3 vNormal;
@@ -390,6 +395,7 @@ export function init(rendererIn) {
       }
     `,
     fragmentShader: `
+      precision mediump float;
       uniform float time;
       varying vec3 vPosition;
       varying vec3 vNormal;
