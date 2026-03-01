@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { EffectComposer }  from 'three/addons/postprocessing/EffectComposer.js'
 import { RenderPass }      from 'three/addons/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
+import { isMobile } from '../../post.js'
 import { CameraController } from '../camera.js'
 import { initMarsHUD, setStatus, setTerrainLabel, setFeatureClickCallback } from '../hud.js'
 
@@ -320,9 +321,13 @@ export function createMarsView(regionKey) {
       const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.5, 2000)
       camCtrl_ = new CameraController(camera, renderer.domElement)
 
-      composer_ = new EffectComposer(renderer)
-      composer_.addPass(new RenderPass(scene_, camera))
-      composer_.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.6, 0.5, 0.82))
+      if (isMobile) {
+        composer_ = { render() { renderer.render(scene_, camera) }, setSize() {}, dispose() {} }
+      } else {
+        composer_ = new EffectComposer(renderer)
+        composer_.addPass(new RenderPass(scene_, camera))
+        composer_.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.6, 0.5, 0.82))
+      }
 
       scene_.add(new THREE.AmbientLight(0x1a0d08, 1.4))
       const sun = new THREE.DirectionalLight(0xffcc88, 1.5)

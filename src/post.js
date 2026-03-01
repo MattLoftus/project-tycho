@@ -67,7 +67,33 @@ const CinematicShader = {
   `,
 };
 
+// Mobile detection — exported so views can use it for other optimizations
+export const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+  (navigator.maxTouchPoints > 1 && 'ontouchstart' in window);
+
 export function createComposer(renderer, scene, camera) {
+  // On mobile, skip all post-processing — return a lightweight stub
+  // with the same interface so no view code needs to change.
+  if (isMobile) {
+    return {
+      composer: {
+        render() { renderer.render(scene, camera); },
+        setSize() {},
+        dispose() {},
+      },
+      bloomPass: { strength: 0, threshold: 0, radius: 0 },
+      cinematicPass: {
+        uniforms: {
+          time: { value: 0 },
+          vignetteIntensity: { value: 0 },
+          grainIntensity: { value: 0 },
+          liftR: { value: 1 }, liftG: { value: 1 }, liftB: { value: 1 },
+          gainR: { value: 1 }, gainG: { value: 1 }, gainB: { value: 1 },
+        },
+      },
+    };
+  }
+
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
 

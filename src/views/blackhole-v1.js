@@ -6,6 +6,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { sim } from '../sim.js';
 import { createCameraMovement } from '../camera-movement.js';
+import { isMobile } from '../post.js';
 
 /*
  * Black hole visualisation inspired by the Interstellar Gargantua render.
@@ -349,24 +350,31 @@ export function init(rendererIn) {
   meshNameMap.set(shadowSphere, 'Black Hole');
 
   // ── Post-processing chain ──
-  composer = new EffectComposer(renderer);
-  composer.addPass(new RenderPass(scene, camera));
+  if (isMobile) {
+    composer = { render() { renderer.render(scene, camera); }, setSize() {}, dispose() {} };
+    bhPass = null;
+    bloomPass = { strength: 0, threshold: 0, radius: 0 };
+    cinematicPass = { uniforms: { time: { value: 0 } } };
+  } else {
+    composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
 
-  // Black hole ray-marching pass
-  bhPass = new ShaderPass(BlackHoleShader);
-  updateBhUniforms();
-  composer.addPass(bhPass);
+    // Black hole ray-marching pass
+    bhPass = new ShaderPass(BlackHoleShader);
+    updateBhUniforms();
+    composer.addPass(bhPass);
 
-  // Bloom — photon ring and inner disk glow
-  bloomPass = new UnrealBloomPass(
-    new THREE.Vector2(window.innerWidth, window.innerHeight),
-    2.0, 0.7, 0.4,
-  );
-  composer.addPass(bloomPass);
+    // Bloom — photon ring and inner disk glow
+    bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      2.0, 0.7, 0.4,
+    );
+    composer.addPass(bloomPass);
 
-  // Cinematic color grade
-  cinematicPass = new ShaderPass(CinematicShader);
-  composer.addPass(cinematicPass);
+    // Cinematic color grade
+    cinematicPass = new ShaderPass(CinematicShader);
+    composer.addPass(cinematicPass);
+  }
 
   // ── Input ──
   raycaster = new THREE.Raycaster();
