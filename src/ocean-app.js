@@ -42,6 +42,12 @@ const ocDescriptions = {
   philippine: 'Philippine Trench \u2014 a submarine trench reaching 10,540 m at Galathea Deep. Created by the subduction of the Philippine Sea Plate beneath the Philippine Mobile Belt.',
   java: 'Java Trench (Sunda Trench) \u2014 the deepest point in the Indian Ocean at 7,290 m. A 3,200 km arc formed by the subduction of the Indo-Australian Plate beneath the Eurasian Plate.',
   reef: 'Coral reef ecosystem simulation with procedurally generated reef structures, sea life, and bioluminescent organisms in shallow tropical waters.',
+  shelf: 'Continental shelf simulation \u2014 the gently sloping underwater extension of a continent, typically reaching 200 m depth before dropping off at the shelf edge.',
+  hydrothermal: 'Hydrothermal vent field simulation \u2014 chaotic terrain surrounding deep-sea black smokers, where superheated mineral-rich water erupts from the seafloor at temperatures exceeding 400\u00B0C.',
+  arctic: 'Arctic seafloor simulation \u2014 a cold, barren polar ocean floor beneath seasonal ice cover. Dense marine snow falls through near-freezing water to the broad, gently undulating basin floor.',
+  tonga: 'Tonga Trench \u2014 the second deepest ocean trench on Earth at 10,823 m. This South Pacific subduction zone connects to the Kermadec Trench in a 2,500 km long feature.',
+  cayman: 'Cayman Trough \u2014 the deepest point in the Caribbean Sea at 7,686 m. Home to the Beebe Vent Field, the deepest known hydrothermal vents at nearly 5,000 m.',
+  southsandwich: 'South Sandwich Trench \u2014 the deepest trench in the Southern Atlantic at 8,264 m. A remote subduction zone near Antarctica with active volcanism along the island arc.',
 }
 
 async function switchView(name) {
@@ -87,16 +93,22 @@ export function init(renderer) {
 
   if (!initialized) {
     views = {
-      procedural:   proceduralView,
-      abyssal:      createProceduralView('abyssal'),
-      volcanic:     createProceduralView('volcanic'),
-      mariana:      createBathymetryView('mariana'),
-      hawaiian:     createBathymetryView('hawaiian'),
-      philippine:   createBathymetryView('philippine'),
-      midatlantic:  createBathymetryView('midatlantic'),
-      puertorico:   createBathymetryView('puertorico'),
-      java:         createBathymetryView('java'),
-      reef:         createReefView(),
+      procedural:     proceduralView,
+      abyssal:        createProceduralView('abyssal'),
+      volcanic:       createProceduralView('volcanic'),
+      shelf:          createProceduralView('shelf'),
+      hydrothermal:   createProceduralView('hydrothermal'),
+      arctic:         createProceduralView('arctic'),
+      mariana:        createBathymetryView('mariana'),
+      hawaiian:       createBathymetryView('hawaiian'),
+      philippine:     createBathymetryView('philippine'),
+      midatlantic:    createBathymetryView('midatlantic'),
+      puertorico:     createBathymetryView('puertorico'),
+      java:           createBathymetryView('java'),
+      tonga:          createBathymetryView('tonga'),
+      cayman:         createBathymetryView('cayman'),
+      southsandwich:  createBathymetryView('southsandwich'),
+      reef:           createReefView(),
     }
 
     // Nav buttons

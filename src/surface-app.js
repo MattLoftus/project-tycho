@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import * as proceduralView from './surface/views/procedural.js'
+import { createSurfaceProceduralView } from './surface/views/procedural.js'
 import { createMarsView }  from './surface/views/mars.js'
 import { createEarthView } from './surface/views/earth.js'
 import { createPhotoView, setResolutionOffset, getResolutionOffset } from './surface/views/everest-v2.js'
@@ -33,7 +34,8 @@ function onCanvasClick(e) {
 const PHOTO_VIEWS = new Set([
   'everestv2', 'grandcanyonv2', 'yosemite', 'fjords', 'craterlake',
   'hawaii', 'patagonia', 'dolomites', 'matterhorn', 'iceland',
-  'zhangjiajie', 'deadsea',
+  'zhangjiajie', 'deadsea', 'santorini', 'borabora', 'namibia',
+  'fuji', 'cappadocia',
 ])
 
 const svDescriptionText = document.getElementById('sv-view-description-text')
@@ -56,6 +58,15 @@ const svDescriptions = {
   everestv2: 'Mount Everest (8,849 m) \u2014 the highest point on Earth, viewed from satellite imagery. The Khumbu Glacier and surrounding Himalayan peaks are visible.',
   zhangjiajie: 'Zhangjiajie, China \u2014 towering sandstone pillars that inspired the floating mountains of Avatar. Over 3,000 quartzite columns rise above subtropical forest.',
   deadsea: 'The Dead Sea \u2014 at 430 m below sea level, the lowest point on Earth\'s surface. Satellite imagery shows the hypersaline lake and surrounding rift valley.',
+  glacial: 'Procedurally generated glacial terrain with broad U-shaped valleys and sharp arêtes. Simplex noise FBM simulates erosional patterns typical of glaciated landscapes.',
+  volcanicSurface: 'Procedurally generated volcanic terrain with jagged peaks and deep calderas. High-frequency noise creates sharp detail reminiscent of active volcanic regions.',
+  kilimanjaro: 'Mount Kilimanjaro, Tanzania \u2014 Africa\'s highest peak at 5,895 m, a massive stratovolcano rising from the East African savanna. Terrarium elevation tiles reveal three volcanic cones.',
+  sognefjord: 'Sognefjorden, Norway \u2014 the longest and deepest fjord in Norway at 204 km and 1,308 m deep. Elevation data shows the dramatic U-shaped valleys carved by Pleistocene glaciers.',
+  santorini: 'Santorini, Greece \u2014 a volcanic caldera island in the Aegean Sea, site of one of the largest eruptions in recorded history (~1600 BCE). Satellite imagery over elevation data.',
+  borabora: 'Bora Bora, French Polynesia \u2014 a volcanic island surrounded by a turquoise lagoon and barrier reef. Satellite imagery captures the iconic profile of Mount Otemanu.',
+  namibia: 'The Namib Desert \u2014 home to the world\'s tallest sand dunes at Sossusvlei, some exceeding 300 m. Satellite imagery reveals the dramatic red-orange dune fields.',
+  fuji: 'Mount Fuji (3,776 m) \u2014 Japan\'s iconic symmetrical stratovolcano and highest peak. Satellite imagery over elevation data shows the perfect conical form and Five Lakes region.',
+  cappadocia: 'Cappadocia, Turkey \u2014 a volcanic landscape shaped by millions of years of erosion, creating fairy chimneys, cave cities, and dramatic valleys in central Anatolia.',
 }
 
 let currentViewName = null
@@ -107,12 +118,16 @@ export function init(renderer) {
 
   if (!initialized) {
     views = {
-      procedural:  proceduralView,
-      valles:      createMarsView('valles'),
-      olympus:     createMarsView('olympus'),
-      hellas:      createMarsView('hellas'),
-      grandcanyon: createEarthView('grandcanyon'),
-      himalayas:   createEarthView('himalayas'),
+      procedural:     proceduralView,
+      glacial:        createSurfaceProceduralView('glacial'),
+      volcanicSurface: createSurfaceProceduralView('volcanicSurface'),
+      valles:         createMarsView('valles'),
+      olympus:        createMarsView('olympus'),
+      hellas:         createMarsView('hellas'),
+      grandcanyon:    createEarthView('grandcanyon'),
+      himalayas:      createEarthView('himalayas'),
+      kilimanjaro:    createEarthView('kilimanjaro'),
+      sognefjord:     createEarthView('sognefjord'),
       everestv2:      createPhotoView('everestv2'),
       grandcanyonv2:  createPhotoView('grandcanyonv2'),
       yosemite:       createPhotoView('yosemite'),
@@ -125,6 +140,11 @@ export function init(renderer) {
       iceland:        createPhotoView('iceland'),
       zhangjiajie:    createPhotoView('zhangjiajie'),
       deadsea:        createPhotoView('deadsea'),
+      santorini:      createPhotoView('santorini'),
+      borabora:       createPhotoView('borabora'),
+      namibia:        createPhotoView('namibia'),
+      fuji:           createPhotoView('fuji'),
+      cappadocia:     createPhotoView('cappadocia'),
     }
 
     // Nav buttons

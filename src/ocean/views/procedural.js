@@ -63,6 +63,63 @@ const PRESETS = {
     terrainWarp:      6.0,
     snowCount:        2500,
   },
+  shelf: {
+    label:         'CONTINENTAL SHELF · SURVEY ACTIVE',
+    bgColor:       0x020810,
+    fogDensity:    0.008,
+    bloomStrength: 0.8,
+    bloomRadius:   0.5,
+    bloomThreshold:0.80,
+    ambientColor:  0x081828,
+    ambientIntensity: 2.0,
+    sunColor:      0x5090c0,
+    sunIntensity:  0.6,
+    // Terrain: gently rolling shelf with broad features
+    terrainAmplitude: -15.0,
+    terrainOffset:    -6.0,
+    terrainFreq:      0.003,
+    terrainOctaves:   5,
+    terrainWarp:      3.0,
+    snowCount:        3500,
+  },
+  hydrothermal: {
+    label:         'HYDROTHERMAL FIELD · SURVEY ACTIVE',
+    bgColor:       0x020204,
+    fogDensity:    0.011,
+    bloomStrength: 1.6,
+    bloomRadius:   0.7,
+    bloomThreshold:0.55,
+    ambientColor:  0x0c0808,
+    ambientIntensity: 1.5,
+    sunColor:      0x402010,
+    sunIntensity:  0.2,
+    // Terrain: very sharp, high-frequency spikes (chimney structures)
+    terrainAmplitude: -18.0,
+    terrainOffset:    -12.0,
+    terrainFreq:      0.012,
+    terrainOctaves:   9,
+    terrainWarp:      7.0,
+    snowCount:        2000,
+  },
+  arctic: {
+    label:         'ARCTIC SEAFLOOR · SURVEY ACTIVE',
+    bgColor:       0x010308,
+    fogDensity:    0.006,
+    bloomStrength: 0.7,
+    bloomRadius:   0.45,
+    bloomThreshold:0.85,
+    ambientColor:  0x081020,
+    ambientIntensity: 1.4,
+    sunColor:      0x3060a0,
+    sunIntensity:  0.25,
+    // Terrain: broad, gently undulating polar shelf
+    terrainAmplitude: -12.0,
+    terrainOffset:    -16.0,
+    terrainFreq:      0.004,
+    terrainOctaves:   6,
+    terrainWarp:      2.5,
+    snowCount:        5000,
+  },
 }
 
 // ─── Custom seafloor generator ──────────────────────────────────────────────
@@ -163,9 +220,6 @@ function _getShaders() {
       vec3  sunDir = normalize(vec3(0.3, 1.0, 0.2));
       float diff   = max(dot(normalize(vWorldNormal), sunDir), 0.0);
       color *= (0.06 + diff * 0.94 * sunAtten);
-      float bioNoise = fract(sin(dot(floor(vWorldPos.xz * 0.3), vec2(12.9898, 78.233))) * 43758.5453);
-      float bioGlow  = smoothstep(0.97, 1.0, bioNoise) * depthFactor * 0.7;
-      color += vec3(0.08, 0.45, 0.70) * bioGlow;
       float range = uMaxH - uMinH;
       float cStep = range / 20.0;
       float c     = mod(vHeight - uMinH, cStep) / cStep;

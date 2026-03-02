@@ -49,6 +49,46 @@ export const REGIONS = {
       { name: 'Khumbu Icefall',  type: 'Glacier', lat: 28.01, lon:  86.86, depth: '---', width: '5,500 m' },
     ],
   },
+  kilimanjaro: {
+    label:    'KILIMANJARO',
+    subtitle: 'EAST AFRICAN RIFT · TANZANIA',
+    z: 10, baseX: 618, baseY: 514, grid: 4, sceneH: 35,
+    camPos:    [0, 70, 180],
+    camTarget: [0, 0, 20],
+    palette: [
+      [0.22, 0.18, 0.10],  // savanna lowland — dry grass brown
+      [0.35, 0.32, 0.18],  // lower slopes — scrub olive
+      [0.25, 0.30, 0.18],  // montane forest — dark green
+      [0.50, 0.48, 0.45],  // alpine desert — gray rock
+      [0.92, 0.95, 0.98],  // ice cap — white
+    ],
+    features: [
+      { name: 'Uhuru Peak',      type: 'Summit',  lat: -3.076, lon: 37.353, depth: '---', width: '5,895 m' },
+      { name: 'Kibo Crater',     type: 'Crater',  lat: -3.065, lon: 37.355, depth: '---', width: '2.4 km'  },
+      { name: 'Mawenzi Peak',    type: 'Summit',  lat: -3.095, lon: 37.455, depth: '---', width: '5,149 m' },
+      { name: 'Shira Plateau',   type: 'Plateau', lat: -3.055, lon: 37.235, depth: '---', width: '3,962 m' },
+    ],
+  },
+  sognefjord: {
+    label:    'SOGNEFJORDEN',
+    subtitle: 'VESTLAND · WESTERN NORWAY',
+    z: 10, baseX: 530, baseY: 282, grid: 4, sceneH: 30,
+    camPos:    [0, 65, 160],
+    camTarget: [10, 0, -20],
+    palette: [
+      [0.04, 0.08, 0.14],  // deep fjord water — dark blue-black
+      [0.12, 0.20, 0.14],  // valley floor — dark green
+      [0.28, 0.38, 0.24],  // forested slopes — pine green
+      [0.52, 0.50, 0.48],  // bare rock — gray
+      [0.82, 0.85, 0.88],  // snow patches — pale gray-white
+    ],
+    features: [
+      { name: 'Sognefjorden',    type: 'Fjord',   lat: 61.15, lon: 6.80, depth: '-1,308 m', width: '4.5 km' },
+      { name: 'Aurlandsfjorden', type: 'Fjord',   lat: 60.90, lon: 7.20, depth: '---',      width: '---'    },
+      { name: 'Jostedalsbreen',  type: 'Glacier', lat: 61.65, lon: 7.00, depth: '---',      width: '487 km²'},
+      { name: 'Stegastein',      type: 'Vista',   lat: 60.91, lon: 7.17, depth: '---',      width: '650 m'  },
+    ],
+  },
 }
 
 // ─── Coordinate utilities ────────────────────────────────────────────────────

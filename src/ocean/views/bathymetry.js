@@ -94,6 +94,48 @@ const REGIONS = {
       { name: 'Abyssal Tube Worms',    type: 'creature', lat: -10.80, lon: 114.20, depth: '-6,100 m', species: 'Lamellibrachia sp.' },
     ],
   },
+  tonga: {
+    label:    'TONGA TRENCH',
+    subtitle: 'HORIZON DEEP · SOUTH PACIFIC',
+    z: 7, baseX: 1, baseY: 71, grid: 4, sceneH: 50,
+    camPos: [0, 65, 185],
+    bgColor: 0x010306,
+    fogDensity: 0.008,
+    features: [
+      { name: 'Horizon Deep',        type: 'trench',   lat: -23.30, lon: -174.70, depth: '-10,823 m', width: '1.8 km' },
+      { name: 'Tonga Ridge',         type: 'seamount', lat: -22.30, lon: -175.80, depth: '-1,200 m',  width: '60 km'  },
+      { name: 'Kermadec Trench',     type: 'trench',   lat: -26.00, lon: -175.30, depth: '-10,047 m', width: '---'    },
+      { name: 'Tonga Volcanic Arc',  type: 'vent',     lat: -21.15, lon: -175.75, depth: '-2,800 m',  temp: '280 °C'  },
+    ],
+  },
+  cayman: {
+    label:    'CAYMAN TROUGH',
+    subtitle: 'MID-CAYMAN SPREADING CENTER · CARIBBEAN SEA',
+    z: 7, baseX: 34, baseY: 56, grid: 4, sceneH: 45,
+    camPos: [0, 60, 180],
+    bgColor: 0x010408,
+    fogDensity: 0.007,
+    features: [
+      { name: 'Cayman Trench',        type: 'trench',   lat: 19.20, lon: -80.00, depth: '-7,686 m', width: '---'     },
+      { name: 'Beebe Vent Field',     type: 'vent',     lat: 18.55, lon: -81.72, depth: '-4,960 m', temp: '401 °C'   },
+      { name: 'Von Damm Vent Field',  type: 'vent',     lat: 18.38, lon: -81.80, depth: '-2,300 m', temp: '226 °C'   },
+      { name: 'Cayman Ridge',         type: 'seamount', lat: 19.80, lon: -79.50, depth: '-1,500 m', width: '80 km'   },
+    ],
+  },
+  southsandwich: {
+    label:    'SOUTH SANDWICH TRENCH',
+    subtitle: 'METEOR DEEP · SOUTHERN ATLANTIC',
+    z: 7, baseX: 53, baseY: 86, grid: 4, sceneH: 48,
+    camPos: [0, 60, 185],
+    bgColor: 0x010306,
+    fogDensity: 0.008,
+    features: [
+      { name: 'Meteor Deep',              type: 'trench',   lat: -55.20, lon: -26.20, depth: '-8,264 m', width: '---'    },
+      { name: 'South Sandwich Arc',       type: 'seamount', lat: -56.50, lon: -27.00, depth: '-1,800 m', width: '50 km'  },
+      { name: 'East Scotia Ridge Vents',  type: 'vent',     lat: -56.09, lon: -30.32, depth: '-2,600 m', temp: '380 °C'  },
+      { name: 'Kemp Seamount',            type: 'seamount', lat: -59.70, lon: -28.35, depth: '-50 m',    width: '---'    },
+    ],
+  },
 }
 
 // ─── Underwater fragment shader (for real bathymetry) ───────────────────────
@@ -134,10 +176,6 @@ const FRAG = /* glsl */`
     vec3  sunDir = normalize(vec3(0.3, 1.0, 0.2));
     float diff   = max(dot(normalize(vWorldNormal), sunDir), 0.0);
     color *= (0.06 + diff * 0.94 * sunAtten);
-
-    float bioNoise = fract(sin(dot(floor(vWorldPos.xz * 0.3), vec2(12.9898, 78.233))) * 43758.5453);
-    float bioGlow  = smoothstep(0.97, 1.0, bioNoise) * depthFactor * 0.7;
-    color += vec3(0.08, 0.45, 0.70) * bioGlow;
 
     float range = uMaxH - uMinH;
     float cStep = range / 20.0;

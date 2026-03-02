@@ -55,11 +55,6 @@ const FRAG = /* glsl */`
     float diff   = max(dot(normalize(vWorldNormal), sunDir), 0.0);
     color *= (0.06 + diff * 0.94 * sunAtten);
 
-    // ── Bioluminescence in the deep (scattered glow points)
-    float bioNoise = fract(sin(dot(floor(vWorldPos.xz * 0.3), vec2(12.9898, 78.233))) * 43758.5453);
-    float bioGlow  = smoothstep(0.97, 1.0, bioNoise) * depthFactor * 0.7;
-    color += vec3(0.08, 0.45, 0.70) * bioGlow;
-
     // ── Isobath contour lines (depth contours)
     float range = uMaxH - uMinH;
     float cStep = range / 20.0;
