@@ -18,6 +18,7 @@ import * as proximaView from './views/proxima.js';
 import * as kepler90View from './views/kepler90.js';
 import * as toi700View from './views/toi700.js';
 import * as pegasi51View from './views/pegasi51.js';
+import * as marsPlanetView from './views/mars-planet.js';
 import * as pulsarView from './views/pulsar.js';
 import * as supernovaRemnantView from './views/supernova-remnant.js';
 import * as hltauriView from './views/hltauri.js';
@@ -30,7 +31,7 @@ import { sim } from './sim.js';
 import { OBJECT_DATA } from './data.js';
 import { isMobile } from './post.js';
 
-const views = { earth: earthView, station: stationView, station2: station2View, station3: station3View, station4: station4View, solar: solarView, trappist: trappistView, cancri: cancriView, hr8799: hr8799View, kepler16: kepler16View, lich: lichView, wasp121: wasp121View, proxima: proximaView, kepler90: kepler90View, toi700: toi700View, pegasi51: pegasi51View, blackholeV1: blackholeV1View, blackholeV2: blackholeV2View, cataclysmic: cataclysmicView, pulsar: pulsarView, supernovaRemnant: supernovaRemnantView, hltauri: hltauriView, magnetar: magnetarView, kilonova: kilonovaView, planetaryNebula: planetaryNebulaView, quasar: quasarView, grb: grbView };
+const views = { earth: earthView, marsPlanet: marsPlanetView, station: stationView, station2: station2View, station3: station3View, station4: station4View, solar: solarView, trappist: trappistView, cancri: cancriView, hr8799: hr8799View, kepler16: kepler16View, lich: lichView, wasp121: wasp121View, proxima: proximaView, kepler90: kepler90View, toi700: toi700View, pegasi51: pegasi51View, blackholeV1: blackholeV1View, blackholeV2: blackholeV2View, cataclysmic: cataclysmicView, pulsar: pulsarView, supernovaRemnant: supernovaRemnantView, hltauri: hltauriView, magnetar: magnetarView, kilonova: kilonovaView, planetaryNebula: planetaryNebulaView, quasar: quasarView, grb: grbView };
 let activeView = null;
 let active = false;
 let _renderer = null;
@@ -444,15 +445,16 @@ if (activeBtn) {
   if (parentGroup) parentGroup.classList.remove('collapsed');
 }
 
-// Mobile: hide all views except Earth (other views crash on mobile GPUs)
+// Mobile: hide all views except mobile-safe ones (other views crash on mobile GPUs)
+const MOBILE_SAFE = new Set(['earth', 'marsPlanet']);
 if (isMobile) {
   document.querySelectorAll('#space-app #nav .nav-group').forEach((group) => {
     const buttons = group.querySelectorAll('button[data-view]');
-    const hasEarth = Array.from(buttons).some((b) => b.dataset.view === 'earth');
-    if (!hasEarth) {
+    const hasSafe = Array.from(buttons).some((b) => MOBILE_SAFE.has(b.dataset.view));
+    if (!hasSafe) {
       group.style.display = 'none';
     } else {
-      buttons.forEach((b) => { if (b.dataset.view !== 'earth') b.style.display = 'none'; });
+      buttons.forEach((b) => { if (!MOBILE_SAFE.has(b.dataset.view)) b.style.display = 'none'; });
     }
   });
 }
@@ -485,6 +487,7 @@ const spClass = document.getElementById('sp-class');
 const spDist = document.getElementById('sp-dist');
 const viewMeta = {
   earth:        { sys: 'Sol',         cls: 'G2V',          dist: '---' },
+  marsPlanet:   { sys: 'Sol',         cls: 'G2V',          dist: '---' },
   solar:        { sys: 'Sol',         cls: 'G2V',          dist: '---' },
   station:      { sys: 'Sol / LEO',   cls: 'Station',      dist: '---' },
   station2:     { sys: 'Sol / LEO',   cls: 'Station',      dist: '---' },
@@ -517,6 +520,7 @@ const viewMeta = {
 const viewDescriptionText = document.getElementById('view-description-text');
 const viewDescriptions = {
   earth: 'Real-time model of Earth with day/night cycle, cloud layer, and atmospheric scattering. The Moon orbits at true relative distance. Textures derived from NASA Blue Marble imagery.',
+  marsPlanet: 'Mars \u2014 the Red Planet, fourth from the Sun. A rocky world with the largest volcano (Olympus Mons) and deepest canyon (Valles Marineris) in the Solar System. Its thin CO\u2082 atmosphere produces a dusty orange-pink haze. Two small, irregularly shaped moons \u2014 Phobos and Deimos \u2014 orbit close to the surface.',
   station: 'A rotating dual-torus station inspired by 2001: A Space Odyssey. Two 274 m rings spin at ~2 RPM to produce 1 g of artificial gravity at the rim, connected by a central hub and radial spokes.',
   station2: 'Modular variant with segmented rings \u2014 each torus is formed from 16 cylindrical habitat modules joined by pressurized collars. Same 274 m diameter and ~1 g rim gravity as Station 1.',
   station3: 'Advanced orbital colony (c. 2230) featuring five counter-rotating ring levels, a central command spire, particle accelerator ring, and agricultural domes. 1,300 m central ring, crew capacity ~10,000.',
