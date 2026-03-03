@@ -6,6 +6,7 @@ import { CameraController } from '../camera.js'
 import { VERT } from '../seafloor.js'
 import { createMarineSnow, createVentSmoke } from '../particles.js'
 import { initGeoHUD, setStatus, setFeatureClickCallback } from '../hud.js'
+import { createTitanicModel } from '../titanic-model.js'
 
 // ─── Region definitions ──────────────────────────────────────────────────────
 
@@ -462,6 +463,19 @@ export function createBathymetryView(regionKey) {
       })
 
       markers_ = buildFeatureMarkers(scene_, featuresWithPos)
+
+      // Place Titanic model on the wreck site
+      if (regionKey === 'titanic') {
+        const wreckPos = latlonToScene(41.73, -49.95, bounds)
+        wreckPos.y = terrain_.sampleHeight(wreckPos.x, wreckPos.z) + 0.8
+        const titanic = createTitanicModel()
+        titanic.position.copy(wreckPos)
+        titanic.rotation.y = 0.4  // heading
+        titanic.rotation.z = 0.05 // slight list to port
+        titanic.rotation.x = 0.02 // slight bow-down trim
+        titanic.scale.setScalar(0.6)
+        scene_.add(titanic)
+      }
 
       // Marine snow
       snow_ = createMarineSnow(scene_, 2500)
