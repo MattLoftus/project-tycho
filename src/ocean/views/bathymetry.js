@@ -494,7 +494,7 @@ export function createBathymetryView(regionKey) {
     },
 
     animate() {
-      if (!composer_) return
+      if (!composer_ || !terrain_) return
       const dt = clock_.getDelta()
       terrain_.material.uniforms.uTime.value = clock_.elapsedTime
       if (markers_?.length) updateMarkers(markers_, dt)
