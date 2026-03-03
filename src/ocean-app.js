@@ -47,6 +47,7 @@ const ocDescriptions = {
   arctic: 'Arctic seafloor simulation \u2014 a cold, barren polar ocean floor beneath seasonal ice cover. Dense marine snow falls through near-freezing water to the broad, gently undulating basin floor.',
   tonga: 'Tonga Trench \u2014 the second deepest ocean trench on Earth at 10,823 m. This South Pacific subduction zone connects to the Kermadec Trench in a 2,500 km long feature.',
   cayman: 'Cayman Trough \u2014 the deepest point in the Caribbean Sea at 7,686 m. Home to the Beebe Vent Field, the deepest known hydrothermal vents at nearly 5,000 m.',
+  titanic: 'RMS Titanic wreck site \u2014 resting at 3,784 m on the North Atlantic abyssal plain, 600 km south of Newfoundland. The wreck sits on the edge of the Grand Banks continental shelf, where the cold Labrador Current meets warmer Gulf Stream waters \u2014 the same convergence that carried icebergs into the shipping lanes on the night of April 14, 1912.',
   southsandwich: 'South Sandwich Trench \u2014 the deepest trench in the Southern Atlantic at 8,264 m. A remote subduction zone near Antarctica with active volcanism along the island arc.',
 }
 
@@ -107,6 +108,7 @@ export function init(renderer) {
       java:           createBathymetryView('java'),
       tonga:          createBathymetryView('tonga'),
       cayman:         createBathymetryView('cayman'),
+      titanic:        createBathymetryView('titanic'),
       southsandwich:  createBathymetryView('southsandwich'),
       reef:           createReefView(),
     }

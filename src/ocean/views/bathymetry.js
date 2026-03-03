@@ -136,6 +136,20 @@ const REGIONS = {
       { name: 'Kemp Seamount',            type: 'seamount', lat: -59.70, lon: -28.35, depth: '-50 m',    width: '---'    },
     ],
   },
+  titanic: {
+    label:    'TITANIC WRECK SITE',
+    subtitle: 'NORTH ATLANTIC ABYSSAL PLAIN · 41°43\u2032N 49°56\u2032W',
+    z: 7, baseX: 46, baseY: 47, grid: 4, sceneH: 45,
+    camPos: [0, 55, 180],
+    bgColor: 0x010408,
+    fogDensity: 0.007,
+    features: [
+      { name: 'RMS Titanic Wreck',     type: 'trench',   lat: 41.73, lon: -49.95, depth: '-3,784 m', width: '---' },
+      { name: 'Grand Banks Shelf Edge', type: 'seamount', lat: 43.50, lon: -50.00, depth: '-200 m',   width: '350 km' },
+      { name: 'Sohm Abyssal Plain',    type: 'trench',   lat: 40.00, lon: -52.00, depth: '-5,100 m', width: '---' },
+      { name: 'Titanic Canyon',         type: 'trench',   lat: 41.50, lon: -49.50, depth: '-4,200 m', width: '15 km' },
+    ],
+  },
 }
 
 // ─── Underwater fragment shader (for real bathymetry) ───────────────────────
