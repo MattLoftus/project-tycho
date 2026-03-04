@@ -467,14 +467,25 @@ export function createBathymetryView(regionKey) {
       // Place Titanic model on the wreck site
       if (regionKey === 'titanic') {
         const wreckPos = latlonToScene(41.73, -49.95, bounds)
-        wreckPos.y = terrain_.sampleHeight(wreckPos.x, wreckPos.z) + 0.8
+        wreckPos.y = terrain_.sampleHeight(wreckPos.x, wreckPos.z) + 1.5
         const titanic = createTitanicModel()
         titanic.position.copy(wreckPos)
         titanic.rotation.y = 0.4  // heading
         titanic.rotation.z = 0.05 // slight list to port
         titanic.rotation.x = 0.02 // slight bow-down trim
-        titanic.scale.setScalar(0.6)
+        titanic.scale.setScalar(2.0)
         scene_.add(titanic)
+
+        // Wreck-site lighting — simulate ROV / submersible floodlights
+        const wreckKey = new THREE.PointLight(0x88bbee, 8, 80, 1.2)
+        wreckKey.position.copy(wreckPos).add(new THREE.Vector3(8, 25, 12))
+        scene_.add(wreckKey)
+        const wreckFill = new THREE.PointLight(0x6699bb, 4, 60, 1.5)
+        wreckFill.position.copy(wreckPos).add(new THREE.Vector3(-10, 15, -8))
+        scene_.add(wreckFill)
+        const wreckRim = new THREE.PointLight(0x445566, 3, 50, 1.5)
+        wreckRim.position.copy(wreckPos).add(new THREE.Vector3(0, 8, -15))
+        scene_.add(wreckRim)
       }
 
       // Marine snow

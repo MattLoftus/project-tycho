@@ -68,16 +68,16 @@ export function createTitanicModel() {
   const ship = new THREE.Group()
 
   // ── Wreck materials ──
-  const rustHull = new THREE.MeshStandardMaterial({ color: 0x3a1e0e, roughness: 0.9, metalness: 0.1 })
-  const darkRust = new THREE.MeshStandardMaterial({ color: 0x2a1508, roughness: 0.95, metalness: 0.05 })
-  const sediment = new THREE.MeshStandardMaterial({ color: 0x1a1812, roughness: 0.95 })
-  const ghostWhite = new THREE.MeshStandardMaterial({ color: 0x3a3830, roughness: 0.85 })
-  const fadedCream = new THREE.MeshStandardMaterial({ color: 0x2e2a22, roughness: 0.9 })
-  const fadedBuff = new THREE.MeshStandardMaterial({ color: 0x5a3a18, roughness: 0.7, metalness: 0.1 })
-  const blackened = new THREE.MeshStandardMaterial({ color: 0x0e0e0e, roughness: 0.8 })
-  const metalMat = new THREE.MeshStandardMaterial({ color: 0x1a1a16, metalness: 0.3, roughness: 0.8 })
-  const windowMat = new THREE.MeshStandardMaterial({ color: 0x060606, roughness: 0.4 })
-  const propMat = new THREE.MeshStandardMaterial({ color: 0x4a3a1a, roughness: 0.6, metalness: 0.4 })
+  const rustHull = new THREE.MeshStandardMaterial({ color: 0x8b4513, roughness: 0.85, metalness: 0.15 })
+  const darkRust = new THREE.MeshStandardMaterial({ color: 0x6b3410, roughness: 0.9, metalness: 0.1 })
+  const sediment = new THREE.MeshStandardMaterial({ color: 0x4a3828, roughness: 0.9 })
+  const ghostWhite = new THREE.MeshStandardMaterial({ color: 0x8a8070, roughness: 0.8 })
+  const fadedCream = new THREE.MeshStandardMaterial({ color: 0x7a6a52, roughness: 0.85 })
+  const fadedBuff = new THREE.MeshStandardMaterial({ color: 0xb07830, roughness: 0.65, metalness: 0.15 })
+  const blackened = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.75 })
+  const metalMat = new THREE.MeshStandardMaterial({ color: 0x4a4a40, metalness: 0.4, roughness: 0.7 })
+  const windowMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.3, metalness: 0.2 })
+  const propMat = new THREE.MeshStandardMaterial({ color: 0x8a7a3a, roughness: 0.55, metalness: 0.5 })
 
   // ── Hull ──
   ship.add(new THREE.Mesh(createHull(), rustHull))
