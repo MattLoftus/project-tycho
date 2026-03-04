@@ -141,9 +141,9 @@ const REGIONS = {
     label:    'TITANIC WRECK SITE',
     subtitle: 'NORTH ATLANTIC ABYSSAL PLAIN · 41°43\u2032N 49°56\u2032W',
     z: 7, baseX: 44, baseY: 46, grid: 4, sceneH: 45,
-    camPos: [0, 55, 180],
-    bgColor: 0x010408,
-    fogDensity: 0.007,
+    camPos: null,
+    bgColor: 0x020810,
+    fogDensity: 0.003,
     features: [
       { name: 'RMS Titanic Wreck',     type: 'trench',   lat: 41.73, lon: -49.95, depth: '-3,784 m', width: '---' },
       { name: 'Grand Banks Shelf Edge', type: 'seamount', lat: 43.50, lon: -50.00, depth: '-200 m',   width: '350 km' },
@@ -449,14 +449,26 @@ export function createBathymetryView(regionKey) {
         0.9, 0.5, 0.78
       ))
 
-      // Dim deep-sea lighting
-      scene_.add(new THREE.AmbientLight(0x061828, 1.5))
-      const sun = new THREE.DirectionalLight(0x4080c0, 0.4)
-      sun.position.set(80, 200, 50)
-      scene_.add(sun)
-      const fill = new THREE.DirectionalLight(0x0a1830, 0.25)
-      fill.position.set(-80, 40, -60)
-      scene_.add(fill)
+      // Lighting
+      if (regionKey === 'titanic') {
+        // Bright ROV-style lighting for wreck exploration
+        scene_.add(new THREE.AmbientLight(0x4477aa, 2.5))
+        const sun = new THREE.DirectionalLight(0x88bbdd, 1.8)
+        sun.position.set(40, 100, 30)
+        scene_.add(sun)
+        const fill = new THREE.DirectionalLight(0x5588aa, 0.8)
+        fill.position.set(-60, 60, -40)
+        scene_.add(fill)
+      } else {
+        // Dim deep-sea lighting
+        scene_.add(new THREE.AmbientLight(0x061828, 1.5))
+        const sun = new THREE.DirectionalLight(0x4080c0, 0.4)
+        sun.position.set(80, 200, 50)
+        scene_.add(sun)
+        const fill = new THREE.DirectionalLight(0x0a1830, 0.25)
+        fill.position.set(-80, 40, -60)
+        scene_.add(fill)
+      }
 
       const { raw, size } = await loadHeightmap(region, setStatus)
       terrain_ = buildTerrain(scene_, raw, size, region.sceneH)
@@ -473,25 +485,32 @@ export function createBathymetryView(regionKey) {
       // Place Titanic model on the wreck site
       if (regionKey === 'titanic') {
         const wreckPos = latlonToScene(41.73, -49.95, bounds)
-        wreckPos.y = terrain_.sampleHeight(wreckPos.x, wreckPos.z) + 1.5
+        wreckPos.y = terrain_.sampleHeight(wreckPos.x, wreckPos.z) + 0.5
         const titanic = createTitanicModel()
         titanic.position.copy(wreckPos)
         titanic.rotation.y = 0.4  // heading
         titanic.rotation.z = 0.05 // slight list to port
         titanic.rotation.x = 0.02 // slight bow-down trim
-        titanic.scale.setScalar(2.0)
+        titanic.scale.setScalar(1.0)
         scene_.add(titanic)
 
-        // Wreck-site lighting — simulate ROV / submersible floodlights
-        const wreckKey = new THREE.PointLight(0x88bbee, 8, 80, 1.2)
-        wreckKey.position.copy(wreckPos).add(new THREE.Vector3(8, 25, 12))
+        // Wreck-site point lights for detail
+        const wreckKey = new THREE.PointLight(0xaaccee, 12, 40, 1.0)
+        wreckKey.position.copy(wreckPos).add(new THREE.Vector3(5, 12, 8))
         scene_.add(wreckKey)
-        const wreckFill = new THREE.PointLight(0x6699bb, 4, 60, 1.5)
-        wreckFill.position.copy(wreckPos).add(new THREE.Vector3(-10, 15, -8))
+        const wreckFill = new THREE.PointLight(0x88aacc, 8, 35, 1.2)
+        wreckFill.position.copy(wreckPos).add(new THREE.Vector3(-6, 8, -5))
         scene_.add(wreckFill)
-        const wreckRim = new THREE.PointLight(0x445566, 3, 50, 1.5)
-        wreckRim.position.copy(wreckPos).add(new THREE.Vector3(0, 8, -15))
+        const wreckRim = new THREE.PointLight(0x6688aa, 6, 30, 1.2)
+        wreckRim.position.copy(wreckPos).add(new THREE.Vector3(0, 5, -10))
         scene_.add(wreckRim)
+
+        // Position camera close, looking at the wreck
+        camCtrl_.camera.position.set(wreckPos.x + 10, wreckPos.y + 8, wreckPos.z + 18)
+        camCtrl_.controls.target.copy(wreckPos)
+        camCtrl_.controls.minDistance = 2
+        camCtrl_.camera.near = 0.1
+        camCtrl_.camera.updateProjectionMatrix()
       }
 
       // Marine snow
