@@ -118,49 +118,30 @@ export function createTitanicModel() {
     return Math.acos(Math.max(0, Math.min(1, -y / D)))
   }
 
-  // Hull plating lines (horizontal strakes) — follow hull curvature
-  // Use short segments that follow the taper
-  for (let i = 0; i < 8; i++) {
-    const y = -0.05 - i * 0.12
-    for (const side of [-1, 1]) {
-      const pts = []
-      for (let s = 0; s <= 40; s++) {
-        const z = -5.0 + s * 0.25
-        const hx = hullSurface(y, z)
-        if (hx > 0.03) pts.push(new THREE.Vector3(side * (hx - 0.01), y, z))
-      }
-      if (pts.length > 1) {
-        ship.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),
-          new THREE.LineBasicMaterial({ color: 0x6b3410 })))
-      }
-    }
-  }
-
   // Hull portholes — positioned on hull surface, following taper
   const portGeo = new THREE.CircleGeometry(0.018, 8)
   const portRimGeo = new THREE.RingGeometry(0.016, 0.022, 8)
   for (const side of [-1, 1]) {
+    const ry = side * Math.PI / 2
     // Upper row (y = -0.15)
-    const y1 = -0.15, a1 = hullAngle(y1)
     for (let i = 0; i < 44; i++) {
       const pz = 4.8 - i * 0.22
-      const hx = hullSurface(y1, pz)
-      if (hx < 0.1) continue // skip where hull is too narrow
-      const pw = m(portGeo, windowMat, side * hx, y1, pz)
-      pw.rotation.y = side * a1; ship.add(pw)
-      const pr = m(portRimGeo, metalMat, side * (hx + side * 0.001), y1, pz)
-      pr.rotation.y = side * a1; ship.add(pr)
+      const hx = hullSurface(-0.15, pz)
+      if (hx < 0.15) continue
+      const pw = m(portGeo, windowMat, side * hx, -0.15, pz)
+      pw.rotation.y = ry; ship.add(pw)
+      const pr = m(portRimGeo, metalMat, side * (hx + side * 0.001), -0.15, pz)
+      pr.rotation.y = ry; ship.add(pr)
     }
     // Lower row (y = -0.38)
-    const y2 = -0.38, a2 = hullAngle(y2)
     for (let i = 0; i < 38; i++) {
       const pz = 4.2 - i * 0.24
-      const hx = hullSurface(y2, pz)
-      if (hx < 0.1) continue
-      const pw = m(portGeo, windowMat, side * hx, y2, pz)
-      pw.rotation.y = side * a2; ship.add(pw)
-      const pr = m(portRimGeo, metalMat, side * (hx + side * 0.001), y2, pz)
-      pr.rotation.y = side * a2; ship.add(pr)
+      const hx = hullSurface(-0.38, pz)
+      if (hx < 0.15) continue
+      const pw = m(portGeo, windowMat, side * hx, -0.38, pz)
+      pw.rotation.y = ry; ship.add(pw)
+      const pr = m(portRimGeo, metalMat, side * (hx + side * 0.001), -0.38, pz)
+      pr.rotation.y = ry; ship.add(pr)
     }
   }
 

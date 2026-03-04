@@ -505,10 +505,10 @@ export function createBathymetryView(regionKey) {
         wreckRim.position.copy(wreckPos).add(new THREE.Vector3(0, 5, -10))
         scene_.add(wreckRim)
 
-        // Position camera close, looking at the wreck
-        camCtrl_.camera.position.set(wreckPos.x + 10, wreckPos.y + 8, wreckPos.z + 18)
+        // Position camera for wreck overview, orbit target on ship
+        camCtrl_.camera.position.set(wreckPos.x + 12, wreckPos.y + 10, wreckPos.z + 22)
         camCtrl_.controls.target.copy(wreckPos)
-        camCtrl_.controls.minDistance = 2
+        camCtrl_.controls.minDistance = 4
         camCtrl_.camera.near = 0.1
         camCtrl_.camera.updateProjectionMatrix()
       }
