@@ -485,7 +485,7 @@ export function createBathymetryView(regionKey) {
       // Place Titanic model on the wreck site
       if (regionKey === 'titanic') {
         const wreckPos = latlonToScene(41.73, -49.95, bounds)
-        wreckPos.y = terrain_.sampleHeight(wreckPos.x, wreckPos.z) + 0.5
+        wreckPos.y = terrain_.sampleHeight(wreckPos.x, wreckPos.z) + 1.8
         const titanic = createTitanicModel()
         titanic.position.copy(wreckPos)
         titanic.rotation.y = 0.4  // heading

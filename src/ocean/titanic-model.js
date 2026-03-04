@@ -1,9 +1,9 @@
 import * as THREE from 'three'
 
 /**
- * Procedural RMS Titanic model for the ocean floor scene.
- * Wreck-tinted materials (rust, sediment, corrosion).
- * Returns a THREE.Group scaled to fit the bathymetry scene.
+ * Procedural RMS Titanic wreck model.
+ * Detailed exterior with wreck-appropriate materials.
+ * Returns a THREE.Group.
  */
 
 function smoothstep(a, b, t) {
@@ -11,7 +11,6 @@ function smoothstep(a, b, t) {
   return x * x * (3 - 2 * x)
 }
 
-// Helper: create mesh and position it
 function m(geo, mat, x, y, z) {
   const mesh = new THREE.Mesh(geo, mat)
   mesh.position.set(x, y, z)
@@ -20,7 +19,7 @@ function m(geo, mat, x, y, z) {
 
 function createHull() {
   const L = 12, halfW = 0.7, D = 1.0
-  const segs = 60, rings = 20
+  const segs = 80, rings = 24
   const v = [], idx = []
 
   for (let i = 0; i <= segs; i++) {
@@ -67,50 +66,129 @@ function createHull() {
 export function createTitanicModel() {
   const ship = new THREE.Group()
 
-  // ── Wreck materials ──
-  const rustHull = new THREE.MeshStandardMaterial({ color: 0x8b4513, roughness: 0.85, metalness: 0.15 })
-  const darkRust = new THREE.MeshStandardMaterial({ color: 0x6b3410, roughness: 0.9, metalness: 0.1 })
-  const sediment = new THREE.MeshStandardMaterial({ color: 0x4a3828, roughness: 0.9 })
-  const ghostWhite = new THREE.MeshStandardMaterial({ color: 0x8a8070, roughness: 0.8 })
-  const fadedCream = new THREE.MeshStandardMaterial({ color: 0x7a6a52, roughness: 0.85 })
-  const fadedBuff = new THREE.MeshStandardMaterial({ color: 0xb07830, roughness: 0.65, metalness: 0.15 })
-  const blackened = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.75 })
-  const metalMat = new THREE.MeshStandardMaterial({ color: 0x4a4a40, metalness: 0.4, roughness: 0.7 })
-  const windowMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.3, metalness: 0.2 })
-  const propMat = new THREE.MeshStandardMaterial({ color: 0x8a7a3a, roughness: 0.55, metalness: 0.5 })
+  // ── Materials ──
+  const rustHull    = new THREE.MeshStandardMaterial({ color: 0x8b4513, roughness: 0.85, metalness: 0.15 })
+  const darkRust    = new THREE.MeshStandardMaterial({ color: 0x6b3410, roughness: 0.9, metalness: 0.1 })
+  const redBottom   = new THREE.MeshStandardMaterial({ color: 0x6a2020, roughness: 0.85 })
+  const sediment    = new THREE.MeshStandardMaterial({ color: 0x5a4838, roughness: 0.9 })
+  const ghostWhite  = new THREE.MeshStandardMaterial({ color: 0x9a9080, roughness: 0.8 })
+  const fadedCream  = new THREE.MeshStandardMaterial({ color: 0x8a7a62, roughness: 0.85 })
+  const fadedBuff   = new THREE.MeshStandardMaterial({ color: 0xb07830, roughness: 0.65, metalness: 0.15 })
+  const blackened   = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.75 })
+  const metalMat    = new THREE.MeshStandardMaterial({ color: 0x5a5a50, metalness: 0.45, roughness: 0.65 })
+  const windowMat   = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.3, metalness: 0.2 })
+  const propMat     = new THREE.MeshStandardMaterial({ color: 0x8a7a3a, roughness: 0.55, metalness: 0.5 })
+  const railMat     = new THREE.MeshStandardMaterial({ color: 0x3a3830, metalness: 0.35, roughness: 0.8 })
+  const rusticleMat = new THREE.MeshStandardMaterial({ color: 0x8b3a0a, roughness: 0.95, metalness: 0.05 })
+  const glassMat    = new THREE.MeshStandardMaterial({ color: 0x223344, roughness: 0.2, metalness: 0.3, transparent: true, opacity: 0.6 })
+  const wireMat     = new THREE.LineBasicMaterial({ color: 0x444440, transparent: true, opacity: 0.5 })
+  const mastMat     = new THREE.MeshStandardMaterial({ color: 0x3a2e18, roughness: 0.85 })
+  const boatMat     = new THREE.MeshStandardMaterial({ color: 0x5a5040, roughness: 0.8 })
+  const ventMat     = new THREE.MeshStandardMaterial({ color: 0x4a4238, roughness: 0.85 })
+  const teakDeck    = new THREE.MeshStandardMaterial({ color: 0x5a4a30, roughness: 0.9 })
+  const brassLamp   = new THREE.MeshStandardMaterial({ color: 0x887740, roughness: 0.4, metalness: 0.6 })
 
-  // ── Hull ──
+  // ═══════════════════════════════════════════════════════════════════════════
+  // HULL
+  // ═══════════════════════════════════════════════════════════════════════════
   ship.add(new THREE.Mesh(createHull(), rustHull))
 
-  // Red anti-fouling (faded) — visible on lower hull
-  const redHull = new THREE.Mesh(createHull(), new THREE.MeshStandardMaterial({
-    color: 0x4a1818, roughness: 0.85,
-  }))
+  // Red anti-fouling bottom
+  const redHull = new THREE.Mesh(createHull(), redBottom)
   redHull.scale.set(1.003, 0.6, 1.001)
   redHull.position.y = -0.4
   ship.add(redHull)
 
-  // ── Main deck ──
-  ship.add(m(new THREE.BoxGeometry(1.3, 0.035, 11.0), sediment, 0, 0.02, -0.2))
+  // Hull plating lines (horizontal strakes)
+  for (let i = 0; i < 8; i++) {
+    const y = -0.05 - i * 0.12
+    for (const side of [-1, 1]) {
+      const strake = m(new THREE.BoxGeometry(0.003, 0.003, 10.5), darkRust, side * 0.68, y, 0)
+      ship.add(strake)
+    }
+  }
 
-  // Forecastle
+  // Hull portholes (below deck)
+  const portGeo = new THREE.CircleGeometry(0.018, 8)
+  const portRimGeo = new THREE.RingGeometry(0.016, 0.022, 8)
+  for (const side of [-1, 1]) {
+    const ry = side * Math.PI / 2
+    for (let i = 0; i < 44; i++) {
+      const pz = 4.8 - i * 0.22
+      const pw = m(portGeo, windowMat, side * 0.701, -0.15, pz)
+      pw.rotation.y = ry; ship.add(pw)
+      const pr = m(portRimGeo, metalMat, side * 0.702, -0.15, pz)
+      pr.rotation.y = ry; ship.add(pr)
+    }
+    // Lower row
+    for (let i = 0; i < 38; i++) {
+      const pz = 4.2 - i * 0.24
+      const pw = m(portGeo, windowMat, side * 0.695, -0.38, pz)
+      pw.rotation.y = ry; ship.add(pw)
+      const pr = m(portRimGeo, metalMat, side * 0.696, -0.38, pz)
+      pr.rotation.y = ry; ship.add(pr)
+    }
+  }
+
+  // Bow stem (keel line at bow)
+  ship.add(m(new THREE.BoxGeometry(0.02, 0.8, 0.02), darkRust, 0, 0.1, 5.9))
+
+  // Hawse pipes (anchor holes)
+  for (const side of [-0.25, 0.25]) {
+    const hawse = m(new THREE.TorusGeometry(0.03, 0.008, 6, 8), metalMat, side, -0.05, 5.4)
+    hawse.rotation.y = 0.3 * Math.sign(side)
+    ship.add(hawse)
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DECKS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // Main deck (teak planking)
+  ship.add(m(new THREE.BoxGeometry(1.3, 0.035, 11.0), teakDeck, 0, 0.02, -0.2))
+
+  // Deck plank lines
+  for (let i = -6; i <= 6; i++) {
+    ship.add(m(new THREE.BoxGeometry(0.002, 0.002, 10.8), sediment, i * 0.09, 0.04, -0.2))
+  }
+
+  // Forecastle deck
   ship.add(m(new THREE.BoxGeometry(1.15, 0.15, 2.6), darkRust, 0, 0.1, 4.1))
 
   // Forecastle bulwarks
   for (const side of [-1, 1])
-    ship.add(m(new THREE.BoxGeometry(0.025, 0.1, 2.6), darkRust, side * 0.565, 0.22, 4.1))
+    ship.add(m(new THREE.BoxGeometry(0.025, 0.12, 2.6), darkRust, side * 0.565, 0.24, 4.1))
 
-  // Poop deck
+  // Well deck (between forecastle and bridge)
+  ship.add(m(new THREE.BoxGeometry(1.1, 0.04, 0.8), teakDeck, 0, 0.02, 2.6))
+
+  // Poop deck (stern)
   ship.add(m(new THREE.BoxGeometry(1.0, 0.14, 1.6), darkRust, 0, 0.09, -4.65))
 
-  // ── Superstructure ──
-  const aLen = 7.2
-  ship.add(m(new THREE.BoxGeometry(1.08, 0.2, aLen), ghostWhite, 0, 0.13, -0.2))   // A-deck
-  ship.add(m(new THREE.BoxGeometry(1.0, 0.18, 6.4), fadedCream, 0, 0.32, -0.05))   // B-deck
-  ship.add(m(new THREE.BoxGeometry(0.94, 0.16, 5.6), ghostWhite, 0, 0.49, 0.05))   // C-deck
-  ship.add(m(new THREE.BoxGeometry(0.84, 0.14, 4.2), fadedCream, 0, 0.64, 0.3))    // D-deck
+  // Poop deck bulwarks
+  for (const side of [-1, 1])
+    ship.add(m(new THREE.BoxGeometry(0.02, 0.1, 1.6), darkRust, side * 0.49, 0.21, -4.65))
 
-  // Windows
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SUPERSTRUCTURE
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  const aLen = 7.2
+  ship.add(m(new THREE.BoxGeometry(1.08, 0.2, aLen), ghostWhite, 0, 0.13, -0.2))    // A-deck
+  ship.add(m(new THREE.BoxGeometry(1.0, 0.18, 6.4), fadedCream, 0, 0.32, -0.05))    // B-deck
+  ship.add(m(new THREE.BoxGeometry(0.94, 0.16, 5.6), ghostWhite, 0, 0.49, 0.05))    // C-deck (Promenade)
+  ship.add(m(new THREE.BoxGeometry(0.84, 0.14, 4.2), fadedCream, 0, 0.64, 0.3))     // Boat deck
+
+  // Promenade deck covered walkway (C-deck side panels)
+  for (const side of [-1, 1]) {
+    // Enclosed section forward
+    ship.add(m(new THREE.BoxGeometry(0.015, 0.14, 2.0), glassMat, side * 0.465, 0.49, 1.5))
+    // Open section aft — stanchions only
+    for (let i = 0; i < 10; i++)
+      ship.add(m(new THREE.CylinderGeometry(0.004, 0.004, 0.14, 4), ghostWhite, side * 0.465, 0.49, -0.8 - i * 0.22))
+  }
+
+  // Superstructure windows (3 rows)
   const winGeoA = new THREE.PlaneGeometry(0.055, 0.045)
   const winGeoB = new THREE.PlaneGeometry(0.05, 0.04)
   const winGeoC = new THREE.PlaneGeometry(0.04, 0.035)
@@ -130,171 +208,466 @@ export function createTitanicModel() {
     }
   }
 
-  // Railings
-  const railMat = new THREE.MeshStandardMaterial({ color: 0x222218, metalness: 0.3, roughness: 0.85 })
-  for (const side of [-1, 1]) {
-    ship.add(m(new THREE.BoxGeometry(0.008, 0.008, 10.5), railMat, side * 0.63, 0.1, -0.2))
-    for (let i = 0; i < 40; i++)
-      ship.add(m(new THREE.CylinderGeometry(0.003, 0.003, 0.08, 4), railMat, side * 0.63, 0.065, -5.0 + i * 0.26))
-    ship.add(m(new THREE.BoxGeometry(0.006, 0.006, 5.4), railMat, side * 0.48, 0.61, 0.05))
+  // ═══════════════════════════════════════════════════════════════════════════
+  // RAILINGS (main deck, boat deck, forecastle, poop)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  function addRailing(xOff, yBase, zStart, zEnd, count) {
+    const len = zEnd - zStart
+    for (const side of [-1, 1]) {
+      // Top rail
+      ship.add(m(new THREE.BoxGeometry(0.006, 0.006, len), railMat, side * xOff, yBase + 0.07, (zStart + zEnd) / 2))
+      // Middle rail
+      ship.add(m(new THREE.BoxGeometry(0.004, 0.004, len), railMat, side * xOff, yBase + 0.04, (zStart + zEnd) / 2))
+      // Stanchions
+      const spacing = len / count
+      for (let i = 0; i <= count; i++)
+        ship.add(m(new THREE.CylinderGeometry(0.003, 0.003, 0.08, 4), railMat, side * xOff, yBase + 0.035, zStart + i * spacing))
+    }
   }
 
-  // ── Bridge ──
-  ship.add(m(new THREE.BoxGeometry(0.65, 0.2, 0.65), ghostWhite, 0, 0.82, 2.3))
+  addRailing(0.63, 0.02, -5.4, 2.6, 30)   // Main deck rails
+  addRailing(0.48, 0.56, -1.5, 2.2, 14)    // Boat deck rails
+  addRailing(0.565, 0.17, 2.8, 5.3, 10)    // Forecastle rails
+  addRailing(0.49, 0.14, -5.4, -3.8, 6)    // Poop deck rails
 
-  // Bridge windows
-  for (let i = 0; i < 6; i++)
-    ship.add(m(new THREE.PlaneGeometry(0.055, 0.06), windowMat, -0.24 + i * 0.09, 0.85, 2.626))
+  // ═══════════════════════════════════════════════════════════════════════════
+  // BRIDGE & WHEELHOUSE
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  ship.add(m(new THREE.BoxGeometry(0.65, 0.22, 0.7), ghostWhite, 0, 0.82, 2.35))
+
+  // Bridge windows (front row)
+  for (let i = 0; i < 7; i++)
+    ship.add(m(new THREE.PlaneGeometry(0.05, 0.065), windowMat, -0.24 + i * 0.08, 0.85, 2.701))
+
+  // Bridge side windows
+  for (const side of [-1, 1]) {
+    for (let i = 0; i < 3; i++) {
+      const bw = m(new THREE.PlaneGeometry(0.06, 0.065), windowMat, side * 0.326, 0.85, 2.5 - i * 0.15)
+      bw.rotation.y = side * Math.PI / 2; ship.add(bw)
+    }
+  }
 
   // Bridge wings
-  ship.add(m(new THREE.BoxGeometry(1.2, 0.035, 0.3), fadedCream, 0, 0.73, 2.3))
+  ship.add(m(new THREE.BoxGeometry(1.25, 0.04, 0.35), fadedCream, 0, 0.72, 2.35))
+
+  // Wing cabs (enclosed ends)
+  for (const side of [-1, 1])
+    ship.add(m(new THREE.BoxGeometry(0.12, 0.18, 0.28), ghostWhite, side * 0.58, 0.82, 2.35))
 
   // Wheelhouse
-  ship.add(m(new THREE.BoxGeometry(0.3, 0.14, 0.3), ghostWhite, 0, 0.96, 2.3))
+  ship.add(m(new THREE.BoxGeometry(0.32, 0.16, 0.32), ghostWhite, 0, 0.98, 2.35))
+  // Wheelhouse windows
+  for (let i = 0; i < 4; i++)
+    ship.add(m(new THREE.PlaneGeometry(0.045, 0.05), windowMat, -0.1 + i * 0.065, 1.0, 2.521))
 
   // Compass platform
-  ship.add(m(new THREE.BoxGeometry(0.5, 0.06, 0.3), fadedCream, 0, 0.95, 1.8))
+  ship.add(m(new THREE.BoxGeometry(0.5, 0.06, 0.3), fadedCream, 0, 0.97, 1.85))
 
-  // ── Funnels ──
+  // Binnacle (compass housing)
+  ship.add(m(new THREE.CylinderGeometry(0.02, 0.02, 0.08, 6), brassLamp, 0, 1.04, 1.85))
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // GRAND STAIRCASE DOME
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // Glass dome over the grand staircase (between funnels 1&2)
+  const domeGeo = new THREE.SphereGeometry(0.2, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2)
+  const dome = m(domeGeo, glassMat, 0, 0.72, 1.9)
+  ship.add(dome)
+  // Dome frame ribs
+  for (let a = 0; a < 8; a++) {
+    const ang = (a / 8) * Math.PI * 2
+    const ribPts = []
+    for (let t = 0; t <= 10; t++) {
+      const phi = (t / 10) * Math.PI / 2
+      ribPts.push(new THREE.Vector3(
+        Math.cos(ang) * Math.sin(phi) * 0.202,
+        Math.cos(phi) * 0.202,
+        Math.sin(ang) * Math.sin(phi) * 0.202
+      ))
+    }
+    const ribGeo = new THREE.BufferGeometry().setFromPoints(ribPts)
+    const rib = new THREE.Line(ribGeo, new THREE.LineBasicMaterial({ color: 0x665530 }))
+    rib.position.set(0, 0.52, 1.9)
+    ship.add(rib)
+  }
+
+  // Aft grand staircase dome (smaller)
+  const aftDome = m(new THREE.SphereGeometry(0.14, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), glassMat, 0, 0.72, -1.0)
+  ship.add(aftDome)
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // FUNNELS (4)
+  // ═══════════════════════════════════════════════════════════════════════════
+
   const funnelZ = [2.6, 1.2, -0.2, -1.6]
-  funnelZ.forEach(fz => {
+  funnelZ.forEach((fz, fi) => {
     const fg = new THREE.Group()
     fg.position.set(0, 0.72, fz)
-    fg.rotation.x = -0.065
+    fg.rotation.x = -0.065 // slight rake aft
 
-    const body = new THREE.CylinderGeometry(0.125, 0.15, 1.25, 16)
-    body.scale(1, 1, 0.82)
+    // Main funnel body
+    const body = new THREE.CylinderGeometry(0.125, 0.15, 1.25, 20)
+    body.scale(1, 1, 0.82) // oval cross-section
     fg.add(new THREE.Mesh(body, fadedBuff))
 
-    const topGeo = new THREE.CylinderGeometry(0.13, 0.125, 0.28, 16)
+    // Black top band
+    const topGeo = new THREE.CylinderGeometry(0.13, 0.125, 0.3, 20)
     topGeo.scale(1, 1, 0.82)
     const topMesh = new THREE.Mesh(topGeo, blackened)
     topMesh.position.y = 0.72
     fg.add(topMesh)
 
-    const cowlGeo = new THREE.CylinderGeometry(0.145, 0.13, 0.06, 16)
+    // Cowl rim
+    const cowlGeo = new THREE.CylinderGeometry(0.148, 0.13, 0.06, 20)
     cowlGeo.scale(1, 1, 0.82)
     const cowlMesh = new THREE.Mesh(cowlGeo, blackened)
-    cowlMesh.position.y = 0.88
+    cowlMesh.position.y = 0.9
     fg.add(cowlMesh)
 
-    const pipe = m(new THREE.CylinderGeometry(0.06, 0.06, 0.02, 10), metalMat, 0, 0.92, 0)
-    fg.add(pipe)
+    // Steam pipe
+    fg.add(m(new THREE.CylinderGeometry(0.06, 0.06, 0.02, 10), metalMat, 0, 0.94, 0))
 
-    const wireMat = new THREE.LineBasicMaterial({ color: 0x333330, transparent: true, opacity: 0.4 })
-    for (let a = 0; a < 4; a++) {
-      const ang = (a / 4) * Math.PI * 2 + Math.PI / 4
+    // Funnel base collar
+    const baseGeo = new THREE.CylinderGeometry(0.16, 0.16, 0.06, 20)
+    baseGeo.scale(1, 1, 0.82)
+    fg.add(new THREE.Mesh(baseGeo, darkRust))
+
+    // Guy wires (6 per funnel)
+    for (let a = 0; a < 6; a++) {
+      const ang = (a / 6) * Math.PI * 2
       fg.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
         new THREE.Vector3(0, 0.7, 0),
-        new THREE.Vector3(Math.cos(ang) * 0.5, -0.6, Math.sin(ang) * 0.4)
+        new THREE.Vector3(Math.cos(ang) * 0.55, -0.65, Math.sin(ang) * 0.45)
       ]), wireMat))
     }
+
+    // Ladder on each funnel (aft side)
+    for (let r = 0; r < 8; r++) {
+      fg.add(m(new THREE.BoxGeometry(0.06, 0.003, 0.003), metalMat, 0, -0.3 + r * 0.18, -0.12))
+    }
+    fg.add(m(new THREE.BoxGeometry(0.003, 1.3, 0.003), metalMat, -0.025, 0.04, -0.12))
+    fg.add(m(new THREE.BoxGeometry(0.003, 1.3, 0.003), metalMat, 0.025, 0.04, -0.12))
 
     ship.add(fg)
   })
 
-  // ── Masts ──
-  const mastMat = new THREE.MeshStandardMaterial({ color: 0x2a1e10, roughness: 0.9 })
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MASTS
+  // ═══════════════════════════════════════════════════════════════════════════
 
   // Foremast
-  ship.add(m(new THREE.CylinderGeometry(0.018, 0.026, 2.8, 8), mastMat, 0, 1.6, 3.8))
+  ship.add(m(new THREE.CylinderGeometry(0.02, 0.028, 3.0, 8), mastMat, 0, 1.7, 3.8))
 
   // Crow's nest
-  ship.add(m(new THREE.CylinderGeometry(0.055, 0.055, 0.05, 10), metalMat, 0, 2.24, 3.8))
-  const cnRail = new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.004, 4, 10), metalMat)
-  cnRail.position.set(0, 2.3, 3.8); cnRail.rotation.x = Math.PI / 2; ship.add(cnRail)
+  ship.add(m(new THREE.CylinderGeometry(0.06, 0.06, 0.06, 12), metalMat, 0, 2.3, 3.8))
+  const cnRail = new THREE.Mesh(new THREE.TorusGeometry(0.065, 0.005, 6, 12), metalMat)
+  cnRail.position.set(0, 2.37, 3.8); cnRail.rotation.x = Math.PI / 2; ship.add(cnRail)
+  // Crow's nest floor
+  ship.add(m(new THREE.CircleGeometry(0.058, 12), metalMat, 0, 2.27, 3.8))
 
   // Yardarms
-  for (const y of [2.5, 2.7]) {
-    const yd = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.7, 4), mastMat)
+  for (const y of [2.6, 2.8]) {
+    const yd = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.8, 4), mastMat)
     yd.rotation.z = Math.PI / 2; yd.position.set(0, y, 3.8); ship.add(yd)
   }
 
-  // Mainmast
-  ship.add(m(new THREE.CylinderGeometry(0.016, 0.024, 2.4, 8), mastMat, 0, 1.4, -3.1))
-  const myrd = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.6, 4), mastMat)
-  myrd.rotation.z = Math.PI / 2; myrd.position.set(0, 2.3, -3.1); ship.add(myrd)
+  // Foremast topmast
+  ship.add(m(new THREE.CylinderGeometry(0.008, 0.014, 0.8, 6), mastMat, 0, 3.5, 3.8))
 
-  // ── Lifeboats + Davits ──
-  const boatMat = new THREE.MeshStandardMaterial({ color: 0x3a3428, roughness: 0.85 })
+  // Mainmast
+  ship.add(m(new THREE.CylinderGeometry(0.018, 0.026, 2.6, 8), mastMat, 0, 1.5, -3.1))
+  const myrd = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.65, 4), mastMat)
+  myrd.rotation.z = Math.PI / 2; myrd.position.set(0, 2.5, -3.1); ship.add(myrd)
+
+  // Mainmast topmast
+  ship.add(m(new THREE.CylinderGeometry(0.006, 0.012, 0.7, 6), mastMat, 0, 3.1, -3.1))
+
+  // Mast lights
+  ship.add(m(new THREE.SphereGeometry(0.012, 6, 6), brassLamp, 0, 3.15, 3.8))
+  ship.add(m(new THREE.SphereGeometry(0.01, 6, 6), brassLamp, 0, 2.85, -3.1))
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CARGO CRANES / DERRICKS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // Forward well deck cargo derricks (between foremast and forecastle)
+  for (const side of [-1, 1]) {
+    const boom = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.01, 1.4, 6), mastMat)
+    boom.position.set(side * 0.15, 1.0, 3.2)
+    boom.rotation.z = side * 0.6
+    boom.rotation.x = -0.3
+    ship.add(boom)
+  }
+
+  // Aft cargo derricks (between mainmast and poop deck)
+  for (const side of [-1, 1]) {
+    const boom = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.01, 1.2, 6), mastMat)
+    boom.position.set(side * 0.15, 0.9, -3.6)
+    boom.rotation.z = side * 0.5
+    boom.rotation.x = 0.3
+    ship.add(boom)
+  }
+
+  // Cargo hatch covers (well decks)
+  ship.add(m(new THREE.BoxGeometry(0.35, 0.04, 0.4), sediment, 0, 0.05, 3.0))
+  ship.add(m(new THREE.BoxGeometry(0.35, 0.04, 0.35), sediment, 0, 0.05, -3.8))
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // LIFEBOATS + DAVITS (16 boats)
+  // ═══════════════════════════════════════════════════════════════════════════
+
   for (let i = 0; i < 8; i++) {
     for (const side of [-1, 1]) {
       const bz = 2.2 - i * 0.52
-      const boat = new THREE.Mesh(new THREE.CapsuleGeometry(0.016, 0.09, 4, 6), boatMat)
-      boat.rotation.x = Math.PI / 2; boat.position.set(side * 0.5, 0.66, bz); ship.add(boat)
+      // Lifeboat hull
+      const boat = new THREE.Mesh(new THREE.CapsuleGeometry(0.018, 0.1, 4, 8), boatMat)
+      boat.rotation.x = Math.PI / 2
+      boat.position.set(side * 0.5, 0.67, bz)
+      ship.add(boat)
 
+      // Lifeboat gunwale
+      const gunwale = m(new THREE.BoxGeometry(0.005, 0.005, 0.12), railMat, side * 0.5, 0.685, bz)
+      ship.add(gunwale)
+
+      // Lifeboat thwarts (seats)
+      for (let t = -1; t <= 1; t++)
+        ship.add(m(new THREE.BoxGeometry(0.03, 0.002, 0.004), boatMat, side * 0.5, 0.67, bz + t * 0.03))
+
+      // Davit crane
       const curve = new THREE.QuadraticBezierCurve3(
         new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(side * 0.06, 0.12, 0),
-        new THREE.Vector3(side * 0.08, 0.04, 0)
+        new THREE.Vector3(side * 0.07, 0.14, 0),
+        new THREE.Vector3(side * 0.09, 0.04, 0)
       )
-      const davit = new THREE.Mesh(new THREE.TubeGeometry(curve, 6, 0.005, 4, false), metalMat)
-      davit.position.set(side * 0.44, 0.62, bz); ship.add(davit)
+      const davit = new THREE.Mesh(new THREE.TubeGeometry(curve, 8, 0.006, 5, false), metalMat)
+      davit.position.set(side * 0.44, 0.62, bz)
+      ship.add(davit)
+
+      // Davit falls (ropes)
+      ship.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(side * 0.52, 0.76, bz),
+        new THREE.Vector3(side * 0.5, 0.685, bz + 0.04)
+      ]), wireMat))
+      ship.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(side * 0.52, 0.76, bz),
+        new THREE.Vector3(side * 0.5, 0.685, bz - 0.04)
+      ]), wireMat))
     }
   }
 
-  // ── Ventilators ──
-  const ventMat = new THREE.MeshStandardMaterial({ color: 0x3a3228, roughness: 0.9 })
-  const ventPos = [[0.22, 3.3], [-0.22, 3.3], [0.25, 2.8], [-0.25, 2.8],
-    [0.2, -2.5], [-0.2, -2.5], [0.2, -3.0], [-0.2, -3.0], [0.15, -3.8], [-0.15, -3.8]]
+  // ═══════════════════════════════════════════════════════════════════════════
+  // VENTILATORS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  const ventPos = [
+    [0.22, 3.3], [-0.22, 3.3], [0.25, 2.8], [-0.25, 2.8],
+    [0.3, 1.6], [-0.3, 1.6], [0.3, 0.8], [-0.3, 0.8],
+    [0.2, -2.5], [-0.2, -2.5], [0.2, -3.0], [-0.2, -3.0],
+    [0.15, -3.8], [-0.15, -3.8], [0.25, -0.6], [-0.25, -0.6],
+  ]
   ventPos.forEach(([x, z]) => {
-    ship.add(m(new THREE.CylinderGeometry(0.022, 0.018, 0.12, 6), ventMat, x, 0.08, z))
-    ship.add(m(new THREE.SphereGeometry(0.028, 6, 4, 0, Math.PI * 2, 0, Math.PI / 2), ventMat, x, 0.15, z))
+    // Vent shaft
+    ship.add(m(new THREE.CylinderGeometry(0.024, 0.02, 0.14, 8), ventMat, x, 0.09, z))
+    // Cowl top
+    const cowl = m(new THREE.SphereGeometry(0.03, 8, 5, 0, Math.PI * 2, 0, Math.PI / 2), ventMat, x, 0.17, z)
+    ship.add(cowl)
+    // Cowl mouth
+    ship.add(m(new THREE.CircleGeometry(0.022, 8), blackened, x, 0.165, z + 0.025))
   })
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // BOW DETAIL
+  // ═══════════════════════════════════════════════════════════════════════════
 
   // Capstans
   for (const x of [-0.28, 0.28])
-    ship.add(m(new THREE.CylinderGeometry(0.035, 0.04, 0.07, 8), metalMat, x, 0.21, 4.5))
+    ship.add(m(new THREE.CylinderGeometry(0.038, 0.044, 0.08, 10), metalMat, x, 0.22, 4.5))
+
+  // Anchor windlass
+  ship.add(m(new THREE.BoxGeometry(0.4, 0.06, 0.08), metalMat, 0, 0.2, 4.8))
+  ship.add(m(new THREE.CylinderGeometry(0.04, 0.04, 0.38, 10), metalMat, 0, 0.24, 4.8))
 
   // Anchor chains
   for (const side of [-0.38, 0.38]) {
-    const chain = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 1.4, 4), metalMat)
-    chain.position.set(side, -0.1, 5.15); chain.rotation.x = 0.7; ship.add(chain)
+    // Chain on deck
+    const chainDeck = m(new THREE.CylinderGeometry(0.008, 0.008, 0.5, 4), metalMat, side * 0.7, 0.18, 4.9)
+    chainDeck.rotation.z = Math.PI / 2 * 0.3
+    ship.add(chainDeck)
+    // Chain going over side
+    const chain = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 1.6, 4), metalMat)
+    chain.position.set(side, -0.1, 5.15)
+    chain.rotation.x = 0.7
+    ship.add(chain)
   }
 
-  // ── Stern ──
-  ship.add(m(new THREE.BoxGeometry(0.6, 0.65, 0.05), darkRust, 0, -0.2, -5.88))
+  // Bollards (bow)
+  for (const x of [-0.35, 0.35, -0.2, 0.2]) {
+    ship.add(m(new THREE.CylinderGeometry(0.015, 0.018, 0.04, 6), metalMat, x, 0.2, 5.0))
+  }
+
+  // Jack staff (flag pole at bow)
+  ship.add(m(new THREE.CylinderGeometry(0.004, 0.006, 0.5, 4), mastMat, 0, 0.5, 5.5))
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STERN DETAIL
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // Stern counter
+  ship.add(m(new THREE.BoxGeometry(0.65, 0.7, 0.06), darkRust, 0, -0.2, -5.88))
+
+  // Stern nameplate area (recessed panel)
+  ship.add(m(new THREE.BoxGeometry(0.4, 0.08, 0.01), blackened, 0, 0.02, -5.92))
+
+  // Docking bridge (aft)
+  ship.add(m(new THREE.BoxGeometry(0.5, 0.12, 0.3), ghostWhite, 0, 0.28, -4.3))
+  // Docking bridge windows
+  for (let i = 0; i < 4; i++)
+    ship.add(m(new THREE.PlaneGeometry(0.06, 0.04), windowMat, -0.12 + i * 0.08, 0.3, -5.88))
+
+  // Stern flagpole
+  ship.add(m(new THREE.CylinderGeometry(0.004, 0.006, 0.4, 4), mastMat, 0, 0.38, -5.7))
 
   // Propellers
   function makeProp(px, pz, blades, r) {
     const g = new THREE.Group()
-    g.add(new THREE.Mesh(new THREE.SphereGeometry(0.02, 6, 6), propMat))
+    g.add(new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 8), propMat))
     for (let b = 0; b < blades; b++) {
       const a = (b / blades) * Math.PI * 2
-      const blade = new THREE.Mesh(new THREE.BoxGeometry(r * 0.85, 0.005, 0.045), propMat)
+      // Wider blades with slight twist
+      const bladeGeo = new THREE.BoxGeometry(r * 0.9, 0.006, 0.06)
+      const blade = new THREE.Mesh(bladeGeo, propMat)
       blade.position.set(Math.cos(a) * r / 2, Math.sin(a) * r / 2, 0)
-      blade.rotation.z = a; g.add(blade)
+      blade.rotation.z = a
+      blade.rotation.y = 0.2 // blade pitch
+      g.add(blade)
     }
-    g.position.set(px, -0.82, pz); return g
+    g.position.set(px, -0.82, pz)
+    return g
   }
-  ship.add(makeProp(-0.28, -5.65, 3, 0.22))
-  ship.add(makeProp(0.28, -5.65, 3, 0.22))
-  ship.add(makeProp(0, -5.5, 4, 0.18))
+  ship.add(makeProp(-0.28, -5.65, 3, 0.24))
+  ship.add(makeProp(0.28, -5.65, 3, 0.24))
+  ship.add(makeProp(0, -5.5, 4, 0.2))
+
+  // Propeller shafts (visible below stern)
+  for (const px of [-0.28, 0.28])
+    ship.add(m(new THREE.CylinderGeometry(0.015, 0.015, 1.0, 6), metalMat, px, -0.75, -5.2))
+  ship.add(m(new THREE.CylinderGeometry(0.012, 0.012, 0.6, 6), metalMat, 0, -0.72, -5.2))
+
+  // Shaft brackets (A-brackets)
+  for (const px of [-0.28, 0.28]) {
+    ship.add(m(new THREE.BoxGeometry(0.008, 0.15, 0.06), metalMat, px, -0.65, -5.0))
+    ship.add(m(new THREE.BoxGeometry(0.008, 0.15, 0.06), metalMat, px, -0.65, -5.4))
+  }
 
   // Rudder
-  const rudder = m(new THREE.BoxGeometry(0.012, 0.35, 0.2),
-    new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.2 }), 0, -0.62, -5.82)
-  ship.add(rudder)
+  ship.add(m(new THREE.BoxGeometry(0.015, 0.4, 0.22),
+    new THREE.MeshStandardMaterial({ color: 0x2a2a2a, metalness: 0.25 }), 0, -0.62, -5.82))
 
-  // ── Rigging ──
-  const rigging = new THREE.LineBasicMaterial({ color: 0x333330, transparent: true, opacity: 0.4 })
+  // ═══════════════════════════════════════════════════════════════════════════
+  // RIGGING
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // Forestay
   ship.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-    new THREE.Vector3(0, 2.9, 3.8), new THREE.Vector3(0, 0.2, 5.3)]), rigging))
+    new THREE.Vector3(0, 3.1, 3.8), new THREE.Vector3(0, 0.25, 5.5)]), wireMat))
+  // Backstay (foremast)
   ship.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-    new THREE.Vector3(0, 2.5, -3.1), new THREE.Vector3(0, 0.12, -5.3)]), rigging))
+    new THREE.Vector3(0, 3.1, 3.8), new THREE.Vector3(0, 0.72, 2.6)]), wireMat))
+  // Mainmast stays
+  ship.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(0, 2.8, -3.1), new THREE.Vector3(0, 0.15, -5.5)]), wireMat))
+  ship.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(0, 2.8, -3.1), new THREE.Vector3(0, 0.72, -1.6)]), wireMat))
+
+  // Shrouds (side rigging)
   for (const side of [-1, 1]) {
-    ship.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(0, 2.6, 3.8), new THREE.Vector3(side * 0.55, 0.2, 3.8)]), rigging))
-    ship.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(0, 2.3, -3.1), new THREE.Vector3(side * 0.5, 0.15, -3.1)]), rigging))
+    // Foremast shrouds
+    for (let i = 0; i < 3; i++) {
+      ship.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 2.6 - i * 0.3, 3.8),
+        new THREE.Vector3(side * 0.55, 0.18, 3.8 + (i - 1) * 0.2)
+      ]), wireMat))
+    }
+    // Mainmast shrouds
+    for (let i = 0; i < 3; i++) {
+      ship.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 2.4 - i * 0.3, -3.1),
+        new THREE.Vector3(side * 0.5, 0.12, -3.1 + (i - 1) * 0.2)
+      ]), wireMat))
+    }
   }
 
-  // Deck skylights
-  for (const z of [1.9, 0.5, -0.9])
-    ship.add(m(new THREE.BoxGeometry(0.4, 0.1, 0.25), fadedCream, 0, 0.62, z))
+  // Aerial wire between masts
+  ship.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(0, 3.1, 3.8), new THREE.Vector3(0, 2.8, -3.1)]), wireMat))
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DECK FEATURES
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // Deck skylights (larger, with glass)
+  for (const z of [1.9, 0.5, -0.9]) {
+    ship.add(m(new THREE.BoxGeometry(0.42, 0.1, 0.28), fadedCream, 0, 0.62, z))
+    ship.add(m(new THREE.BoxGeometry(0.36, 0.005, 0.22), glassMat, 0, 0.68, z))
+  }
+
+  // Officers' quarters deckhouse
+  ship.add(m(new THREE.BoxGeometry(0.5, 0.12, 0.6), ghostWhite, 0, 0.78, 1.5))
+  for (const side of [-1, 1]) {
+    for (let i = 0; i < 3; i++) {
+      const ow = m(new THREE.PlaneGeometry(0.06, 0.04), windowMat, side * 0.251, 0.8, 1.65 - i * 0.15)
+      ow.rotation.y = side * Math.PI / 2; ship.add(ow)
+    }
+  }
 
   // Stern deckhouse
-  ship.add(m(new THREE.BoxGeometry(0.6, 0.12, 0.3), fadedCream, 0, 0.2, -4.0))
+  ship.add(m(new THREE.BoxGeometry(0.65, 0.14, 0.35), fadedCream, 0, 0.2, -4.0))
+
+  // Bollards (stern)
+  for (const x of [-0.3, 0.3])
+    ship.add(m(new THREE.CylinderGeometry(0.015, 0.018, 0.04, 6), metalMat, x, 0.18, -5.2))
+
+  // Deck benches (boat deck)
+  for (let i = 0; i < 6; i++) {
+    ship.add(m(new THREE.BoxGeometry(0.06, 0.025, 0.025), teakDeck, 0.3, 0.585, 1.8 - i * 0.5))
+    ship.add(m(new THREE.BoxGeometry(0.06, 0.025, 0.025), teakDeck, -0.3, 0.585, 1.8 - i * 0.5))
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // RUSTICLES (iconic wreck feature — hanging rust formations)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  const rng = (seed) => { let s = seed; return () => { s = (s * 16807 + 0) % 2147483647; return s / 2147483647 } }
+  const rand = rng(42)
+
+  for (let i = 0; i < 80; i++) {
+    const z = -5.5 + rand() * 10.5
+    const side = rand() > 0.5 ? 1 : -1
+    const x = side * (0.58 + rand() * 0.12)
+    const y = -0.1 - rand() * 0.7
+    const len = 0.05 + rand() * 0.2
+    const thick = 0.003 + rand() * 0.008
+
+    const rusticle = m(new THREE.CylinderGeometry(thick * 0.3, thick, len, 4), rusticleMat, x, y - len / 2, z)
+    ship.add(rusticle)
+  }
+
+  // Bow rusticles (denser — iconic image)
+  for (let i = 0; i < 30; i++) {
+    const z = 4.5 + rand() * 1.3
+    const ang = (rand() - 0.5) * 1.5
+    const r = 0.5 + rand() * 0.2
+    const x = Math.sin(ang) * r
+    const y = -0.2 - rand() * 0.5
+    const len = 0.08 + rand() * 0.25
+    const thick = 0.004 + rand() * 0.01
+
+    const rusticle = m(new THREE.CylinderGeometry(thick * 0.2, thick, len, 4), rusticleMat, x, y - len / 2, z)
+    ship.add(rusticle)
+  }
 
   return ship
 }
