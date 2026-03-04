@@ -237,12 +237,18 @@ function latlonToScene(lat, lon, bounds, planeSize = 300) {
 
 // ─── Tile loading ───────────────────────────────────────────────────────────
 
-function fetchTile(z, x, y) {
+function fetchTile(z, x, y, retries = 2) {
   return new Promise((resolve, reject) => {
     const img = new Image()
     img.crossOrigin = 'anonymous'
     img.onload  = () => resolve(img)
-    img.onerror = () => reject(new Error(`Tile ${z}/${x}/${y} failed`))
+    img.onerror = () => {
+      if (retries > 0) {
+        setTimeout(() => fetchTile(z, x, y, retries - 1).then(resolve, reject), 500)
+      } else {
+        reject(new Error(`Tile ${z}/${x}/${y} failed`))
+      }
+    }
     img.src = `/terrarium/terrarium/${z}/${x}/${y}.png`
   })
 }
