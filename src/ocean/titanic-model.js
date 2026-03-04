@@ -76,9 +76,9 @@ export function createTitanicModel() {
   const ship = new THREE.Group()
 
   // ── Materials ──
-  const rustHull    = new THREE.MeshStandardMaterial({ color: 0x8b4513, roughness: 0.85, metalness: 0.15 })
+  const rustHull    = new THREE.MeshStandardMaterial({ color: 0x8b4513, roughness: 0.85, metalness: 0.15, side: THREE.DoubleSide })
   const darkRust    = new THREE.MeshStandardMaterial({ color: 0x6b3410, roughness: 0.9, metalness: 0.1 })
-  const redBottom   = new THREE.MeshStandardMaterial({ color: 0x6a2020, roughness: 0.85 })
+  const redBottom   = new THREE.MeshStandardMaterial({ color: 0x6a2020, roughness: 0.85, side: THREE.DoubleSide })
   const sediment    = new THREE.MeshStandardMaterial({ color: 0x5a4838, roughness: 0.9 })
   const ghostWhite  = new THREE.MeshStandardMaterial({ color: 0x9a9080, roughness: 0.8 })
   const fadedCream  = new THREE.MeshStandardMaterial({ color: 0x8a7a62, roughness: 0.85 })
