@@ -110,6 +110,45 @@ export function createTitanicModel() {
   // Bow stem (keel line at bow)
   ship.add(m(new THREE.BoxGeometry(0.02, 0.8, 0.02), darkRust, 0, 0.1, 5.9))
 
+  // Hull width at a given z (matches createHull taper logic)
+  function hullW(z) {
+    const t = z / 12 + 0.5
+    if (t < 0.08) return 0.55 + 0.45 * smoothstep(0, 0.08, t)
+    if (t > 0.55) { const bt = (t - 0.55) / 0.45; return Math.max(1.0 - bt * bt, 0.01) }
+    return 1.0
+  }
+  // Hull surface x at given y and z
+  function hullX(y, z) {
+    const w = hullW(z)
+    const cosA = Math.min(1, -y / 1.0)
+    return Math.sqrt(Math.max(0, 1 - cosA * cosA)) * 0.7 * w
+  }
+
+  // Hull portholes — two rows following hull curvature
+  const portGeo = new THREE.CircleGeometry(0.018, 8)
+  const portRimGeo = new THREE.RingGeometry(0.016, 0.022, 8)
+  for (const side of [-1, 1]) {
+    const ry = side * Math.PI / 2
+    for (let i = 0; i < 44; i++) {
+      const pz = 4.5 - i * 0.22
+      const hx = hullX(-0.15, pz)
+      if (hx < 0.15) continue
+      const pw = m(portGeo, windowMat, side * (hx - 0.002), -0.15, pz)
+      pw.rotation.y = ry; ship.add(pw)
+      const pr = m(portRimGeo, metalMat, side * (hx - 0.001), -0.15, pz)
+      pr.rotation.y = ry; ship.add(pr)
+    }
+    for (let i = 0; i < 38; i++) {
+      const pz = 4.0 - i * 0.24
+      const hx = hullX(-0.38, pz)
+      if (hx < 0.15) continue
+      const pw = m(portGeo, windowMat, side * (hx - 0.002), -0.38, pz)
+      pw.rotation.y = ry; ship.add(pw)
+      const pr = m(portRimGeo, metalMat, side * (hx - 0.001), -0.38, pz)
+      pr.rotation.y = ry; ship.add(pr)
+    }
+  }
+
   // ═══════════════════════════════════════════════════════════════════════════
   // DECKS
   // ═══════════════════════════════════════════════════════════════════════════

@@ -452,13 +452,16 @@ export function createBathymetryView(regionKey) {
       // Lighting
       if (regionKey === 'titanic') {
         // Bright ROV-style lighting for wreck exploration
-        scene_.add(new THREE.AmbientLight(0x4477aa, 2.5))
-        const sun = new THREE.DirectionalLight(0x88bbdd, 1.8)
+        scene_.add(new THREE.AmbientLight(0x6699cc, 3.5))
+        const sun = new THREE.DirectionalLight(0xaaddff, 2.5)
         sun.position.set(40, 100, 30)
         scene_.add(sun)
-        const fill = new THREE.DirectionalLight(0x5588aa, 0.8)
+        const fill = new THREE.DirectionalLight(0x7799bb, 1.5)
         fill.position.set(-60, 60, -40)
         scene_.add(fill)
+        const back = new THREE.DirectionalLight(0x6688aa, 1.0)
+        back.position.set(0, 50, -80)
+        scene_.add(back)
       } else {
         // Dim deep-sea lighting
         scene_.add(new THREE.AmbientLight(0x061828, 1.5))
