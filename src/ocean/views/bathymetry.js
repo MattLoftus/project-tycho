@@ -485,32 +485,46 @@ export function createBathymetryView(regionKey) {
 
       markers_ = buildFeatureMarkers(scene_, featuresWithPos)
 
-      // Place Titanic model on the wreck site
+      // Place Titanic wreck — bow and stern sections
       if (regionKey === 'titanic') {
-        const wreckPos = latlonToScene(41.73, -49.95, bounds)
-        wreckPos.y = terrain_.sampleHeight(wreckPos.x, wreckPos.z) + 1.8
-        const titanic = createTitanicModel()
-        titanic.position.copy(wreckPos)
-        titanic.rotation.y = 0.4  // heading
-        titanic.rotation.z = 0.05 // slight list to port
-        titanic.rotation.x = 0.02 // slight bow-down trim
-        titanic.scale.setScalar(1.0)
-        scene_.add(titanic)
+        const { bow, stern } = createTitanicModel()
 
-        // Wreck-site point lights for detail
-        const wreckKey = new THREE.PointLight(0xaaccee, 12, 40, 1.0)
-        wreckKey.position.copy(wreckPos).add(new THREE.Vector3(5, 12, 8))
+        // Bow section — relatively intact, slight list to port
+        const bowPos = latlonToScene(41.73, -49.95, bounds)
+        bowPos.y = terrain_.sampleHeight(bowPos.x, bowPos.z) + 1.8
+        bow.position.copy(bowPos)
+        bow.rotation.y = 0.4
+        bow.rotation.z = 0.05  // slight list
+        bow.rotation.x = 0.03  // bow-down trim (buried in mud)
+        bow.scale.setScalar(1.0)
+        scene_.add(bow)
+
+        // Stern section — ~600m south, more damaged, different heading
+        // At model scale, 600m ≈ 27 units, but we use ~12 for visibility
+        const sternPos = bowPos.clone().add(new THREE.Vector3(-4, 0, -12))
+        sternPos.y = terrain_.sampleHeight(sternPos.x, sternPos.z) + 1.8
+        stern.position.copy(sternPos)
+        stern.rotation.y = 0.8  // different heading from bow
+        stern.rotation.z = -0.08 // list to starboard
+        stern.rotation.x = -0.04 // stern-down
+        stern.scale.setScalar(1.0)
+        scene_.add(stern)
+
+        // Wreck-site lighting
+        const wreckKey = new THREE.PointLight(0xaaccee, 12, 50, 1.0)
+        wreckKey.position.copy(bowPos).add(new THREE.Vector3(5, 12, 8))
         scene_.add(wreckKey)
-        const wreckFill = new THREE.PointLight(0x88aacc, 8, 35, 1.2)
-        wreckFill.position.copy(wreckPos).add(new THREE.Vector3(-6, 8, -5))
+        const wreckFill = new THREE.PointLight(0x88aacc, 8, 45, 1.2)
+        wreckFill.position.copy(bowPos).add(new THREE.Vector3(-6, 8, -5))
         scene_.add(wreckFill)
-        const wreckRim = new THREE.PointLight(0x6688aa, 6, 30, 1.2)
-        wreckRim.position.copy(wreckPos).add(new THREE.Vector3(0, 5, -10))
-        scene_.add(wreckRim)
+        // Light on stern section too
+        const sternLight = new THREE.PointLight(0xaaccee, 10, 40, 1.0)
+        sternLight.position.copy(sternPos).add(new THREE.Vector3(3, 10, 5))
+        scene_.add(sternLight)
 
-        // Position camera for wreck overview, orbit target on ship
-        camCtrl_.camera.position.set(wreckPos.x + 12, wreckPos.y + 10, wreckPos.z + 22)
-        camCtrl_.controls.target.copy(wreckPos)
+        // Camera starts with overview of bow section
+        camCtrl_.camera.position.set(bowPos.x + 12, bowPos.y + 10, bowPos.z + 22)
+        camCtrl_.controls.target.copy(bowPos)
         camCtrl_.controls.minDistance = 4
         camCtrl_.camera.near = 0.1
         camCtrl_.camera.updateProjectionMatrix()
