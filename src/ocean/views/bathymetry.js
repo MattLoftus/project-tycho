@@ -140,7 +140,7 @@ const REGIONS = {
   titanic: {
     label:    'TITANIC WRECK SITE',
     subtitle: 'NORTH ATLANTIC ABYSSAL PLAIN · 41°43\u2032N 49°56\u2032W',
-    z: 7, baseX: 46, baseY: 47, grid: 4, sceneH: 45,
+    z: 7, baseX: 44, baseY: 46, grid: 4, sceneH: 45,
     camPos: [0, 55, 180],
     bgColor: 0x010408,
     fogDensity: 0.007,
