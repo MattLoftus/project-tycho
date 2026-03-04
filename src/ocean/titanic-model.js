@@ -18,34 +18,42 @@ function m(geo, mat, x, y, z) {
 }
 
 function createHull() {
+  // L=length, halfW=max half-beam, D=max draft
   const L = 12, halfW = 0.7, D = 1.0
   const segs = 80, rings = 24
   const v = [], idx = []
 
   for (let i = 0; i <= segs; i++) {
-    const t = i / segs
-    const z = (t - 0.5) * L
+    const t = i / segs         // 0 = stern, 1 = bow
+    const z = (t - 0.5) * L   // -6 stern, +6 bow
 
+    // Beam width factor: full amidships, tapers at bow and stern
     let w
-    if (t < 0.06) w = 0.5 + 0.5 * smoothstep(0, 0.06, t)
-    else if (t > 0.6) {
-      const bt = (t - 0.6) / 0.4
-      w = Math.max(1.0 - bt * bt * 0.98, 0.02)
-    } else w = 1.0
+    if (t < 0.08) {
+      // Stern: moderate taper with rounded counter
+      w = 0.55 + 0.45 * smoothstep(0, 0.08, t)
+    } else if (t > 0.55) {
+      // Bow: long gentle taper to knife edge
+      const bt = (t - 0.55) / 0.45
+      w = Math.max(1.0 - bt * bt, 0.01)
+    } else {
+      w = 1.0
+    }
 
-    const bowRise = t > 0.82 ? smoothstep(0.82, 1.0, t) * 0.55 : 0
-    const sternRise = t < 0.08 ? smoothstep(0.08, 0, t) * 0.2 : 0
+    // V-shape increases toward the bow (sharper bottom at bow)
+    const vShape = t > 0.5 ? (t - 0.5) / 0.5 * 0.4 : 0
 
     for (let j = 0; j <= rings; j++) {
       const angle = (j / rings) * Math.PI
       const sinA = Math.sin(angle), cosA = Math.cos(angle)
-      const vAmount = t > 0.4 ? (t - 0.4) / 0.6 * 0.35 : 0
+
       let x = sinA * halfW * w
-      const y = -Math.abs(cosA) * D - vAmount * (1 - Math.abs(sinA)) * 0.3 + bowRise + sternRise
-      if (t > 0.75) {
-        const flare = (t - 0.75) / 0.25 * 0.08 * Math.max(0, sinA)
-        x += sinA > 0 ? flare : -flare
-      }
+      // Base shape: rounded U amidships, transitioning to V at bow
+      let y = -Math.abs(cosA) * D - vShape * (1 - Math.abs(sinA)) * 0.3
+
+      // Clamp: hull never rises above deck level (y = 0)
+      y = Math.min(y, 0)
+
       v.push(x, y, z)
     }
   }
