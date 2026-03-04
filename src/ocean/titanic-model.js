@@ -79,7 +79,6 @@ export function createTitanicModel() {
   const windowMat   = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.3, metalness: 0.2 })
   const propMat     = new THREE.MeshStandardMaterial({ color: 0x8a7a3a, roughness: 0.55, metalness: 0.5 })
   const railMat     = new THREE.MeshStandardMaterial({ color: 0x3a3830, metalness: 0.35, roughness: 0.8 })
-  const rusticleMat = new THREE.MeshStandardMaterial({ color: 0x8b3a0a, roughness: 0.95, metalness: 0.05 })
   const glassMat    = new THREE.MeshStandardMaterial({ color: 0x223344, roughness: 0.2, metalness: 0.3, transparent: true, opacity: 0.6 })
   const wireMat     = new THREE.LineBasicMaterial({ color: 0x444440, transparent: true, opacity: 0.5 })
   const mastMat     = new THREE.MeshStandardMaterial({ color: 0x3a2e18, roughness: 0.85 })
@@ -99,61 +98,8 @@ export function createTitanicModel() {
   redHull.position.y = -0.4
   ship.add(redHull)
 
-  // Hull width factor at a given z position (matches createHull logic)
-  const L = 12, halfW = 0.7, D = 1.0
-  function hullW(z) {
-    const t = z / L + 0.5 // convert z to t (0..1)
-    if (t < 0.06) return 0.5 + 0.5 * smoothstep(0, 0.06, t)
-    if (t > 0.6) { const bt = (t - 0.6) / 0.4; return Math.max(1.0 - bt * bt * 0.98, 0.02) }
-    return 1.0
-  }
-  // Hull surface x at given y and z
-  function hullSurface(y, z) {
-    const w = hullW(z)
-    const a = Math.acos(Math.max(0, Math.min(1, -y / D)))
-    return Math.sin(a) * halfW * w
-  }
-  // Normal angle at given y
-  function hullAngle(y) {
-    return Math.acos(Math.max(0, Math.min(1, -y / D)))
-  }
-
-  // Hull portholes — positioned on hull surface, following taper
-  const portGeo = new THREE.CircleGeometry(0.018, 8)
-  const portRimGeo = new THREE.RingGeometry(0.016, 0.022, 8)
-  for (const side of [-1, 1]) {
-    const ry = side * Math.PI / 2
-    // Upper row (y = -0.15)
-    for (let i = 0; i < 44; i++) {
-      const pz = 4.8 - i * 0.22
-      const hx = hullSurface(-0.15, pz)
-      if (hx < 0.15) continue
-      const pw = m(portGeo, windowMat, side * hx, -0.15, pz)
-      pw.rotation.y = ry; ship.add(pw)
-      const pr = m(portRimGeo, metalMat, side * (hx + side * 0.001), -0.15, pz)
-      pr.rotation.y = ry; ship.add(pr)
-    }
-    // Lower row (y = -0.38)
-    for (let i = 0; i < 38; i++) {
-      const pz = 4.2 - i * 0.24
-      const hx = hullSurface(-0.38, pz)
-      if (hx < 0.15) continue
-      const pw = m(portGeo, windowMat, side * hx, -0.38, pz)
-      pw.rotation.y = ry; ship.add(pw)
-      const pr = m(portRimGeo, metalMat, side * (hx + side * 0.001), -0.38, pz)
-      pr.rotation.y = ry; ship.add(pr)
-    }
-  }
-
   // Bow stem (keel line at bow)
   ship.add(m(new THREE.BoxGeometry(0.02, 0.8, 0.02), darkRust, 0, 0.1, 5.9))
-
-  // Hawse pipes (anchor holes)
-  for (const side of [-0.25, 0.25]) {
-    const hawse = m(new THREE.TorusGeometry(0.03, 0.008, 6, 8), metalMat, side, -0.05, 5.4)
-    hawse.rotation.y = 0.3 * Math.sign(side)
-    ship.add(hawse)
-  }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // DECKS
@@ -649,39 +595,6 @@ export function createTitanicModel() {
   for (let i = 0; i < 6; i++) {
     ship.add(m(new THREE.BoxGeometry(0.06, 0.025, 0.025), teakDeck, 0.3, 0.585, 1.8 - i * 0.5))
     ship.add(m(new THREE.BoxGeometry(0.06, 0.025, 0.025), teakDeck, -0.3, 0.585, 1.8 - i * 0.5))
-  }
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // RUSTICLES (iconic wreck feature — hanging rust formations)
-  // ═══════════════════════════════════════════════════════════════════════════
-
-  const rng = (seed) => { let s = seed; return () => { s = (s * 16807 + 0) % 2147483647; return s / 2147483647 } }
-  const rand = rng(42)
-
-  for (let i = 0; i < 80; i++) {
-    const z = -5.5 + rand() * 10.5
-    const side = rand() > 0.5 ? 1 : -1
-    const x = side * (0.58 + rand() * 0.12)
-    const y = -0.1 - rand() * 0.7
-    const len = 0.05 + rand() * 0.2
-    const thick = 0.003 + rand() * 0.008
-
-    const rusticle = m(new THREE.CylinderGeometry(thick * 0.3, thick, len, 4), rusticleMat, x, y - len / 2, z)
-    ship.add(rusticle)
-  }
-
-  // Bow rusticles (denser — iconic image)
-  for (let i = 0; i < 30; i++) {
-    const z = 4.5 + rand() * 1.3
-    const ang = (rand() - 0.5) * 1.5
-    const r = 0.5 + rand() * 0.2
-    const x = Math.sin(ang) * r
-    const y = -0.2 - rand() * 0.5
-    const len = 0.08 + rand() * 0.25
-    const thick = 0.004 + rand() * 0.01
-
-    const rusticle = m(new THREE.CylinderGeometry(thick * 0.2, thick, len, 4), rusticleMat, x, y - len / 2, z)
-    ship.add(rusticle)
   }
 
   return ship
