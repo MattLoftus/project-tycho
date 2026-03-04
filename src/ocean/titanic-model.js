@@ -44,14 +44,15 @@ function createHull() {
     const vShape = t > 0.5 ? (t - 0.5) / 0.5 * 0.4 : 0
 
     for (let j = 0; j <= rings; j++) {
-      const angle = (j / rings) * Math.PI
-      const sinA = Math.sin(angle), cosA = Math.cos(angle)
+      // Sweep from left waterline → keel → right waterline
+      const angle = (j / rings) * Math.PI - Math.PI / 2
+      const sinA = Math.sin(angle) // -1 (left) to +1 (right)
+      const cosA = Math.cos(angle) // 0 at sides, 1 at keel
 
       let x = sinA * halfW * w
-      // Base shape: rounded U amidships, transitioning to V at bow
-      let y = -Math.abs(cosA) * D - vShape * (1 - Math.abs(sinA)) * 0.3
+      // Rounded U amidships, V at bow
+      let y = -cosA * D - vShape * (1 - Math.abs(sinA)) * 0.3
 
-      // Clamp: hull never rises above deck level (y = 0)
       y = Math.min(y, 0)
 
       v.push(x, y, z)
