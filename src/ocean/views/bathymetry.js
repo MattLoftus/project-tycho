@@ -142,8 +142,8 @@ const REGIONS = {
     subtitle: 'NORTH ATLANTIC ABYSSAL PLAIN · 41°43\u2032N 49°56\u2032W',
     z: 7, baseX: 44, baseY: 46, grid: 4, sceneH: 45,
     camPos: null,
-    bgColor: 0x020810,
-    fogDensity: 0.003,
+    bgColor: 0x020406,
+    fogDensity: 0.006,
     features: [
       { name: 'RMS Titanic Wreck',     type: 'trench',   lat: 41.73, lon: -49.95, depth: '-3,784 m', width: '---' },
       { name: 'Grand Banks Shelf Edge', type: 'seamount', lat: 43.50, lon: -50.00, depth: '-200 m',   width: '350 km' },
@@ -316,7 +316,7 @@ function blurHeightmap(src, size, radius) {
   return out
 }
 
-function buildTerrain(scene, raw, size, sceneH = 40) {
+function buildTerrain(scene, raw, size, sceneH = 40, opts = {}) {
   const smooth = blurHeightmap(raw, size, 2)
 
   let minR = Infinity, maxR = -Infinity
@@ -338,14 +338,83 @@ function buildTerrain(scene, raw, size, sceneH = 40) {
   pos.needsUpdate = true
   geo.computeVertexNormals()
 
-  const mat = new THREE.ShaderMaterial({
-    uniforms: {
-      uTime: { value: 0 },
-      uMinH: { value: minH },
-      uMaxH: { value: maxH },
-    },
-    vertexShader: VERT, fragmentShader: FRAG,
-  })
+  let mat
+  if (opts.realistic) {
+    // Realistic deep-sea sediment using vertex colors + PBR material
+    const colors = new Float32Array(pos.count * 3)
+    const normals = geo.attributes.normal
+
+    // Seeded noise for subtle color variation
+    let noiseV = 12345
+    const noise = () => { noiseV = (noiseV * 16807) % 2147483647; return noiseV / 2147483647 }
+    // Pre-generate noise per vertex for consistency
+    const noiseArr = new Float32Array(pos.count)
+    for (let i = 0; i < pos.count; i++) noiseArr[i] = noise()
+
+    for (let i = 0; i < pos.count; i++) {
+      const h = pos.getY(i)
+      const t = Math.max(0, Math.min(1, (h - minH) / (maxH - minH)))
+      const ny = normals.getY(i) // steepness: flat=1, vertical=0
+
+      // Sediment palette: deep muddy brown → lighter clay → pale silt on ridges
+      const c0 = [0.08, 0.06, 0.04]  // deepest — dark mud
+      const c1 = [0.14, 0.11, 0.08]  // mid valleys — clay
+      const c2 = [0.18, 0.15, 0.11]  // mid slopes — brown silt
+      const c3 = [0.22, 0.19, 0.14]  // upper slopes — lighter sediment
+      const c4 = [0.25, 0.22, 0.17]  // ridgetops — pale clay
+
+      let r, g, b
+      if (t < 0.25) {
+        const f = t * 4; r = c0[0]+(c1[0]-c0[0])*f; g = c0[1]+(c1[1]-c0[1])*f; b = c0[2]+(c1[2]-c0[2])*f
+      } else if (t < 0.5) {
+        const f = (t-0.25)*4; r = c1[0]+(c2[0]-c1[0])*f; g = c1[1]+(c2[1]-c1[1])*f; b = c1[2]+(c2[2]-c1[2])*f
+      } else if (t < 0.75) {
+        const f = (t-0.5)*4; r = c2[0]+(c3[0]-c2[0])*f; g = c2[1]+(c3[1]-c2[1])*f; b = c2[2]+(c3[2]-c2[2])*f
+      } else {
+        const f = (t-0.75)*4; r = c3[0]+(c4[0]-c3[0])*f; g = c3[1]+(c4[1]-c3[1])*f; b = c3[2]+(c4[2]-c3[2])*f
+      }
+
+      // Steeper slopes show exposed rock (slightly bluer/grayer)
+      const steepness = 1 - ny
+      if (steepness > 0.3) {
+        const rockBlend = Math.min(1, (steepness - 0.3) * 2.5)
+        r = r * (1 - rockBlend) + 0.12 * rockBlend
+        g = g * (1 - rockBlend) + 0.11 * rockBlend
+        b = b * (1 - rockBlend) + 0.10 * rockBlend
+      }
+
+      // Subtle per-vertex noise for texture variation
+      const n = (noiseArr[i] - 0.5) * 0.04
+      r += n; g += n; b += n
+
+      // Slight olive/green tint in mid-depths (organic sediment)
+      if (t > 0.2 && t < 0.6) {
+        g += 0.008
+      }
+
+      colors[i * 3]     = Math.max(0, Math.min(1, r))
+      colors[i * 3 + 1] = Math.max(0, Math.min(1, g))
+      colors[i * 3 + 2] = Math.max(0, Math.min(1, b))
+    }
+
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+
+    mat = new THREE.MeshStandardMaterial({
+      vertexColors: true,
+      roughness: 0.95,
+      metalness: 0.0,
+      flatShading: false,
+    })
+  } else {
+    mat = new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+        uMinH: { value: minH },
+        uMaxH: { value: maxH },
+      },
+      vertexShader: VERT, fragmentShader: FRAG,
+    })
+  }
 
   const mesh = new THREE.Mesh(geo, mat)
   scene.add(mesh)
@@ -444,24 +513,35 @@ export function createBathymetryView(regionKey) {
 
       composer_ = new EffectComposer(renderer)
       composer_.addPass(new RenderPass(scene_, camera))
-      composer_.addPass(new UnrealBloomPass(
-        new THREE.Vector2(window.innerWidth, window.innerHeight),
-        0.9, 0.5, 0.78
-      ))
+      if (regionKey === 'titanic') {
+        // Minimal bloom for realistic wreck scene
+        composer_.addPass(new UnrealBloomPass(
+          new THREE.Vector2(window.innerWidth, window.innerHeight),
+          0.15, 0.4, 0.9
+        ))
+      } else {
+        composer_.addPass(new UnrealBloomPass(
+          new THREE.Vector2(window.innerWidth, window.innerHeight),
+          0.9, 0.5, 0.78
+        ))
+      }
 
       // Lighting
       if (regionKey === 'titanic') {
-        // Bright ROV-style lighting for wreck exploration
-        scene_.add(new THREE.AmbientLight(0x6699cc, 3.5))
-        const sun = new THREE.DirectionalLight(0xaaddff, 2.5)
-        sun.position.set(40, 100, 30)
-        scene_.add(sun)
-        const fill = new THREE.DirectionalLight(0x7799bb, 1.5)
-        fill.position.set(-60, 60, -40)
+        // Deep-sea ambient: very faint blue-black
+        scene_.add(new THREE.AmbientLight(0x1a2a3a, 1.2))
+        // Simulated ROV main floodlight (warm white, from above-forward)
+        const rov = new THREE.DirectionalLight(0xe8e0d0, 2.8)
+        rov.position.set(20, 80, 40)
+        scene_.add(rov)
+        // Secondary fill (cool blue, softer, from opposite side)
+        const fill = new THREE.DirectionalLight(0x8899aa, 1.2)
+        fill.position.set(-40, 50, -30)
         scene_.add(fill)
-        const back = new THREE.DirectionalLight(0x6688aa, 1.0)
-        back.position.set(0, 50, -80)
-        scene_.add(back)
+        // Subtle rim light from behind to separate silhouettes
+        const rim = new THREE.DirectionalLight(0x4466aa, 0.6)
+        rim.position.set(0, 30, -80)
+        scene_.add(rim)
       } else {
         // Dim deep-sea lighting
         scene_.add(new THREE.AmbientLight(0x061828, 1.5))
@@ -474,7 +554,8 @@ export function createBathymetryView(regionKey) {
       }
 
       const { raw, size } = await loadHeightmap(region, setStatus)
-      terrain_ = buildTerrain(scene_, raw, size, region.sceneH)
+      terrain_ = buildTerrain(scene_, raw, size, region.sceneH,
+        regionKey === 'titanic' ? { realistic: true } : {})
 
       const bounds = gridBounds(region.z, region.baseX, region.baseY, region.grid)
       const featuresWithPos = region.features.map(f => {
@@ -487,7 +568,7 @@ export function createBathymetryView(regionKey) {
 
       // Place Titanic wreck — bow and stern sections
       if (regionKey === 'titanic') {
-        const { bow, stern } = createTitanicModel()
+        const { bow, stern, debris } = createTitanicModel()
 
         // Bow section — relatively intact, slight list to port
         const bowPos = latlonToScene(41.73, -49.95, bounds)
@@ -500,7 +581,6 @@ export function createBathymetryView(regionKey) {
         scene_.add(bow)
 
         // Stern section — ~600m south, more damaged, different heading
-        // At model scale, 600m ≈ 27 units, but we use ~12 for visibility
         const sternPos = bowPos.clone().add(new THREE.Vector3(-4, 0, -12))
         sternPos.y = terrain_.sampleHeight(sternPos.x, sternPos.z) + 1.8
         stern.position.copy(sternPos)
@@ -510,17 +590,40 @@ export function createBathymetryView(regionKey) {
         stern.scale.setScalar(1.0)
         scene_.add(stern)
 
-        // Wreck-site lighting
-        const wreckKey = new THREE.PointLight(0xaaccee, 12, 50, 1.0)
-        wreckKey.position.copy(bowPos).add(new THREE.Vector3(5, 12, 8))
-        scene_.add(wreckKey)
-        const wreckFill = new THREE.PointLight(0x88aacc, 8, 45, 1.2)
-        wreckFill.position.copy(bowPos).add(new THREE.Vector3(-6, 8, -5))
-        scene_.add(wreckFill)
-        // Light on stern section too
-        const sternLight = new THREE.PointLight(0xaaccee, 10, 40, 1.0)
-        sternLight.position.copy(sternPos).add(new THREE.Vector3(3, 10, 5))
-        scene_.add(sternLight)
+        // Debris field — scattered between bow and stern
+        const debrisPos = bowPos.clone().lerp(sternPos, 0.5)
+        debrisPos.y = terrain_.sampleHeight(debrisPos.x, debrisPos.z) + 0.1
+        debris.position.copy(debrisPos)
+        debris.rotation.y = 0.6
+        scene_.add(debris)
+
+        // ROV floodlights — warm white spots illuminating the wreck
+        const rovMain = new THREE.SpotLight(0xf0e8d8, 40, 60, Math.PI / 4, 0.5, 1.0)
+        rovMain.position.copy(bowPos).add(new THREE.Vector3(4, 12, 10))
+        rovMain.target.position.copy(bowPos)
+        scene_.add(rovMain)
+        scene_.add(rovMain.target)
+
+        const rovFill = new THREE.SpotLight(0xd0dce8, 25, 50, Math.PI / 3, 0.6, 1.2)
+        rovFill.position.copy(bowPos).add(new THREE.Vector3(-5, 8, -4))
+        rovFill.target.position.copy(bowPos)
+        scene_.add(rovFill)
+        scene_.add(rovFill.target)
+
+        // Stern section ROV light
+        const rovStern = new THREE.SpotLight(0xf0e8d8, 35, 55, Math.PI / 4, 0.5, 1.0)
+        rovStern.position.copy(sternPos).add(new THREE.Vector3(3, 10, 6))
+        rovStern.target.position.copy(sternPos)
+        scene_.add(rovStern)
+        scene_.add(rovStern.target)
+
+        // Faint point lights for ambient wreck visibility at distance
+        const ambBow = new THREE.PointLight(0x8899aa, 4, 35, 1.5)
+        ambBow.position.copy(bowPos).add(new THREE.Vector3(0, 6, 0))
+        scene_.add(ambBow)
+        const ambStern = new THREE.PointLight(0x8899aa, 3, 30, 1.5)
+        ambStern.position.copy(sternPos).add(new THREE.Vector3(0, 5, 0))
+        scene_.add(ambStern)
 
         // Camera starts with overview of bow section
         camCtrl_.camera.position.set(bowPos.x + 12, bowPos.y + 10, bowPos.z + 22)
@@ -549,7 +652,8 @@ export function createBathymetryView(regionKey) {
     animate() {
       if (!composer_ || !terrain_) return
       const dt = clock_.getDelta()
-      terrain_.material.uniforms.uTime.value = clock_.elapsedTime
+      if (terrain_.material.uniforms)
+        terrain_.material.uniforms.uTime.value = clock_.elapsedTime
       if (markers_?.length) updateMarkers(markers_, dt)
       snow_?.update(dt, camCtrl_.camera.position)
       camCtrl_.update(dt)
