@@ -43,7 +43,7 @@ const DiskShader = {
   vertexShader: `
     varying vec2 vPolar;
     void main() {
-      vPolar = vec2(length(position.xz), atan(position.z, position.x));
+      vPolar = vec2(length(position.xy), atan(position.y, position.x));
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     }
   `,
@@ -515,22 +515,42 @@ function buildStreamParticles() {
 
 function buildHotSpot() {
   // Bright point where the stream impacts the outer disk edge
-  const mat = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(2.0, 1.6, 1.0), transparent: true, opacity: 0.65,
-  });
-  const spot = new THREE.Mesh(new THREE.SphereGeometry(0.32, 12, 8), mat);
-  // Impact point: outer edge of disk on the stream-arrival side
+  // Small core + soft additive glow — no solid sphere
   const impactPt = streamCurve.getPointAt(0.92);
-  spot.position.copy(impactPt);
-  binaryGroup.add(spot);
 
-  // Glow around hot spot
-  const glowMat = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(1.4, 1.0, 0.5), transparent: true, opacity: 0.25,
+  const coreMat = new THREE.MeshBasicMaterial({
+    color: new THREE.Color(1.5, 1.2, 0.8), transparent: true, opacity: 0.5,
+    blending: THREE.AdditiveBlending, depthWrite: false,
   });
-  const spotGlow = new THREE.Mesh(new THREE.SphereGeometry(0.9, 12, 8), glowMat);
-  spotGlow.position.copy(impactPt);
-  binaryGroup.add(spotGlow);
+  const core = new THREE.Mesh(new THREE.SphereGeometry(0.12, 12, 8), coreMat);
+  core.position.copy(impactPt);
+  binaryGroup.add(core);
+
+  // Soft glow halo
+  const glowMat = new THREE.ShaderMaterial({
+    vertexShader: `
+      varying vec3 vNormal, vViewDir;
+      void main() {
+        vNormal = normalize(normalMatrix * normal);
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        vViewDir = normalize(-mv.xyz);
+        gl_Position = projectionMatrix * mv;
+      }
+    `,
+    fragmentShader: `
+      precision mediump float;
+      varying vec3 vNormal, vViewDir;
+      void main() {
+        float rim = 1.0 - max(dot(vViewDir, vNormal), 0.0);
+        float g = pow(rim, 2.0) * 1.2;
+        gl_FragColor = vec4(1.0, 0.85, 0.5, g * 0.3);
+      }
+    `,
+    transparent: true, blending: THREE.AdditiveBlending, depthWrite: false,
+  });
+  const glow = new THREE.Mesh(new THREE.SphereGeometry(0.45, 12, 8), glowMat);
+  glow.position.copy(impactPt);
+  binaryGroup.add(glow);
 }
 
 function smoothstep(e0, e1, x) {
