@@ -92,7 +92,7 @@ function hullX(y, z) {
 function addBreakEdge(group, zPos, mat, facing) {
   const rand = rng(facing === 'bow' ? 99 : 77)
   const tornMat = new THREE.MeshStandardMaterial({
-    color: 0x4a2a10, roughness: 0.95, metalness: 0.1, side: THREE.DoubleSide
+    color: 0x2a1808, roughness: 0.95, metalness: 0.08, side: THREE.DoubleSide
   })
 
   // Jagged plates
@@ -136,9 +136,9 @@ function addBreakEdge(group, zPos, mat, facing) {
 
 function addRusticles(group, zMin, zMax, seed) {
   const rand = rng(seed)
-  const rustMat = new THREE.MeshStandardMaterial({ color: 0xc06020, roughness: 0.95, metalness: 0.05 })
-  const rustMat2 = new THREE.MeshStandardMaterial({ color: 0xa04818, roughness: 0.95, metalness: 0.08 })
-  const rustMat3 = new THREE.MeshStandardMaterial({ color: 0x8a3a12, roughness: 0.9, metalness: 0.1 })
+  const rustMat = new THREE.MeshStandardMaterial({ color: 0x5a3018, roughness: 0.95, metalness: 0.05 })
+  const rustMat2 = new THREE.MeshStandardMaterial({ color: 0x4a2810, roughness: 0.95, metalness: 0.08 })
+  const rustMat3 = new THREE.MeshStandardMaterial({ color: 0x3a1e0a, roughness: 0.9, metalness: 0.1 })
   const mats = [rustMat, rustMat2, rustMat3]
 
   // Along hull waterline and lower edges
@@ -188,7 +188,7 @@ function addRusticles(group, zMin, zMax, seed) {
 
 function addPlateSeams(group, zMin, zMax) {
   const seamMat = new THREE.MeshStandardMaterial({
-    color: 0x6b3a18, roughness: 0.95, metalness: 0.1
+    color: 0x2a1a0a, roughness: 0.95, metalness: 0.08
   })
 
   // Horizontal strake seams along hull
@@ -233,9 +233,9 @@ function addPlateSeams(group, zMin, zMax) {
 function createDebrisField() {
   const debris = new THREE.Group()
   const rand = rng(42)
-  const debrisMat = new THREE.MeshStandardMaterial({ color: 0x5a4a38, roughness: 0.9 })
-  const metalDebris = new THREE.MeshStandardMaterial({ color: 0x4a4a40, roughness: 0.8, metalness: 0.3 })
-  const rustDebris = new THREE.MeshStandardMaterial({ color: 0x8b4513, roughness: 0.85, metalness: 0.15 })
+  const debrisMat = new THREE.MeshStandardMaterial({ color: 0x2a2218, roughness: 0.95 })
+  const metalDebris = new THREE.MeshStandardMaterial({ color: 0x2a2a25, roughness: 0.85, metalness: 0.2 })
+  const rustDebris = new THREE.MeshStandardMaterial({ color: 0x3a2210, roughness: 0.9, metalness: 0.1 })
 
   // Scattered hull plates
   for (let i = 0; i < 25; i++) {
@@ -270,11 +270,11 @@ function createDebrisField() {
   const fallenFunnel = new THREE.Group()
   const funnelBody = new THREE.CylinderGeometry(0.125, 0.15, 1.25, 16)
   funnelBody.scale(1, 1, 0.82)
-  const fBuff = new THREE.MeshStandardMaterial({ color: 0x8a6028, roughness: 0.85, metalness: 0.15 })
+  const fBuff = new THREE.MeshStandardMaterial({ color: 0x3a2a14, roughness: 0.9, metalness: 0.1 })
   fallenFunnel.add(new THREE.Mesh(funnelBody, fBuff))
   const topGeo = new THREE.CylinderGeometry(0.13, 0.125, 0.3, 16)
   topGeo.scale(1, 1, 0.82)
-  const topM = new THREE.Mesh(topGeo, new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.75 }))
+  const topM = new THREE.Mesh(topGeo, new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.85 }))
   topM.position.y = 0.72
   fallenFunnel.add(topM)
   fallenFunnel.position.set(3, 0.15, 6)
@@ -292,7 +292,7 @@ function createDebrisField() {
   }
 
   // Ceramic/china fragments
-  const chinaMat = new THREE.MeshStandardMaterial({ color: 0xd8cbb8, roughness: 0.6 })
+  const chinaMat = new THREE.MeshStandardMaterial({ color: 0x6a6258, roughness: 0.7 })
   for (let i = 0; i < 12; i++) {
     const x = (rand() - 0.5) * 8
     const z = (rand() - 0.5) * 12
@@ -314,7 +314,7 @@ function createDebrisField() {
   }
 
   // Bottles
-  const glassMat2 = new THREE.MeshStandardMaterial({ color: 0x2a4a2a, roughness: 0.3, metalness: 0.2 })
+  const glassMat2 = new THREE.MeshStandardMaterial({ color: 0x122212, roughness: 0.4, metalness: 0.15 })
   for (let i = 0; i < 8; i++) {
     const x = (rand() - 0.5) * 7
     const z = (rand() - 0.5) * 12
@@ -358,26 +358,26 @@ export function createTitanicModel() {
   const stern = new THREE.Group()
 
   // ── Shared Materials ──
-  const rustHull    = new THREE.MeshStandardMaterial({ color: 0x8b4513, roughness: 0.85, metalness: 0.15, side: THREE.DoubleSide })
-  const darkRust    = new THREE.MeshStandardMaterial({ color: 0x6b3410, roughness: 0.9, metalness: 0.1 })
-  const redBottom   = new THREE.MeshStandardMaterial({ color: 0x6a2020, roughness: 0.85, side: THREE.DoubleSide })
-  const sediment    = new THREE.MeshStandardMaterial({ color: 0x5a4838, roughness: 0.9 })
-  const ghostWhite  = new THREE.MeshStandardMaterial({ color: 0x9a9080, roughness: 0.8 })
-  const fadedCream  = new THREE.MeshStandardMaterial({ color: 0x8a7a62, roughness: 0.85 })
-  const fadedBuff   = new THREE.MeshStandardMaterial({ color: 0xb07830, roughness: 0.65, metalness: 0.15 })
-  const blackened   = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.75 })
-  const metalMat    = new THREE.MeshStandardMaterial({ color: 0x5a5a50, metalness: 0.45, roughness: 0.65 })
-  const windowMat   = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.3, metalness: 0.2 })
-  const propMat     = new THREE.MeshStandardMaterial({ color: 0x8a7a3a, roughness: 0.55, metalness: 0.5 })
-  const railMat     = new THREE.MeshStandardMaterial({ color: 0x3a3830, metalness: 0.35, roughness: 0.8 })
-  const glassMat    = new THREE.MeshStandardMaterial({ color: 0x223344, roughness: 0.2, metalness: 0.3, transparent: true, opacity: 0.6 })
+  const rustHull    = new THREE.MeshStandardMaterial({ color: 0x4e3018, roughness: 0.88, metalness: 0.12, side: THREE.DoubleSide })
+  const darkRust    = new THREE.MeshStandardMaterial({ color: 0x3a220e, roughness: 0.92, metalness: 0.10 })
+  const redBottom   = new THREE.MeshStandardMaterial({ color: 0x3a1818, roughness: 0.88, side: THREE.DoubleSide })
+  const sediment    = new THREE.MeshStandardMaterial({ color: 0x3a3020, roughness: 0.92 })
+  const ghostWhite  = new THREE.MeshStandardMaterial({ color: 0x686058, roughness: 0.82 })
+  const fadedCream  = new THREE.MeshStandardMaterial({ color: 0x504838, roughness: 0.88 })
+  const fadedBuff   = new THREE.MeshStandardMaterial({ color: 0x5a3e20, roughness: 0.78, metalness: 0.12 })
+  const blackened   = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.82 })
+  const metalMat    = new THREE.MeshStandardMaterial({ color: 0x3a3a32, metalness: 0.35, roughness: 0.72 })
+  const windowMat   = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.35, metalness: 0.18 })
+  const propMat     = new THREE.MeshStandardMaterial({ color: 0x4a4020, roughness: 0.65, metalness: 0.40 })
+  const railMat     = new THREE.MeshStandardMaterial({ color: 0x2a2820, metalness: 0.30, roughness: 0.82 })
+  const glassMat    = new THREE.MeshStandardMaterial({ color: 0x101a20, roughness: 0.28, metalness: 0.22, transparent: true, opacity: 0.5 })
   const wireMat     = new THREE.LineBasicMaterial({ color: 0x444440, transparent: true, opacity: 0.5 })
-  const mastMat     = new THREE.MeshStandardMaterial({ color: 0x3a2e18, roughness: 0.85 })
-  const boatMat     = new THREE.MeshStandardMaterial({ color: 0x5a5040, roughness: 0.8 })
-  const ventMat     = new THREE.MeshStandardMaterial({ color: 0x4a4238, roughness: 0.85 })
-  const teakDeck    = new THREE.MeshStandardMaterial({ color: 0x5a4a30, roughness: 0.9 })
-  const brassLamp   = new THREE.MeshStandardMaterial({ color: 0x887740, roughness: 0.4, metalness: 0.6 })
-  const siltMat     = new THREE.MeshStandardMaterial({ color: 0x4a3e2e, roughness: 0.95, transparent: true, opacity: 0.7 })
+  const mastMat     = new THREE.MeshStandardMaterial({ color: 0x2a200e, roughness: 0.88 })
+  const boatMat     = new THREE.MeshStandardMaterial({ color: 0x3a3428, roughness: 0.82 })
+  const ventMat     = new THREE.MeshStandardMaterial({ color: 0x2e2c22, roughness: 0.88 })
+  const teakDeck    = new THREE.MeshStandardMaterial({ color: 0x3a301c, roughness: 0.92 })
+  const brassLamp   = new THREE.MeshStandardMaterial({ color: 0x4a4020, roughness: 0.55, metalness: 0.45 })
+  const siltMat     = new THREE.MeshStandardMaterial({ color: 0x2e2618, roughness: 0.92, transparent: true, opacity: 0.7 })
 
   function add(mesh, z) {
     if (z === undefined) z = mesh.position.z
@@ -468,7 +468,7 @@ export function createTitanicModel() {
   // Deck plank lines (teak planking visible)
   for (let x = -0.5; x <= 0.5; x += 0.08) {
     bow.add(m(new THREE.BoxGeometry(0.003, 0.002, bowDeckLen - 0.1),
-      new THREE.MeshStandardMaterial({ color: 0x4a3a20, roughness: 0.95 }), x, 0.04, (5.9 + BREAK_Z) / 2))
+      new THREE.MeshStandardMaterial({ color: 0x1e1a0e, roughness: 0.95 }), x, 0.04, (5.9 + BREAK_Z) / 2))
   }
 
   // Forecastle deck (bow)
@@ -525,7 +525,7 @@ export function createTitanicModel() {
   // ═══════════════════════════════════════════════════════════════════════════
   {
     const collapseMat = new THREE.MeshStandardMaterial({
-      color: 0x5a3a1a, roughness: 0.95, metalness: 0.1, side: THREE.DoubleSide
+      color: 0x2a1a0a, roughness: 0.95, metalness: 0.08, side: THREE.DoubleSide
     })
     // Collapsed deck plates at various angles
     const rand = rng(333)
@@ -771,7 +771,7 @@ export function createTitanicModel() {
     if (idx < 4) {
       const bandGeo = new THREE.CylinderGeometry(0.127, 0.14, 0.08, 20)
       bandGeo.scale(1, 1, 0.82)
-      const bandMat = new THREE.MeshStandardMaterial({ color: 0x8a6020, roughness: 0.7, metalness: 0.1 })
+      const bandMat = new THREE.MeshStandardMaterial({ color: 0x3a2a10, roughness: 0.8, metalness: 0.08 })
       const band = new THREE.Mesh(bandGeo, bandMat)
       band.position.y = 0.15
       fg.add(band)
@@ -1054,7 +1054,7 @@ export function createTitanicModel() {
   // Rudder — larger, more detailed
   const rudderGroup = new THREE.Group()
   rudderGroup.add(m(new THREE.BoxGeometry(0.015, 0.45, 0.25),
-    new THREE.MeshStandardMaterial({ color: 0x2a2a2a, metalness: 0.25, roughness: 0.7 }), 0, 0, 0))
+    new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.2, roughness: 0.8 }), 0, 0, 0))
   // Rudder post
   rudderGroup.add(m(new THREE.CylinderGeometry(0.01, 0.01, 0.5, 6), metalMat, 0, 0, 0.12))
   // Rudder horn
@@ -1153,7 +1153,7 @@ export function createTitanicModel() {
 
   // Deck chairs (scattered/fallen)
   {
-    const chairMat = new THREE.MeshStandardMaterial({ color: 0x6a5a40, roughness: 0.9 })
+    const chairMat = new THREE.MeshStandardMaterial({ color: 0x2a2218, roughness: 0.95 })
     const rand = rng(777)
     for (let i = 0; i < 8; i++) {
       const z = 2.0 - rand() * 3.5

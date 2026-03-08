@@ -7,6 +7,7 @@ import { VERT } from '../seafloor.js'
 import { createMarineSnow, createVentSmoke } from '../particles.js'
 import { initGeoHUD, setStatus, setFeatureClickCallback } from '../hud.js'
 import { createTitanicModel } from '../titanic-model.js'
+import { createROV } from '../rov-model.js'
 
 // ─── Region definitions ──────────────────────────────────────────────────────
 
@@ -142,8 +143,8 @@ const REGIONS = {
     subtitle: 'NORTH ATLANTIC ABYSSAL PLAIN · 41°43\u2032N 49°56\u2032W',
     z: 7, baseX: 44, baseY: 46, grid: 4, sceneH: 45,
     camPos: null,
-    bgColor: 0x020406,
-    fogDensity: 0.006,
+    bgColor: 0x010304,
+    fogDensity: 0.007,
     features: [
       { name: 'RMS Titanic Wreck',     type: 'trench',   lat: 41.73, lon: -49.95, depth: '-3,784 m', width: '---' },
       { name: 'Grand Banks Shelf Edge', type: 'seamount', lat: 43.50, lon: -50.00, depth: '-200 m',   width: '350 km' },
@@ -356,12 +357,12 @@ function buildTerrain(scene, raw, size, sceneH = 40, opts = {}) {
       const t = Math.max(0, Math.min(1, (h - minH) / (maxH - minH)))
       const ny = normals.getY(i) // steepness: flat=1, vertical=0
 
-      // Sediment palette: deep muddy brown → lighter clay → pale silt on ridges
-      const c0 = [0.08, 0.06, 0.04]  // deepest — dark mud
-      const c1 = [0.14, 0.11, 0.08]  // mid valleys — clay
-      const c2 = [0.18, 0.15, 0.11]  // mid slopes — brown silt
-      const c3 = [0.22, 0.19, 0.14]  // upper slopes — lighter sediment
-      const c4 = [0.25, 0.22, 0.17]  // ridgetops — pale clay
+      // Deep-sea sediment palette (3,800m depth — dark but visible under ROV light)
+      const c0 = [0.045, 0.038, 0.030]  // deepest — dark mud
+      const c1 = [0.068, 0.058, 0.046]  // valleys — dark clay
+      const c2 = [0.090, 0.078, 0.060]  // mid slopes — dark silt
+      const c3 = [0.110, 0.095, 0.074]  // upper slopes — sediment
+      const c4 = [0.130, 0.115, 0.092]  // ridgetops — slightly lighter
 
       let r, g, b
       if (t < 0.25) {
@@ -493,7 +494,7 @@ function updateMarkers(markers, dt) {
 // ─── View factory ───────────────────────────────────────────────────────────
 
 export function createBathymetryView(regionKey) {
-  let scene_, camCtrl_, composer_, terrain_, markers_, snow_, clock_
+  let scene_, camCtrl_, composer_, terrain_, markers_, snow_, clock_, rovs_
 
   return {
     async init(renderer) {
@@ -528,18 +529,18 @@ export function createBathymetryView(regionKey) {
 
       // Lighting
       if (regionKey === 'titanic') {
-        // Deep-sea ambient: very faint blue-black
-        scene_.add(new THREE.AmbientLight(0x1a2a3a, 1.2))
-        // Simulated ROV main floodlight (warm white, from above-forward)
-        const rov = new THREE.DirectionalLight(0xe8e0d0, 2.8)
-        rov.position.set(20, 80, 40)
-        scene_.add(rov)
-        // Secondary fill (cool blue, softer, from opposite side)
-        const fill = new THREE.DirectionalLight(0x8899aa, 1.2)
+        // Deep-sea ambient: slightly brighter base
+        scene_.add(new THREE.AmbientLight(0x1a2838, 1.4))
+        // Broad fill light (supplementary — primary illumination comes from ROV SpotLights)
+        const dirFill = new THREE.DirectionalLight(0xe8e0d0, 2.2)
+        dirFill.position.set(20, 80, 40)
+        scene_.add(dirFill)
+        // Cool fill from opposite side
+        const fill = new THREE.DirectionalLight(0x778899, 0.8)
         fill.position.set(-40, 50, -30)
         scene_.add(fill)
         // Subtle rim light from behind to separate silhouettes
-        const rim = new THREE.DirectionalLight(0x4466aa, 0.6)
+        const rim = new THREE.DirectionalLight(0x445566, 0.6)
         rim.position.set(0, 30, -80)
         scene_.add(rim)
       } else {
@@ -564,7 +565,12 @@ export function createBathymetryView(regionKey) {
         return { ...f, scenePos: pos }
       })
 
-      markers_ = buildFeatureMarkers(scene_, featuresWithPos)
+      // Skip bright sonar-style markers for Titanic — they break the realistic aesthetic
+      if (regionKey !== 'titanic') {
+        markers_ = buildFeatureMarkers(scene_, featuresWithPos)
+      } else {
+        markers_ = []
+      }
 
       // Place Titanic wreck — bow and stern sections
       if (regionKey === 'titanic') {
@@ -597,32 +603,76 @@ export function createBathymetryView(regionKey) {
         debris.rotation.y = 0.6
         scene_.add(debris)
 
-        // ROV floodlights — warm white spots illuminating the wreck
-        const rovMain = new THREE.SpotLight(0xf0e8d8, 40, 60, Math.PI / 4, 0.5, 1.0)
-        rovMain.position.copy(bowPos).add(new THREE.Vector3(4, 12, 10))
-        rovMain.target.position.copy(bowPos)
-        scene_.add(rovMain)
-        scene_.add(rovMain.target)
+        // ── ROV submersibles ──────────────────────────────────────────
+        // Two ROVs with onboard SpotLights replace the invisible floodlights
+        const rov1 = createROV({ phase: 0 })
+        scene_.add(rov1.group)
+        // Add scene-level targets and cones
+        rov1.sceneTargets.forEach(t => scene_.add(t))
+        rov1.lightCones.forEach(c => scene_.add(c))
 
-        const rovFill = new THREE.SpotLight(0xd0dce8, 25, 50, Math.PI / 3, 0.6, 1.2)
-        rovFill.position.copy(bowPos).add(new THREE.Vector3(-5, 8, -4))
-        rovFill.target.position.copy(bowPos)
-        scene_.add(rovFill)
-        scene_.add(rovFill.target)
+        // ── Patrol path around the bow section ──
+        // The bow is rotated 0.4 rad in the scene. Define waypoints as
+        // offsets in the bow's local frame, then rotate to world space.
+        const bowRot = 0.4
+        const cosR = Math.cos(bowRot), sinR = Math.sin(bowRot)
+        function bowLocal(lx, ly, lz) {
+          // Rotate (lx, lz) by bowRot around Y, offset from bowPos
+          // Three.js Y-rotation matrix: x' = x*cos + z*sin, z' = -x*sin + z*cos
+          return new THREE.Vector3(
+            bowPos.x + lx * cosR + lz * sinR,
+            bowPos.y + ly,
+            bowPos.z - lx * sinR + lz * cosR
+          )
+        }
+        // Hull in local space: origin at bowPos, z=-0.9 (break) to z=6.0 (tip),
+        // width ±0.7 in x. All targets should point AT the hull surface.
+        // pause:true = ROV lingers at points of interest.
+        const patrol = [
+          // Starboard foredeck — inspecting forecastle from the side
+          { pos: bowLocal(2.0, 2.2, 4.0),   target: bowLocal(0, 0.5, 3.0), pause: true },
+          // Starboard midship high — bridge, wheelhouse, boat deck
+          { pos: bowLocal(2.0, 2.5, 2.0),   target: bowLocal(0, 0.8, 1.5) },
+          // Starboard midship low — waterline, portholes, rusticles
+          { pos: bowLocal(1.8, 1.2, 0.5),   target: bowLocal(0, -0.2, 0.5) },
+          // Starboard at the break — looking at torn steel (pause)
+          { pos: bowLocal(1.5, 2.0, -0.6),  target: bowLocal(0, 0.2, -0.5), pause: true },
+          // Above the break edge — looking straight down at damage (pause)
+          { pos: bowLocal(0.3, 3.5, -0.8),  target: bowLocal(0, -0.3, -0.7), pause: true },
+          // Port at the break — other side of damage
+          { pos: bowLocal(-1.5, 2.0, -0.6), target: bowLocal(0, 0.2, -0.5) },
+          // Port midship low — hull plating, rusticle formations
+          { pos: bowLocal(-1.8, 1.2, 0.5),  target: bowLocal(0, -0.2, 0.5) },
+          // Port midship high — funnels, upper decks
+          { pos: bowLocal(-2.0, 2.5, 2.0),  target: bowLocal(0, 0.8, 1.5) },
+          // Port foredeck — crow's nest, foremast (pause)
+          { pos: bowLocal(-2.0, 2.5, 4.0),  target: bowLocal(0, 1.0, 3.0), pause: true },
+          // Above the bow tip — looking back along the entire foredeck
+          { pos: bowLocal(0, 3.2, 5.5),     target: bowLocal(0, 0.5, 2.0) },
+        ]
+        rov1.setPatrol(patrol)
 
-        // Stern section ROV light
-        const rovStern = new THREE.SpotLight(0xf0e8d8, 35, 55, Math.PI / 4, 0.5, 1.0)
-        rovStern.position.copy(sternPos).add(new THREE.Vector3(3, 10, 6))
-        rovStern.target.position.copy(sternPos)
-        scene_.add(rovStern)
-        scene_.add(rovStern.target)
+        const rov2 = createROV({ phase: Math.PI * 0.7 })
+        const rov2Pos = sternPos.clone().add(new THREE.Vector3(1.5, 3, 2))
+        rov2.group.position.copy(rov2Pos)
+        rov2.group.rotation.y = Math.PI - 0.4 // facing the stern
+        rov2.setBase(rov2Pos.y, Math.PI - 0.4)
+        scene_.add(rov2.group)
+        // Aim SpotLight targets at the stern wreck + add cones to scene
+        rov2.sceneTargets.forEach(t => {
+          t.position.copy(sternPos).add(new THREE.Vector3(0, 0.8, 0))
+          scene_.add(t)
+        })
+        rov2.lightCones.forEach(c => scene_.add(c))
 
-        // Faint point lights for ambient wreck visibility at distance
-        const ambBow = new THREE.PointLight(0x8899aa, 4, 35, 1.5)
-        ambBow.position.copy(bowPos).add(new THREE.Vector3(0, 6, 0))
+        rovs_ = [rov1, rov2]
+
+        // Ambient glow for silhouette visibility at distance
+        const ambBow = new THREE.PointLight(0x667788, 3, 30, 1.5)
+        ambBow.position.copy(bowPos).add(new THREE.Vector3(0, 5, 0))
         scene_.add(ambBow)
-        const ambStern = new THREE.PointLight(0x8899aa, 3, 30, 1.5)
-        ambStern.position.copy(sternPos).add(new THREE.Vector3(0, 5, 0))
+        const ambStern = new THREE.PointLight(0x667788, 2.5, 28, 1.5)
+        ambStern.position.copy(sternPos).add(new THREE.Vector3(0, 4, 0))
         scene_.add(ambStern)
 
         // Camera starts with overview of bow section
@@ -633,8 +683,8 @@ export function createBathymetryView(regionKey) {
         camCtrl_.camera.updateProjectionMatrix()
       }
 
-      // Marine snow
-      snow_ = createMarineSnow(scene_, 2500)
+      // Marine snow — fewer particles for Titanic to reduce visual noise
+      snow_ = createMarineSnow(scene_, regionKey === 'titanic' ? 1200 : 2500)
 
       initGeoHUD(region, featuresWithPos, 'DEEP OCEAN SURVEY SYSTEM')
       setStatus(`${region.label} · ACTIVE`)
@@ -656,6 +706,7 @@ export function createBathymetryView(regionKey) {
         terrain_.material.uniforms.uTime.value = clock_.elapsedTime
       if (markers_?.length) updateMarkers(markers_, dt)
       snow_?.update(dt, camCtrl_.camera.position)
+      if (rovs_?.length) rovs_.forEach(r => r.update(clock_.elapsedTime))
       camCtrl_.update(dt)
       composer_.render()
       return { camera: camCtrl_.camera }
@@ -680,7 +731,8 @@ export function createBathymetryView(regionKey) {
         const mats = Array.isArray(obj.material) ? obj.material : [obj.material]
         mats?.forEach(m => m?.dispose())
       })
-      scene_ = camCtrl_ = composer_ = terrain_ = markers_ = snow_ = null
+      rovs_?.forEach(r => r.dispose())
+      scene_ = camCtrl_ = composer_ = terrain_ = markers_ = snow_ = rovs_ = null
     },
   }
 }
