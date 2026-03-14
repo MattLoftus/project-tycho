@@ -260,12 +260,16 @@ export function animate() {
   });
 
   if (focusTransition) {
+    controls.enabled = false;
     const elapsed = performance.now() - focusTransition.startTime;
     const t = Math.min(elapsed / focusTransition.duration, 1);
     const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
     controls.target.lerpVectors(focusTransition.startControlsTarget, focusTransition.endControlsTarget, ease);
     camera.position.lerpVectors(focusTransition.startCamPos, focusTransition.endCamPos, ease);
-    if (t >= 1) focusTransition = null;
+    if (t >= 1) {
+      focusTransition = null;
+      controls.enabled = true;
+    }
   } else if (lockedMesh) {
     const newPos = lockedMesh.getWorldPosition(new THREE.Vector3());
     const delta = newPos.clone().sub(lastLockedPos);

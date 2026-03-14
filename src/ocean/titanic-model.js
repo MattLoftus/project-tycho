@@ -10,6 +10,79 @@ import * as THREE from 'three'
 
 const BREAK_Z = -0.9
 
+// ─── Feature data ───────────────────────────────────────────────────────────
+
+const FEATURES = {
+  bow: {
+    name: 'Bow Section',
+    type: 'Hull Structure',
+    dimensions: '133 m long (intact)',
+    description: 'The forward section of the Titanic, remarkably intact after its 3,800 m descent. The bow struck the seabed at roughly 25 knots, burying itself up to 18 m into the sediment. The forecastle, well deck, and most of the superstructure forward of the third funnel survive.',
+  },
+  stern: {
+    name: 'Stern Section',
+    type: 'Hull Structure',
+    dimensions: '100 m long (heavily damaged)',
+    description: 'The aft section suffered catastrophic implosion damage during the sinking. Air trapped inside collapsed entire decks as hydrostatic pressure overwhelmed the structure. The stern lies roughly 600 m south of the bow, rotated almost 180 degrees from the bow\'s heading.',
+  },
+  funnels: {
+    name: 'Funnel Bases',
+    type: 'Superstructure',
+    dimensions: '7.3 m diameter, 18.9 m tall (original)',
+    description: 'All four funnels broke free during the sinking. Only the bases and guy-wire anchor points remain on the wreck. Funnel No. 1 was found in the debris field. The fourth funnel was a dummy used for ventilation and aesthetic balance.',
+  },
+  bridge: {
+    name: 'Bridge & Wheelhouse',
+    type: 'Navigation',
+    dimensions: '12.5 m wide, 5 m deep',
+    description: 'The nerve center of the ship where First Officer Murdoch ordered "hard a-starboard" moments before the collision. The telemotor that held the ship\'s wheel still stands. The bridge wings extended to port and starboard for docking maneuvers.',
+  },
+  grandStaircase: {
+    name: 'Grand Staircase',
+    type: 'Interior Feature',
+    dimensions: '18 m tall (6 decks), wrought-iron & glass dome',
+    description: 'The forward Grand Staircase was the most opulent feature of the ship, descending six decks beneath an ornate iron-and-glass dome. The dome and staircase are gone — only the opening remains, providing a haunting portal into the ship\'s interior.',
+  },
+  boatDeck: {
+    name: 'Boat Deck',
+    type: 'Deck Structure',
+    dimensions: '200 m long, uppermost deck',
+    description: 'The topmost deck from which lifeboats were launched on the night of the sinking. Titanic carried only 20 lifeboats — enough for roughly half the people aboard. The davits that held the boats still line both sides of the wreck.',
+  },
+  forecastle: {
+    name: 'Forecastle',
+    type: 'Deck Structure',
+    dimensions: '39 m long, forward deck',
+    description: 'The raised forward deck where the anchor chains, capstans, and mooring equipment were located. The crow\'s nest, from which lookout Frederick Fleet spotted the iceberg, was mounted on the foremast just aft of the forecastle.',
+  },
+  poopDeck: {
+    name: 'Poop Deck',
+    type: 'Deck Structure',
+    dimensions: '32 m long, stern deck',
+    description: 'The raised aft deck was the last part of the ship above water. As the bow sank, the stern rose until the ship broke apart between the third and fourth funnels. Survivors described the stern rising to nearly vertical before its final plunge.',
+  },
+  debrisField: {
+    name: 'Debris Field',
+    type: 'Wreckage Zone',
+    dimensions: '~1.5 km long, 0.8 km wide',
+    description: 'Scattered between the bow and stern sections, the debris field contains thousands of artifacts: coal, hull plates, wine bottles, personal belongings, a fallen funnel, and structural fragments. The field traces the path the ship took as it broke apart during the descent.',
+  },
+}
+
+// ─── Label anchors (positions in model space relative to bow/stern origins) ──
+
+const LABEL_ANCHORS = {
+  bow:            { pos: new THREE.Vector3(0, 2.5, 3.0),   name: 'Bow Section' },
+  stern:          { pos: new THREE.Vector3(0, 2.5, -3.5),  name: 'Stern Section' },
+  funnels:        { pos: new THREE.Vector3(0, 2.8, 1.2),   name: 'Funnel Bases' },
+  bridge:         { pos: new THREE.Vector3(0, 2.0, 2.35),  name: 'Bridge' },
+  grandStaircase: { pos: new THREE.Vector3(0, 1.8, 1.9),   name: 'Grand Staircase' },
+  boatDeck:       { pos: new THREE.Vector3(0.6, 1.6, 1.0), name: 'Boat Deck' },
+  forecastle:     { pos: new THREE.Vector3(0, 1.5, 4.5),   name: 'Forecastle' },
+  poopDeck:       { pos: new THREE.Vector3(0, 1.2, -4.6),  name: 'Poop Deck' },
+  debrisField:    { pos: new THREE.Vector3(0, 0.8, 0),     name: 'Debris Field' },
+}
+
 // ─── Utility ────────────────────────────────────────────────────────────────
 
 function smoothstep(a, b, t) {
@@ -356,6 +429,14 @@ function createDebrisField() {
 export function createTitanicModel() {
   const bow = new THREE.Group()
   const stern = new THREE.Group()
+  const clickTargets = []
+
+  function tagged(mesh, featureKey) {
+    mesh.userData.feature = FEATURES[featureKey]
+    mesh.userData.featureKey = featureKey
+    clickTargets.push(mesh)
+    return mesh
+  }
 
   // ── Shared Materials ──
   const rustHull    = new THREE.MeshStandardMaterial({ color: 0x4e3018, roughness: 0.88, metalness: 0.12, side: THREE.DoubleSide })
@@ -387,8 +468,8 @@ export function createTitanicModel() {
   // ═══════════════════════════════════════════════════════════════════════════
   // HULLS
   // ═══════════════════════════════════════════════════════════════════════════
-  bow.add(new THREE.Mesh(createHullSection(BREAK_Z, 6), rustHull))
-  stern.add(new THREE.Mesh(createHullSection(-6, BREAK_Z), rustHull))
+  bow.add(tagged(new THREE.Mesh(createHullSection(BREAK_Z, 6), rustHull), 'bow'))
+  stern.add(tagged(new THREE.Mesh(createHullSection(-6, BREAK_Z), rustHull), 'stern'))
 
   // Red anti-fouling bottom
   const redBow = new THREE.Mesh(createHullSection(BREAK_Z, 6), redBottom)
@@ -472,7 +553,7 @@ export function createTitanicModel() {
   }
 
   // Forecastle deck (bow)
-  bow.add(m(new THREE.BoxGeometry(1.15, 0.15, 2.6), darkRust, 0, 0.1, 4.1))
+  bow.add(tagged(m(new THREE.BoxGeometry(1.15, 0.15, 2.6), darkRust, 0, 0.1, 4.1), 'forecastle'))
   for (const side of [-1, 1])
     bow.add(m(new THREE.BoxGeometry(0.025, 0.12, 2.6), darkRust, side * 0.565, 0.24, 4.1))
 
@@ -480,7 +561,7 @@ export function createTitanicModel() {
   bow.add(m(new THREE.BoxGeometry(1.1, 0.04, 0.8), teakDeck, 0, 0.02, 2.6))
 
   // Poop deck (stern) — partially collapsed
-  stern.add(m(new THREE.BoxGeometry(1.0, 0.14, 1.6), darkRust, 0, 0.09, -4.65))
+  stern.add(tagged(m(new THREE.BoxGeometry(1.0, 0.14, 1.6), darkRust, 0, 0.09, -4.65), 'poopDeck'))
   for (const side of [-1, 1])
     stern.add(m(new THREE.BoxGeometry(0.02, 0.1, 1.6), darkRust, side * 0.49, 0.21, -4.65))
 
@@ -508,7 +589,7 @@ export function createTitanicModel() {
   stern.add(m(new THREE.BoxGeometry(0.94, 0.16, aBrk - (-2.75)), ghostWhite, 0, 0.49, (aBrk + -2.75) / 2))
 
   // Boat deck
-  bow.add(m(new THREE.BoxGeometry(0.84, 0.14, 2.4 - aBrk), fadedCream, 0, 0.64, (2.4 + aBrk) / 2))
+  bow.add(tagged(m(new THREE.BoxGeometry(0.84, 0.14, 2.4 - aBrk), fadedCream, 0, 0.64, (2.4 + aBrk) / 2), 'boatDeck'))
   stern.add(m(new THREE.BoxGeometry(0.84, 0.14, aBrk - (-1.8)), fadedCream, 0, 0.64, (aBrk + -1.8) / 2))
 
   // Promenade deck windows (enclosed section)
@@ -631,7 +712,7 @@ export function createTitanicModel() {
   // ═══════════════════════════════════════════════════════════════════════════
   // BRIDGE & WHEELHOUSE
   // ═══════════════════════════════════════════════════════════════════════════
-  bow.add(m(new THREE.BoxGeometry(0.65, 0.22, 0.7), ghostWhite, 0, 0.82, 2.35))
+  bow.add(tagged(m(new THREE.BoxGeometry(0.65, 0.22, 0.7), ghostWhite, 0, 0.82, 2.35), 'bridge'))
   // Front windows
   for (let i = 0; i < 7; i++)
     bow.add(m(new THREE.PlaneGeometry(0.05, 0.065), windowMat, -0.24 + i * 0.08, 0.85, 2.701))
@@ -685,7 +766,7 @@ export function createTitanicModel() {
   // GRAND STAIRCASE DOME
   // ═══════════════════════════════════════════════════════════════════════════
   const domeGeo = new THREE.SphereGeometry(0.2, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2)
-  bow.add(m(domeGeo, glassMat, 0, 0.72, 1.9))
+  bow.add(tagged(m(domeGeo, glassMat, 0, 0.72, 1.9), 'grandStaircase'))
   // Dome ribs
   for (let a = 0; a < 12; a++) {
     const ang = (a / 12) * Math.PI * 2
@@ -724,7 +805,9 @@ export function createTitanicModel() {
     // Main body
     const body = new THREE.CylinderGeometry(0.125, 0.15, 1.25, 20)
     body.scale(1, 1, 0.82)
-    fg.add(new THREE.Mesh(body, fadedBuff))
+    const bodyMesh = new THREE.Mesh(body, fadedBuff)
+    if (idx === 0) tagged(bodyMesh, 'funnels')
+    fg.add(bodyMesh)
 
     // Black top
     const topGeo = new THREE.CylinderGeometry(0.13, 0.125, 0.3, 20)
@@ -1186,6 +1269,9 @@ export function createTitanicModel() {
   // DEBRIS FIELD
   // ═══════════════════════════════════════════════════════════════════════════
   const debris = createDebrisField()
+  // Tag debris group for click targeting
+  debris.userData.feature = FEATURES.debrisField
+  debris.userData.featureKey = 'debrisField'
 
-  return { bow, stern, debris }
+  return { bow, stern, debris, clickTargets, features: FEATURES, labelAnchors: LABEL_ANCHORS }
 }

@@ -714,6 +714,10 @@ export function createBathymetryView(regionKey) {
 
     getClickTargets() { return [] },
 
+    getScene() { return scene_ ?? null },
+    getCamera() { return camCtrl_?.camera ?? null },
+    getControls() { return camCtrl_?.controls ?? null },
+
     resize() {
       if (!camCtrl_ || !composer_) return
       camCtrl_.camera.aspect = window.innerWidth / window.innerHeight

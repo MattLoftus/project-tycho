@@ -1698,6 +1698,308 @@
     #ocean-app #oc-close-detail { background: none; border: none; color: #0080ff; font-size: 14px; line-height: 1; cursor: pointer; opacity: 0.5; padding: 0 0 0 8px; transition: opacity 0.15s; letter-spacing: 0; flex-shrink: 0; }
     #ocean-app #oc-close-detail:hover { opacity: 1; }
 
+    /* ══════════════════════════════════════════════════════════════════════
+       SPECIAL APP STYLES (scoped under #special-app)
+       ══════════════════════════════════════════════════════════════════════ */
+
+    #special-app {
+      position: fixed; inset: 0; z-index: 5;
+      pointer-events: none;
+      --sp-accent: #d4a050;
+      --sp-accent-rgb: 212, 160, 80;
+      --sp-bg: rgba(10, 8, 4, 0.82);
+    }
+    #special-app.theme-titanic {
+      --sp-accent: #4090c0;
+      --sp-accent-rgb: 64, 144, 192;
+      --sp-bg: rgba(4, 10, 18, 0.82);
+    }
+    #special-app.theme-cell {
+      --sp-accent: #40c890;
+      --sp-accent-rgb: 64, 200, 144;
+      --sp-bg: rgba(4, 14, 10, 0.82);
+    }
+    #special-app.theme-pompeii {
+      --sp-accent: #c08050;
+      --sp-accent-rgb: 192, 128, 80;
+      --sp-bg: rgba(14, 8, 4, 0.82);
+    }
+    #special-app.theme-chernobyl {
+      --sp-accent: #c04020;
+      --sp-accent-rgb: 192, 64, 32;
+      --sp-bg: rgba(14, 6, 4, 0.82);
+    }
+    #special-app.theme-dna {
+      --sp-accent: #60a0e0;
+      --sp-accent-rgb: 96, 160, 224;
+      --sp-bg: rgba(4, 8, 18, 0.82);
+    }
+    #special-app.theme-saturn5 {
+      --sp-accent: #e0a040;
+      --sp-accent-rgb: 224, 160, 64;
+      --sp-bg: rgba(10, 8, 4, 0.82);
+    }
+    #special-app.theme-pangaea {
+      --sp-accent: #40a0c0;
+      --sp-accent-rgb: 64, 160, 192;
+      --sp-bg: rgba(4, 10, 14, 0.82);
+    }
+    #special-app.theme-collider {
+      --sp-accent: #a060ff;
+      --sp-accent-rgb: 160, 96, 255;
+      --sp-bg: rgba(6, 4, 14, 0.82);
+    }
+
+    /* View switcher nav — top left */
+    /* View switcher — vertical nav (left side) */
+    #special-app #sp2-view-nav {
+      position: absolute; top: 140px; left: 24px;
+      display: flex; flex-direction: column; gap: 0;
+      pointer-events: auto; z-index: 15;
+      background: var(--sp-bg);
+      border: 1px solid rgba(var(--sp-accent-rgb), 0.15);
+      border-left: 2px solid rgba(var(--sp-accent-rgb), 0.3);
+      padding: 6px 0;
+      width: 195px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #special-app #sp2-view-nav.collapsed {
+      transform: translateX(calc(-100% - 24px));
+    }
+    #special-app #sp2-nav-collapse {
+      display: none;
+      position: absolute; top: 6px; right: 6px;
+      width: 22px; height: 22px;
+      background: none; border: none; cursor: pointer; padding: 0;
+      color: rgba(var(--sp-accent-rgb), 0.35);
+      font-size: 10px; font-family: 'Share Tech Mono', monospace;
+      transition: color 0.18s; z-index: 1;
+    }
+    #special-app #sp2-nav-collapse:hover { color: rgba(var(--sp-accent-rgb), 0.85); }
+    #special-app #sp2-nav-expand {
+      display: none;
+      position: absolute; top: 140px; left: 0;
+      width: 22px; height: 48px;
+      background: var(--sp-bg);
+      border: 1px solid rgba(var(--sp-accent-rgb), 0.15);
+      border-left: none;
+      border-radius: 0 6px 6px 0;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      cursor: pointer; z-index: 15;
+      align-items: center; justify-content: center;
+      color: rgba(var(--sp-accent-rgb), 0.45);
+      font-size: 14px; font-family: 'Share Tech Mono', monospace;
+      padding: 0; pointer-events: auto;
+      transition: color 0.18s, background 0.18s;
+    }
+    #special-app #sp2-nav-expand:hover {
+      color: rgba(var(--sp-accent-rgb), 0.85);
+      background: rgba(var(--sp-accent-rgb), 0.08);
+    }
+    #special-app #sp2-nav-expand.visible { display: flex; }
+    #special-app .sp2-view-btn {
+      position: relative;
+      background: transparent;
+      border: none;
+      border-left: 2px solid transparent;
+      color: rgba(var(--sp-accent-rgb), 0.5);
+      padding: 6px 14px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px; letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.18s, border-color 0.18s, background 0.18s, color 0.18s;
+      text-align: left; white-space: nowrap; width: 100%;
+    }
+    #special-app .sp2-view-btn:hover {
+      color: rgba(var(--sp-accent-rgb), 0.75);
+      background: rgba(var(--sp-accent-rgb), 0.08);
+    }
+    #special-app .sp2-view-btn.active {
+      color: var(--sp-accent);
+      border-left-color: var(--sp-accent);
+      background: rgba(var(--sp-accent-rgb), 0.12);
+    }
+    @media (max-width: 768px) {
+      #special-app #sp2-nav-collapse { display: block; }
+    }
+
+    #special-app #sp2-hud { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
+    #special-app .sp2-view-hud { position: absolute; inset: 0; pointer-events: none; }
+    #special-app .sp2-view-hud > * { pointer-events: none; }
+    #special-app #sp2-hud::after {
+      content: ''; position: absolute; inset: 0;
+      border: 1px solid rgba(var(--sp-accent-rgb), 0.08);
+      margin: 16px;
+      pointer-events: none;
+    }
+    #special-app .corner { position: absolute; width: 28px; height: 28px; border-color: var(--sp-accent); border-style: solid; opacity: 0.4; }
+    #special-app .corner-tl { top: 18px; left: 18px; border-width: 2px 0 0 2px; }
+    #special-app .corner-tr { top: 18px; right: 18px; border-width: 2px 2px 0 0; }
+    #special-app .corner-bl { bottom: 18px; left: 18px; border-width: 0 0 2px 2px; }
+    #special-app .corner-br { bottom: 18px; right: 18px; border-width: 0 2px 2px 0; }
+
+    #special-app #sp2-hud-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 24px 38px 0 38px;
+    }
+    #special-app #sp2-hud-top-left { padding-top: 38px; }
+    #special-app .hud-system-title { font-size: 14px; letter-spacing: 5px; color: var(--sp-accent); opacity: 0.75; margin-bottom: 7px; }
+    #special-app .hud-coords { font-family: 'Share Tech Mono', monospace; font-size: 14px; color: rgba(var(--sp-accent-rgb), 0.55); letter-spacing: 1px; }
+    #special-app .hud-coords .label { color: rgba(var(--sp-accent-rgb), 0.35); margin-right: 6px; font-size: 11px; letter-spacing: 2px; }
+
+    #special-app #sp2-status-container {
+      padding-top: 38px;
+    }
+    #special-app .status-indicator { display: flex; align-items: center; gap: 8px; }
+    #special-app .status-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--sp-accent); box-shadow: 0 0 6px var(--sp-accent);
+      animation: sp2-pulse 2s ease-in-out infinite;
+    }
+    @keyframes sp2-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    #special-app #sp2-status-text {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px; letter-spacing: 3px; color: rgba(var(--sp-accent-rgb), 0.7);
+    }
+
+    /* Mode toggle */
+    #special-app #sp2-mode-toggle {
+      position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+      display: flex; pointer-events: auto; z-index: 15;
+    }
+    #special-app .mode-btn {
+      background: var(--sp-bg);
+      border: 1px solid rgba(var(--sp-accent-rgb), 0.2);
+      color: rgba(var(--sp-accent-rgb), 0.4);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px; letter-spacing: 0.2em;
+      padding: 8px 28px; cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    #special-app .mode-btn:first-child { border-radius: 2px 0 0 2px; border-right: none; }
+    #special-app .mode-btn:last-child { border-radius: 0 2px 2px 0; }
+    #special-app .mode-btn:hover { color: rgba(var(--sp-accent-rgb), 0.7); }
+    #special-app .mode-btn.active {
+      background: rgba(var(--sp-accent-rgb), 0.12);
+      border-color: rgba(var(--sp-accent-rgb), 0.45);
+      color: var(--sp-accent);
+      box-shadow: 0 0 18px rgba(var(--sp-accent-rgb), 0.12);
+    }
+
+    /* Detail panel — positioned below feature nav */
+    #special-app #sp2-detail {
+      position: absolute; right: 38px; bottom: 80px; width: 280px;
+      background: var(--sp-bg);
+      border: 1px solid rgba(var(--sp-accent-rgb), 0.2);
+      backdrop-filter: blur(8px);
+      pointer-events: auto;
+      transition: opacity 0.2s ease;
+      z-index: 20;
+    }
+    #special-app #sp2-detail.hidden { display: none; }
+    #special-app #sp2-detail .panel-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(var(--sp-accent-rgb), 0.15);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px; letter-spacing: 3px; color: rgba(var(--sp-accent-rgb), 0.5);
+    }
+    #special-app #sp2-close-detail {
+      background: none; border: none; color: var(--sp-accent); font-size: 18px;
+      cursor: pointer; opacity: 0.5; padding: 0; transition: opacity 0.15s;
+    }
+    #special-app #sp2-close-detail:hover { opacity: 1; }
+
+    /* Bottom HUD bar */
+    #special-app #sp2-hud-bottom {
+      position: absolute; bottom: 28px; left: 38px; right: 38px;
+      display: flex; gap: 32px;
+      font-family: 'Share Tech Mono', monospace;
+    }
+    #special-app .gauge { display: flex; flex-direction: column; gap: 2px; }
+    #special-app .gauge-label { font-size: 10px; letter-spacing: 2px; color: rgba(var(--sp-accent-rgb), 0.35); }
+    #special-app .gauge-value { font-size: 15px; letter-spacing: 1px; color: rgba(var(--sp-accent-rgb), 0.7); }
+
+    /* View description */
+    #special-app #sp2-view-description {
+      position: absolute; bottom: 62px; left: 38px; max-width: 500px;
+    }
+    #special-app #sp2-view-description p {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px; line-height: 1.6; letter-spacing: 0.5px;
+      color: rgba(var(--sp-accent-rgb), 0.35);
+    }
+
+    /* CSS2D Labels */
+    .sp2-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--sp-accent);
+      background: var(--sp-bg);
+      padding: 3px 8px;
+      border: 1px solid rgba(var(--sp-accent-rgb), 0.2);
+      border-radius: 1px;
+      white-space: nowrap;
+      pointer-events: none;
+      text-shadow: 0 0 6px rgba(var(--sp-accent-rgb), 0.3);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    /* Feature navigation panel */
+    #special-app #sp2-feature-nav {
+      position: absolute; right: 38px; top: 80px; width: 260px;
+      background: var(--sp-bg);
+      border: 1px solid rgba(var(--sp-accent-rgb), 0.15);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      pointer-events: auto;
+      max-height: calc(100vh - 160px);
+      overflow-y: auto;
+      z-index: 12;
+    }
+    #special-app #sp2-feature-nav::-webkit-scrollbar { width: 3px; }
+    #special-app #sp2-feature-nav::-webkit-scrollbar-track { background: transparent; }
+    #special-app #sp2-feature-nav::-webkit-scrollbar-thumb { background: rgba(var(--sp-accent-rgb), 0.2); border-radius: 2px; }
+    #special-app .sp2-nav-header {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px; letter-spacing: 3px; color: rgba(var(--sp-accent-rgb), 0.4);
+      padding: 10px 14px 6px;
+    }
+    #special-app .sp2-nav-group-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px; letter-spacing: 2px; color: rgba(var(--sp-accent-rgb), 0.25);
+      padding: 8px 14px 3px;
+      text-transform: uppercase;
+    }
+    #special-app .sp2-feature-item {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px; letter-spacing: 1px;
+      color: rgba(var(--sp-accent-rgb), 0.5);
+      padding: 5px 14px 5px 22px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-left: 2px solid transparent;
+    }
+    #special-app .sp2-feature-item:hover {
+      color: rgba(var(--sp-accent-rgb), 0.85);
+      background: rgba(var(--sp-accent-rgb), 0.05);
+    }
+    #special-app .sp2-feature-item.active {
+      color: var(--sp-accent);
+      border-left-color: var(--sp-accent);
+      background: rgba(var(--sp-accent-rgb), 0.08);
+    }
+    @media (max-width: 768px) {
+      #special-app #sp2-feature-nav { display: none; }
+    }
+
     /* ── Mobile D-pad ── */
     #mobile-dpad {
       display: none;
@@ -1817,6 +2119,7 @@
     <button class="app-switch-btn active" data-app="space">Space Sim</button>
     <button class="app-switch-btn" data-app="surface">Surface</button>
     <button class="app-switch-btn" data-app="ocean">Ocean</button>
+    <button class="app-switch-btn" data-app="special">Special</button>
   </div>
 
   <!-- ════════════════════════════════════════════════════════════════════
@@ -2392,6 +2695,484 @@
 
       <!-- View description -->
       <div id="oc-view-description"><p id="oc-view-description-text"></p></div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SPECIAL APP
+       ════════════════════════════════════════════════════════════════════ -->
+  <div id="special-app" class="theme-pyramid" style="display:none">
+    <div id="sp2-hud">
+      <div class="corner corner-tl"></div>
+      <div class="corner corner-tr"></div>
+      <div class="corner corner-bl"></div>
+      <div class="corner corner-br"></div>
+
+      <!-- View switcher — vertical nav (left side) -->
+      <div id="sp2-view-nav">
+        <button id="sp2-nav-collapse">✕</button>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:rgba(var(--sp-accent-rgb),0.45);padding:4px 14px 6px;text-transform:uppercase;pointer-events:none">Views</div>
+        <button class="sp2-view-btn active" data-view="pyramid">GREAT PYRAMID</button>
+        <button class="sp2-view-btn" data-view="titanic">RMS TITANIC</button>
+        <button class="sp2-view-btn" data-view="cell">HUMAN CELL</button>
+        <button class="sp2-view-btn" data-view="pompeii">POMPEII</button>
+        <button class="sp2-view-btn" data-view="chernobyl">CHERNOBYL</button>
+        <button class="sp2-view-btn" data-view="dna">DNA HELIX</button>
+        <button class="sp2-view-btn" data-view="saturn5">SATURN V</button>
+        <button class="sp2-view-btn" data-view="pangaea">PANGAEA</button>
+        <button class="sp2-view-btn" data-view="collider">COLLIDER</button>
+      </div>
+      <button id="sp2-nav-expand">▶</button>
+
+      <!-- ═══ PYRAMID HUD ═══ -->
+      <div class="sp2-view-hud" data-view="pyramid">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">ARCHAEOLOGICAL SURVEY SYSTEM</div>
+            <div class="hud-coords">
+              <span class="label">LAT</span><span>29.9792°N</span>
+              <span class="label" style="margin-left:12px">LON</span><span>31.1342°E</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span id="sp2-status-text">GREAT PYRAMID OF GIZA</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-mode-toggle">
+          <button class="mode-btn active" data-mode="exterior">EXTERIOR</button>
+          <button class="mode-btn" data-mode="interior">INTERIOR</button>
+        </div>
+
+        <div id="sp2-feature-nav">
+          <div class="sp2-nav-header">STRUCTURES</div>
+          <div class="sp2-nav-group-title">Upper System</div>
+          <div class="sp2-feature-item" data-feature="grandGallery">Grand Gallery</div>
+          <div class="sp2-feature-item" data-feature="kingsChamber">King's Chamber</div>
+          <div class="sp2-feature-item" data-feature="relievingChambers">Relieving Chambers</div>
+          <div class="sp2-feature-item" data-feature="antechamber">Antechamber</div>
+          <div class="sp2-feature-item" data-feature="sarcophagus">Sarcophagus</div>
+          <div class="sp2-nav-group-title">Middle System</div>
+          <div class="sp2-feature-item" data-feature="ascendingPassage">Ascending Passage</div>
+          <div class="sp2-feature-item" data-feature="queensChamber">Queen's Chamber</div>
+          <div class="sp2-nav-group-title">Lower System</div>
+          <div class="sp2-feature-item" data-feature="descendingPassage">Descending Passage</div>
+          <div class="sp2-feature-item" data-feature="subterranean">Subterranean Chamber</div>
+          <div class="sp2-nav-group-title">Shafts &amp; Voids</div>
+          <div class="sp2-feature-item" data-feature="wellShaft">Well Shaft</div>
+          <div class="sp2-feature-item" data-feature="bigVoid">Big Void (2017)</div>
+          <div class="sp2-nav-group-title">Historical</div>
+          <div class="sp2-feature-item" data-feature="entrance">Entrance</div>
+          <div class="sp2-feature-item" data-feature="granitePl">Granite Plugs</div>
+          <div class="sp2-feature-item" data-feature="alMamun">Al-Ma'mun's Tunnel</div>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">ELEVATION</span>
+            <span class="gauge-value" id="sp2-gauge-elevation">0 m</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">DISTANCE</span>
+            <span class="gauge-value" id="sp2-gauge-distance">--- m</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">MODE</span>
+            <span class="gauge-value" id="sp2-gauge-mode">EXTERIOR</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">SCALE</span>
+            <span class="gauge-value">1 : 1</span>
+          </div>
+        </div>
+
+        <div id="sp2-view-description"><p>Great Pyramid of Giza (Pyramid of Khufu) — the oldest and largest of the three pyramids on the Giza plateau. Built c. 2560 BCE, it stood 146.6 m tall for over 3,800 years as the tallest structure on Earth. Toggle to interior mode to explore the passage system, chambers, and the mysterious Big Void discovered in 2017.</p></div>
+      </div>
+
+      <!-- ═══ TITANIC HUD ═══ -->
+      <div class="sp2-view-hud" data-view="titanic" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">DEEP OCEAN SURVEY SYSTEM</div>
+            <div class="hud-coords">
+              <span class="label">LAT</span><span>41.7325°N</span>
+              <span class="label" style="margin-left:12px">LON</span><span>49.9469°W</span>
+              <span class="label" style="margin-left:12px">DEPTH</span><span>3,784 m</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>RMS TITANIC WRECK SITE</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">DEPTH</span>
+            <span class="gauge-value">-3,784 m</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">PRESSURE</span>
+            <span class="gauge-value">379.4 atm</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">TEMP</span>
+            <span class="gauge-value">2.1 °C</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">VISIBILITY</span>
+            <span class="gauge-value">~30 m</span>
+          </div>
+        </div>
+
+        <div id="sp2-view-description"><p>RMS Titanic wreck site — North Atlantic abyssal plain, 3,784 metres below the surface. The bow and stern sections lie approximately 600 metres apart, with a vast debris field between them. Discovered on September 1, 1985 by Robert Ballard using the Argo deep-tow camera system.</p></div>
+      </div>
+
+      <!-- ═══ CELL HUD ═══ -->
+      <div class="sp2-view-hud" data-view="cell" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">BIOLOGICAL SURVEY SYSTEM</div>
+            <div class="hud-coords">
+              <span class="label">TYPE</span><span>Eukaryotic Animal Cell</span>
+              <span class="label" style="margin-left:12px">SCALE</span><span>~20 µm</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>HUMAN CELL CROSS-SECTION</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-mode-toggle">
+          <button class="mode-btn active" data-mode="exterior">OVERVIEW</button>
+          <button class="mode-btn" data-mode="interior">INTERIOR</button>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">DISTANCE</span>
+            <span class="gauge-value" id="sp2-gauge-cell-dist">--- µm</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">MODE</span>
+            <span class="gauge-value" id="sp2-gauge-cell-mode">OVERVIEW</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">MAGNIFICATION</span>
+            <span class="gauge-value">×10,000</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">STAIN</span>
+            <span class="gauge-value">FLUORESCENT</span>
+          </div>
+        </div>
+
+        <div id="sp2-view-description"><p>Human eukaryotic cell — the fundamental unit of life. Contains membrane-bound organelles including the nucleus (DNA storage), mitochondria (energy production), endoplasmic reticulum (protein synthesis), and Golgi apparatus (protein packaging). Approximately 37.2 trillion cells comprise the human body.</p></div>
+
+        <div id="sp2-rotation-control" style="position:absolute;bottom:60px;right:24px;display:flex;align-items:center;gap:8px;pointer-events:auto;z-index:15;">
+          <span style="color:var(--sp-accent);font-size:9px;letter-spacing:2px;text-transform:uppercase;opacity:0.7">ROTATION</span>
+          <input type="range" id="sp2-rotation-speed" min="0" max="100" value="50" style="width:100px;accent-color:var(--sp-accent);height:2px;cursor:pointer;">
+        </div>
+      </div>
+
+      <!-- ═══ POMPEII HUD ═══ -->
+      <div class="sp2-view-hud" data-view="pompeii" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">ARCHAEOLOGICAL SURVEY SYSTEM</div>
+            <div class="hud-coords">
+              <span class="label">LAT</span><span>40.7509°N</span>
+              <span class="label" style="margin-left:12px">LON</span><span>14.4869°E</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>POMPEII — REGIO VI, INSULA 12</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-mode-toggle">
+          <button class="mode-btn active" data-mode="exterior">79 AD</button>
+          <button class="mode-btn" data-mode="interior">RUINS</button>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">ERA</span>
+            <span class="gauge-value" id="sp2-gauge-pompeii-era">79 AD</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">ELEVATION</span>
+            <span class="gauge-value">14 m</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">TEPHRA DEPTH</span>
+            <span class="gauge-value">5.6 m</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">SCALE</span>
+            <span class="gauge-value">1 : 1</span>
+          </div>
+        </div>
+
+        <div id="sp2-view-description"><p>Pompeii — Roman city buried by the eruption of Mount Vesuvius on August 24, 79 AD. This insula (city block) contains a typical domus with atrium, impluvium, and peristyle garden, along with street-facing tabernae (shops). Toggle between the living city and the excavated ruins preserved under 5.6 metres of volcanic ash.</p></div>
+      </div>
+
+      <!-- ═══ CHERNOBYL HUD ═══ -->
+      <div class="sp2-view-hud" data-view="chernobyl" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">NUCLEAR INCIDENT SURVEY SYSTEM</div>
+            <div class="hud-coords">
+              <span class="label">LAT</span><span>51.3892°N</span>
+              <span class="label" style="margin-left:12px">LON</span><span>30.0988°E</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>CHERNOBYL NPP — UNIT 4</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-mode-toggle">
+          <button class="mode-btn active" data-mode="exterior">APRIL 25</button>
+          <button class="mode-btn" data-mode="interior">APRIL 26</button>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">STATUS</span>
+            <span class="gauge-value" id="sp2-gauge-chernobyl-status">OPERATIONAL</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">REACTOR</span>
+            <span class="gauge-value">RBMK-1000</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">THERMAL</span>
+            <span class="gauge-value">3,200 MWt</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">INES LEVEL</span>
+            <span class="gauge-value">7 (MAJOR)</span>
+          </div>
+        </div>
+
+        <div id="sp2-view-description"><p>Chernobyl Nuclear Power Plant, Unit 4 — RBMK-1000 graphite-moderated reactor. On April 26, 1986 at 01:23:45, a catastrophic steam explosion during a safety test destroyed the reactor core, ejecting the 2,000-ton biological shield and releasing 400 times more radiation than Hiroshima. Toggle between the intact reactor and the destroyed state.</p></div>
+      </div>
+
+      <!-- ═══ DNA HUD ═══ -->
+      <div class="sp2-view-hud" data-view="dna" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">MOLECULAR BIOLOGY VIEWER</div>
+            <div class="hud-coords">
+              <span class="label">SCALE</span><span>~2nm per base pair</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>DNA DOUBLE HELIX</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-mode-toggle">
+          <button class="mode-btn active" data-mode="exterior">HELIX</button>
+          <button class="mode-btn" data-mode="interior">CHROMOSOME</button>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">STRUCTURE</span>
+            <span class="gauge-value" id="sp2-gauge-mode">HELIX</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">DIAMETER</span>
+            <span class="gauge-value">2.0 nm</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">PITCH</span>
+            <span class="gauge-value">3.4 nm / turn</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">BASE PAIRS</span>
+            <span class="gauge-value">~3.2 billion (human)</span>
+          </div>
+        </div>
+
+        <div id="sp2-view-description"><p>Deoxyribonucleic acid — the molecule that encodes the genetic instructions for all known living organisms. The double helix structure, discovered by Watson and Crick in 1953, consists of two sugar-phosphate backbones connected by complementary base pairs: adenine–thymine (2 hydrogen bonds) and guanine–cytosine (3 hydrogen bonds). Toggle to see how DNA coils into chromosomes.</p></div>
+      </div>
+
+      <!-- ═══ SATURN V HUD ═══ -->
+      <div class="sp2-view-hud" data-view="saturn5" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">LAUNCH VEHICLE ANALYSIS SYSTEM</div>
+            <div class="hud-coords">
+              <span class="label">PAD</span><span>LC-39A, Kennedy Space Center</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>SATURN V — APOLLO PROGRAM</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-mode-toggle">
+          <button class="mode-btn active" data-mode="exterior">ASSEMBLED</button>
+          <button class="mode-btn" data-mode="cutaway">CUTAWAY</button>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">VIEW</span>
+            <span class="gauge-value" id="sp2-gauge-mode">ASSEMBLED</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">HEIGHT</span>
+            <span class="gauge-value">111 m (363 ft)</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">MASS</span>
+            <span class="gauge-value">2,970,000 kg</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">FLIGHTS</span>
+            <span class="gauge-value">13 (1967–1973)</span>
+          </div>
+        </div>
+
+        <div id="sp2-view-description"><p>Saturn V — the most powerful rocket ever brought to operational status. Designed by Wernher von Braun's team at NASA Marshall, it stood 111 meters tall and generated 34,020 kN of thrust at liftoff. All 13 flights were successful, carrying the Apollo astronauts to the Moon and launching the Skylab space station. Toggle to cutaway view to see the internal fuel tanks, engines, and spacecraft.</p></div>
+      </div>
+
+      <!-- ═══ PANGAEA HUD ═══ -->
+      <div class="sp2-view-hud" data-view="pangaea" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">GEOLOGICAL TIME VIEWER</div>
+            <div class="hud-coords">
+              <span class="label">ERA</span><span id="sp2-pangaea-era">Permian–Triassic</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>CONTINENTAL DRIFT</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-mode-toggle">
+          <button class="mode-btn active" data-mode="pangaea">PANGAEA</button>
+          <button class="mode-btn" data-mode="drift">DRIFT</button>
+          <button class="mode-btn" data-mode="present">PRESENT</button>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">PERIOD</span>
+            <span class="gauge-value" id="sp2-gauge-mode">PANGAEA</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">TIME</span>
+            <span class="gauge-value" id="sp2-gauge-mya">250 Mya</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">CONTINENTS</span>
+            <span class="gauge-value">8 major plates</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">DRIFT RATE</span>
+            <span class="gauge-value">~2–15 cm/year</span>
+          </div>
+        </div>
+
+        <div id="sp2-view-description"><p>Pangaea ("all lands") — the supercontinent that existed from ~335 to ~175 million years ago. All major landmasses were joined in a single vast continent surrounded by the global ocean Panthalassa. It split into Laurasia (north) and Gondwana (south), which further fragmented into today's continents. Toggle between geological periods to watch 250 million years of continental drift.</p></div>
+      </div>
+
+      <!-- ═══ COLLIDER HUD ═══ -->
+      <div class="sp2-view-hud" data-view="collider" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">CMS DETECTOR SIMULATION</div>
+            <div class="hud-coords">
+              <span class="label">STATUS</span><span id="sp2-collider-status">READY</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>BEAM ACTIVE</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-mode-toggle">
+          <button class="mode-btn active" data-mode="single">SINGLE EVENT</button>
+          <button class="mode-btn" data-mode="continuous">CONTINUOUS</button>
+        </div>
+
+        <div style="position:absolute;top:50%;right:24px;transform:translateY(-50%);pointer-events:auto;z-index:15;">
+          <button id="sp2-collider-fire" style="
+            background: rgba(160,96,255,0.15);
+            border: 1px solid rgba(160,96,255,0.4);
+            color: #c0a0ff;
+            font-size: 11px;
+            letter-spacing: 3px;
+            padding: 12px 28px;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+            transition: all 0.2s;
+          ">▶ FIRE EVENT</button>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">EVENT TYPE</span>
+            <span class="gauge-value" id="sp2-collider-event">—</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">PARTICLES</span>
+            <span class="gauge-value" id="sp2-collider-particles">0</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">EVENT #</span>
+            <span class="gauge-value" id="sp2-collider-count">0</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">√s</span>
+            <span class="gauge-value">13.6 TeV</span>
+          </div>
+        </div>
+
+        <div id="sp2-view-description"><p>Compact Muon Solenoid (CMS) — one of two general-purpose detectors at CERN's Large Hadron Collider. Proton-proton collisions at √s = 13.6 TeV produce showers of particles whose trajectories curve in the 3.8T solenoidal magnetic field. Charged particles spiral through silicon trackers, photons and electrons deposit energy in the electromagnetic calorimeter (ECAL), hadrons penetrate the hadronic calorimeter (HCAL), and muons reach the outermost detection layers. Fire events to observe dijets, Z→μμ, H→γγ, and more.</p></div>
+      </div>
+
+      <!-- Shared detail panel (all views) -->
+      <div id="sp2-detail" class="hidden">
+        <div class="panel-header">
+          <span id="sp2-detail-title">STRUCTURAL ANALYSIS</span>
+          <button id="sp2-close-detail">&#x2715;</button>
+        </div>
+        <div id="sp2-detail-content"></div>
+      </div>
 
     </div>
   </div>

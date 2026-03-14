@@ -487,6 +487,7 @@ export function animate() {
   } else if (focusTransition) {
     // Keep transition endpoints chasing the moving planet so there's no
     // stale-delta jump when steady tracking takes over after the animation.
+    controls.enabled = false;
     if (lockedMesh && lastLockedPos) {
       const newPos = lockedMesh.getWorldPosition(new THREE.Vector3());
       const delta = newPos.clone().sub(lastLockedPos);
@@ -499,7 +500,10 @@ export function animate() {
     const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
     controls.target.lerpVectors(focusTransition.startControlsTarget, focusTransition.endControlsTarget, ease);
     camera.position.lerpVectors(focusTransition.startCamPos, focusTransition.endCamPos, ease);
-    if (t >= 1) focusTransition = null;
+    if (t >= 1) {
+      focusTransition = null;
+      controls.enabled = true;
+    }
   } else if (lockedMesh) {
     // Track the locked body — shift camera and target by how much the body moved
     const newPos = lockedMesh.getWorldPosition(new THREE.Vector3());
