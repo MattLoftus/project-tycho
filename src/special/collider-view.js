@@ -226,6 +226,41 @@ export function createColliderView() {
       collisionLight.position.set(0, 0, 0)
       scene_.add(collisionLight)
 
+      // ── Beam lines — two bright lines along Z axis ──
+      const beamLen = 40
+      const beamPositions = new Float32Array([0, 0, -beamLen, 0, 0, 0])
+      const beamGeo1 = new LineGeometry()
+      beamGeo1.setPositions(beamPositions)
+      const beamPositions2 = new Float32Array([0, 0, 0, 0, 0, beamLen])
+      const beamGeo2 = new LineGeometry()
+      beamGeo2.setPositions(beamPositions2)
+      const beamMat = new LineMaterial({
+        color: 0x40c0ff,
+        linewidth: 2,
+        transparent: true,
+        opacity: 0.7,
+        depthTest: false,
+        resolution: new THREE.Vector2(window.innerWidth, window.innerHeight),
+      })
+      const beam1 = new Line2(beamGeo1, beamMat)
+      beam1.computeLineDistances()
+      beam1.renderOrder = 5
+      scene_.add(beam1)
+      const beam2 = new Line2(beamGeo2, beamMat.clone())
+      beam2.computeLineDistances()
+      beam2.renderOrder = 5
+      scene_.add(beam2)
+
+      // Bright glow point at collision vertex
+      const vertexGeo = new THREE.SphereGeometry(0.25, 12, 8)
+      const vertexMat = new THREE.MeshBasicMaterial({
+        color: 0x80e0ff,
+        transparent: true,
+        opacity: 0.8,
+      })
+      const vertex = new THREE.Mesh(vertexGeo, vertexMat)
+      scene_.add(vertex)
+
       // ── Detector model ──
       model_ = createColliderModel()
       scene_.add(model_.detector)
