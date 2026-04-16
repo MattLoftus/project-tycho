@@ -8,6 +8,8 @@ import { createDNAView } from './special/dna-view.js'
 import { createSaturnVView } from './special/saturn5-view.js'
 import { createPangaeaView } from './special/pangaea-view.js'
 import { createColliderView } from './special/collider-view.js'
+import { createSpacetimeView } from './special/spacetime-view.js'
+import { createAlcubierreView } from './special/alcubierre-view.js'
 
 let _renderer = null
 let active = false
@@ -26,6 +28,8 @@ const viewFactories = {
   saturn5: createSaturnVView,
   pangaea: createPangaeaView,
   collider: createColliderView,
+  spacetime: createSpacetimeView,
+  alcubierre: createAlcubierreView,
 }
 const viewInstances = {}
 
@@ -40,6 +44,8 @@ const viewThemes = {
   saturn5: 'theme-saturn5',
   pangaea: 'theme-pangaea',
   collider: 'theme-collider',
+  spacetime: 'theme-spacetime',
+  alcubierre: 'theme-alcubierre',
 }
 
 // Raycasting

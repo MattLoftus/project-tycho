@@ -1762,6 +1762,32 @@
       --sp-accent-rgb: 160, 96, 255;
       --sp-bg: rgba(6, 4, 14, 0.82);
     }
+    #special-app.theme-spacetime {
+      --sp-accent: #40ddee;
+      --sp-accent-rgb: 64, 221, 238;
+      --sp-bg: rgba(2, 4, 10, 0.82);
+    }
+    #special-app.theme-alcubierre {
+      --sp-accent: #e09030;
+      --sp-accent-rgb: 224, 144, 48;
+      --sp-bg: rgba(6, 4, 2, 0.82);
+    }
+    #sp2-alcubierre-speed::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: rgba(224, 144, 48, 0.9);
+      border: 1px solid rgba(224, 144, 48, 0.4);
+      cursor: pointer;
+    }
+    #sp2-spacetime-speed::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: rgba(64, 221, 238, 0.9);
+      border: 1px solid rgba(64, 221, 238, 0.4);
+      cursor: pointer;
+    }
 
     /* View switcher nav — top left */
     /* View switcher — vertical nav (left side) */
@@ -2735,6 +2761,8 @@
         <button class="sp2-view-btn" data-view="saturn5">SATURN V</button>
         <button class="sp2-view-btn" data-view="pangaea">PANGAEA</button>
         <button class="sp2-view-btn" data-view="collider">COLLIDER</button>
+        <button class="sp2-view-btn" data-view="spacetime">SPACETIME</button>
+        <button class="sp2-view-btn" data-view="alcubierre">WARP DRIVE</button>
       </div>
       <button id="sp2-nav-expand">▶</button>
 
@@ -3176,6 +3204,119 @@
         </div>
 
         <div id="sp2-view-description"><p>Compact Muon Solenoid (CMS) — one of two general-purpose detectors at CERN's Large Hadron Collider. Proton-proton collisions at √s = 13.6 TeV produce showers of particles whose trajectories curve in the 3.8T solenoidal magnetic field. Charged particles spiral through silicon trackers, photons and electrons deposit energy in the electromagnetic calorimeter (ECAL), hadrons penetrate the hadronic calorimeter (HCAL), and muons reach the outermost detection layers. Fire events to observe dijets, Z→μμ, H→γγ, and more.</p></div>
+      </div>
+
+      <!-- ═══ SPACETIME HUD ═══ -->
+      <div class="sp2-view-hud" data-view="spacetime" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">SPACETIME CURVATURE SIMULATION</div>
+            <div class="hud-coords">
+              <span class="label">STATUS</span><span>OBSERVING</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>GRAVITATIONAL FIELD ACTIVE</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">MASS</span>
+            <span class="gauge-value">10 M&#x2609;</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">METRIC</span>
+            <span class="gauge-value">Schwarzschild</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">EVENT HORIZON</span>
+            <span class="gauge-value">29.5 km</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">DISTANCE</span>
+            <span class="gauge-value" id="sp2-spacetime-distance">&mdash;</span>
+          </div>
+        </div>
+
+        <div style="position:absolute;bottom:112px;right:24px;pointer-events:auto;z-index:15;display:flex;align-items:center;gap:8px;">
+          <label for="sp2-spacetime-gw" style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.6);text-transform:uppercase;cursor:pointer;">Grav Waves</label>
+          <input id="sp2-spacetime-gw" type="checkbox" checked style="accent-color:rgba(64,221,238,0.9);cursor:pointer;">
+        </div>
+
+        <div style="position:absolute;bottom:80px;right:24px;pointer-events:auto;z-index:15;display:flex;align-items:center;gap:10px;">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.6);text-transform:uppercase;">Speed</span>
+          <input id="sp2-spacetime-speed" type="range" min="0" max="2500" value="100" style="
+            width: 120px;
+            height: 3px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(var(--sp-accent-rgb), 0.25);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+          ">
+          <span id="sp2-spacetime-speed-label" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(var(--sp-accent-rgb),0.8);min-width:32px;">1.0x</span>
+        </div>
+
+        <div id="sp2-view-description"><p>Spacetime curvature &mdash; a binary star system orbiting their common barycenter. Both masses warp the fabric of spacetime, with the heavier star creating a deeper well while barely moving, and the lighter companion sweeping a wide arc. The grid deforms under the superposed gravitational fields of both objects in real time.</p></div>
+      </div>
+
+      <!-- ═══ ALCUBIERRE HUD ═══ -->
+      <div class="sp2-view-hud" data-view="alcubierre" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">ALCUBIERRE WARP DRIVE</div>
+            <div class="hud-coords">
+              <span class="label">STATUS</span><span>WARP FIELD ACTIVE</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>EXOTIC MATTER SUSTAINED</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">BUBBLE RADIUS</span>
+            <span class="gauge-value">5.0 units</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">WALL THICKNESS</span>
+            <span class="gauge-value">&sigma; = 3</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">ENERGY DENSITY</span>
+            <span class="gauge-value" style="color:#ff6040">&lt; 0 (exotic)</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">METRIC</span>
+            <span class="gauge-value">Alcubierre (1994)</span>
+          </div>
+        </div>
+
+        <div style="position:absolute;bottom:80px;right:24px;pointer-events:auto;z-index:15;display:flex;align-items:center;gap:10px;">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.6);text-transform:uppercase;">Speed</span>
+          <input id="sp2-alcubierre-speed" type="range" min="0" max="2500" value="100" style="
+            width: 120px;
+            height: 3px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(var(--sp-accent-rgb), 0.25);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+          ">
+          <span id="sp2-alcubierre-speed-label" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(var(--sp-accent-rgb),0.8);min-width:32px;">1.0x</span>
+        </div>
+
+        <div id="sp2-view-description"><p>Alcubierre warp drive (1994) &mdash; a theoretical solution to Einstein's field equations that allows faster-than-light travel by warping spacetime itself. A "warp bubble" contracts space in front of the ship (orange) and expands it behind (blue). The ship inside the bubble sits in flat spacetime and experiences no acceleration. The metric requires exotic matter with negative energy density &mdash; a fundamental obstacle that remains unresolved. The grid shows the York expansion scalar: the rate at which spatial volume changes.</p></div>
       </div>
 
       <!-- Shared detail panel (all views) -->
