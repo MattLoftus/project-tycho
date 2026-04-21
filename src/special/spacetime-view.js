@@ -17,6 +17,7 @@ export function createSpacetimeView() {
   let camMove_
   let clock_
   let model_ = null
+  let marker_ = null
   let speedMultiplier_ = 1.0
   let simTime_ = 0
 
@@ -60,8 +61,12 @@ export function createSpacetimeView() {
       massLight.position.set(0, -1, 0)
       scene_.add(massLight)
 
-      // ── Model ──
-      model_ = createSpacetimeModel()
+      // ── Model ── (cyan accent matches the theme-spacetime color scheme)
+      model_ = createSpacetimeModel({
+        accent: { r: 0.45, g: 0.9, b: 1.0 },
+        emissiveA: 0x2060e0,
+        emissiveB: 0x40a0ff,
+      })
       scene_.add(model_.grid)
       scene_.add(model_.centralSphere)
       scene_.add(model_.orbitSphere)
@@ -77,9 +82,9 @@ export function createSpacetimeView() {
         side: THREE.DoubleSide,
         depthWrite: false,
       })
-      const marker = new THREE.Mesh(markerGeo, markerMat)
-      marker.position.set(0, -5.5, 0)
-      scene_.add(marker)
+      marker_ = new THREE.Mesh(markerGeo, markerMat)
+      marker_.position.set(0, -5.5, 0)
+      scene_.add(marker_)
 
       // Speed slider
       const slider = document.getElementById('sp2-spacetime-speed')
@@ -99,6 +104,31 @@ export function createSpacetimeView() {
         })
       }
 
+      // Mass sliders — update the model in real time
+      const massASlider = document.getElementById('sp2-binary-mass-a-slider')
+      const massBSlider = document.getElementById('sp2-binary-mass-b-slider')
+      const applyMasses = () => {
+        const a = parseFloat(massASlider?.value ?? '15')
+        const b = parseFloat(massBSlider?.value ?? '4')
+        model_.setMasses(a, b)
+      }
+      massASlider?.addEventListener('input', applyMasses)
+      massBSlider?.addEventListener('input', applyMasses)
+
+      // Preset scenarios
+      document.querySelectorAll('[data-preset-group="binary"] .preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const a = parseFloat(btn.dataset.a)
+          const b = parseFloat(btn.dataset.b)
+          if (massASlider) massASlider.value = a
+          if (massBSlider) massBSlider.value = b
+          model_.setMasses(a, b)
+          document.querySelectorAll('[data-preset-group="binary"] .preset-btn').forEach(b =>
+            b.classList.toggle('active', b === btn)
+          )
+        })
+      })
+
       // ── CSS2D label renderer ──
       labelRenderer_ = new CSS2DRenderer()
       labelRenderer_.setSize(window.innerWidth, window.innerHeight)
@@ -106,7 +136,8 @@ export function createSpacetimeView() {
       labelRenderer_.domElement.style.top = '0'
       labelRenderer_.domElement.style.left = '0'
       labelRenderer_.domElement.style.pointerEvents = 'none'
-      document.getElementById('special-app')?.appendChild(labelRenderer_.domElement)
+      const appContainer = document.getElementById('spacetime-app') || document.getElementById('special-app')
+      appContainer?.appendChild(labelRenderer_.domElement)
 
       // ── Post-processing ──
       const post = createComposer(renderer, scene_, camera_)
@@ -136,8 +167,23 @@ export function createSpacetimeView() {
 
       model_.update(simTime_)
 
-      // HUD
-      updateGauges(camera_)
+      // Track barycenter marker to grid surface
+      if (marker_ && model_.originY != null) {
+        marker_.position.y = model_.originY + 0.05
+      }
+
+      // Live HUD updates
+      const phaseEl = document.getElementById('sp2-binary-phase')
+      if (phaseEl) {
+        const phaseDeg = ((model_.phase * 180 / Math.PI) % 360 + 360) % 360
+        phaseEl.textContent = phaseDeg.toFixed(0) + '°'
+      }
+      const omegaEl = document.getElementById('sp2-binary-omega')
+      if (omegaEl) omegaEl.textContent = model_.omega.toFixed(3) + ' rad/s'
+      const massAEl = document.getElementById('sp2-binary-mass-a')
+      if (massAEl) massAEl.textContent = model_.aMass.toFixed(0) + ' M☉'
+      const massBEl = document.getElementById('sp2-binary-mass-b')
+      if (massBEl) massBEl.textContent = model_.bMass.toFixed(0) + ' M☉'
 
       if (camMove_) camMove_.update(dt)
       cinematicPass_.uniforms.time.value = performance.now() * 0.001
@@ -181,12 +227,3 @@ export function createSpacetimeView() {
   }
 }
 
-// ─── HUD helper ──────────────────────────────────────────────────────────────
-
-function updateGauges(camera) {
-  const el = document.getElementById('sp2-spacetime-distance')
-  if (el) {
-    const d = camera.position.distanceTo(new THREE.Vector3(0, -1, 0))
-    el.textContent = `${d.toFixed(1)} units`
-  }
-}

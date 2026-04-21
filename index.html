@@ -1762,24 +1762,195 @@
       --sp-accent-rgb: 160, 96, 255;
       --sp-bg: rgba(6, 4, 14, 0.82);
     }
-    #special-app.theme-spacetime {
+    /* ─── Spacetime app themes ─── */
+    #spacetime-app.theme-blackhole {
+      --sp-accent: #e0a040;
+      --sp-accent-rgb: 224, 160, 64;
+      --sp-bg: rgba(6, 4, 2, 0.82);
+    }
+    #spacetime-app.theme-spacetime {
       --sp-accent: #40ddee;
       --sp-accent-rgb: 64, 221, 238;
       --sp-bg: rgba(2, 4, 10, 0.82);
     }
-    #special-app.theme-alcubierre {
+    #spacetime-app.theme-alcubierre {
       --sp-accent: #e09030;
       --sp-accent-rgb: 224, 144, 48;
       --sp-bg: rgba(6, 4, 2, 0.82);
     }
-    #sp2-alcubierre-speed::-webkit-slider-thumb {
+    #spacetime-app.theme-lensing {
+      --sp-accent: #c0a0ff;
+      --sp-accent-rgb: 192, 160, 255;
+      --sp-bg: rgba(2, 2, 6, 0.82);
+    }
+    #spacetime-app.theme-inspiral {
+      --sp-accent: #50e0c0;
+      --sp-accent-rgb: 80, 224, 192;
+      --sp-bg: rgba(2, 6, 6, 0.82);
+    }
+    #sp2-inspiral-speed::-webkit-slider-thumb {
       -webkit-appearance: none;
       width: 12px; height: 12px;
       border-radius: 50%;
-      background: rgba(224, 144, 48, 0.9);
-      border: 1px solid rgba(224, 144, 48, 0.4);
+      background: rgba(80, 224, 192, 0.9);
+      border: 1px solid rgba(80, 224, 192, 0.4);
       cursor: pointer;
     }
+    #spacetime-app.theme-framedrag {
+      --sp-accent: #e06090;
+      --sp-accent-rgb: 224, 96, 144;
+      --sp-bg: rgba(6, 2, 4, 0.82);
+    }
+    #spacetime-app.theme-polarization {
+      --sp-accent: #b080ff;
+      --sp-accent-rgb: 176, 128, 255;
+      --sp-bg: rgba(4, 2, 8, 0.82);
+    }
+    #spacetime-app.theme-lifebinary {
+      --sp-accent: #70c8ff;
+      --sp-accent-rgb: 112, 200, 255;
+      --sp-bg: rgba(2, 4, 8, 0.82);
+    }
+    #spacetime-app.theme-redshift {
+      --sp-accent: #ff9860;
+      --sp-accent-rgb: 255, 152, 96;
+      --sp-bg: rgba(8, 4, 2, 0.82);
+    }
+    #spacetime-app .st-view-btn[data-view="redshift"]::after {
+      background: linear-gradient(90deg, #4da8ff 0%, #ff8040 100%);
+    }
+    /* Life of a Binary — chapter nav & progress bar */
+    #sp2-lifebinary-chapters {
+      position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 4px; pointer-events: auto; z-index: 15;
+    }
+    #sp2-lifebinary-chapters .chapter-btn {
+      background: rgba(var(--sp-accent-rgb), 0.08);
+      border: 1px solid rgba(var(--sp-accent-rgb), 0.25);
+      color: rgba(var(--sp-accent-rgb), 0.55);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px; letter-spacing: 2px;
+      padding: 6px 12px; cursor: pointer;
+      transition: all 0.15s;
+    }
+    #sp2-lifebinary-chapters .chapter-btn:hover {
+      color: rgba(var(--sp-accent-rgb), 0.85);
+      border-color: rgba(var(--sp-accent-rgb), 0.45);
+    }
+    #sp2-lifebinary-chapters .chapter-btn.active {
+      background: rgba(var(--sp-accent-rgb), 0.18);
+      border-color: var(--sp-accent);
+      color: var(--sp-accent);
+    }
+    #sp2-lifebinary-progress {
+      position: absolute; top: 52px; left: 50%; transform: translateX(-50%);
+      width: 520px; max-width: calc(100vw - 60px); height: 3px;
+      background: rgba(var(--sp-accent-rgb), 0.12);
+      border-radius: 2px;
+      pointer-events: none; z-index: 15;
+    }
+    #sp2-lifebinary-progress-fill {
+      height: 100%;
+      background: var(--sp-accent);
+      border-radius: 2px;
+      transition: width 0.1s linear;
+    }
+    #sp2-lifebinary-chapter-label {
+      position: absolute; top: 64px; left: 50%; transform: translateX(-50%);
+      font-family: 'Share Tech Mono', monospace; font-size: 11px;
+      letter-spacing: 3px; color: rgba(var(--sp-accent-rgb), 0.7);
+      pointer-events: none; z-index: 15;
+    }
+    /* Polarization mode toggle buttons */
+    #sp2-polarization-modes {
+      position:absolute; bottom:80px; right:24px; pointer-events:auto; z-index:15;
+      display:flex; gap:4px;
+    }
+    #sp2-polarization-modes .mode-btn {
+      background: rgba(var(--sp-accent-rgb),0.08);
+      border: 1px solid rgba(var(--sp-accent-rgb),0.25);
+      color: rgba(var(--sp-accent-rgb),0.55);
+      font-family:'Share Tech Mono',monospace;
+      font-size:11px; letter-spacing:2px;
+      padding: 6px 14px; cursor:pointer;
+      transition: all 0.15s;
+    }
+    #sp2-polarization-modes .mode-btn:hover {
+      color: rgba(var(--sp-accent-rgb),0.85);
+      border-color: rgba(var(--sp-accent-rgb),0.45);
+    }
+    #sp2-polarization-modes .mode-btn.active {
+      background: rgba(var(--sp-accent-rgb),0.18);
+      border-color: var(--sp-accent);
+      color: var(--sp-accent);
+    }
+    /* Spacetime app nav — reuse special-app HUD patterns */
+    #spacetime-app #st-hud { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
+    #spacetime-app #st-view-nav {
+      position: absolute; top: 140px; left: 14px; pointer-events: auto; z-index: 20;
+      display: flex; flex-direction: column; gap: 2px;
+      background: var(--sp-bg); backdrop-filter: blur(8px);
+      border: 1px solid rgba(var(--sp-accent-rgb), 0.15); padding: 6px 0;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    #spacetime-app #st-view-nav.collapsed { transform: translateX(-110%); opacity: 0; pointer-events: none; }
+    #spacetime-app #st-nav-collapse {
+      position: absolute; top: 4px; right: 6px; background: none; border: none;
+      color: rgba(var(--sp-accent-rgb), 0.4); font-size: 11px; cursor: pointer; z-index: 2;
+    }
+    #spacetime-app #st-nav-expand {
+      display: none; position: absolute; top: 140px; left: 6px; pointer-events: auto;
+      background: var(--sp-bg); border: 1px solid rgba(var(--sp-accent-rgb), 0.2);
+      color: rgba(var(--sp-accent-rgb), 0.5); font-size: 11px; padding: 6px 8px; cursor: pointer;
+    }
+    #spacetime-app #st-nav-expand.visible { display: flex; }
+    #spacetime-app .st-view-btn {
+      position: relative; background: none; border: none; text-align: left;
+      font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 1.5px;
+      color: rgba(var(--sp-accent-rgb), 0.4); padding: 6px 14px 6px 30px;
+      cursor: pointer; white-space: nowrap;
+    }
+    #spacetime-app .st-view-btn:hover { color: rgba(var(--sp-accent-rgb), 0.75); }
+    #spacetime-app .st-view-btn.active { color: var(--sp-accent); }
+    #spacetime-app .st-view-btn.active::before {
+      content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+      width: 2px; height: 60%; background: var(--sp-accent);
+    }
+    /* View nav per-view thumbnail glyphs */
+    #spacetime-app .st-view-btn::after {
+      content: ''; position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      width: 12px; height: 12px; border-radius: 2px;
+      opacity: 0.8;
+    }
+    #spacetime-app .st-view-btn[data-view="blackhole"]::after {
+      background: radial-gradient(circle, transparent 30%, #e0a040 32%, #e0a040 45%, #1a0c02 48%, #1a0c02 100%);
+      border-radius: 50%;
+    }
+    #spacetime-app .st-view-btn[data-view="binarySystem"]::after {
+      background: radial-gradient(circle at 28% 50%, #40ddee 0%, #40ddee 28%, transparent 30%),
+                  radial-gradient(circle at 72% 50%, #2060c0 0%, #2060c0 18%, transparent 20%);
+    }
+    #spacetime-app .st-view-btn[data-view="alcubierre"]::after {
+      background: linear-gradient(90deg, transparent 0%, #e09030 45%, #e09030 55%, transparent 100%);
+    }
+    #spacetime-app .st-view-btn[data-view="lensing"]::after {
+      background: radial-gradient(circle, transparent 15%, #c0a0ff 28%, #c0a0ff 42%, transparent 55%);
+      border-radius: 50%;
+    }
+    #spacetime-app .st-view-btn[data-view="inspiral"]::after {
+      background: radial-gradient(circle at 50% 50%, #50e0c0 0%, #50e0c0 20%, transparent 22%);
+    }
+    #spacetime-app .st-view-btn[data-view="frameDrag"]::after {
+      background: conic-gradient(from 0deg, #e06090, transparent 60%, #e06090);
+      border-radius: 50%;
+    }
+    #spacetime-app .st-view-btn[data-view="polarization"]::after {
+      background: radial-gradient(ellipse 60% 28% at 50% 50%, #b080ff 0%, transparent 70%);
+    }
+    #spacetime-app .st-view-btn[data-view="lifeBinary"]::after {
+      background: linear-gradient(90deg, #70c8ff 0%, transparent 50%, #70c8ff 100%);
+    }
+
     #sp2-spacetime-speed::-webkit-slider-thumb {
       -webkit-appearance: none;
       width: 12px; height: 12px;
@@ -1788,6 +1959,155 @@
       border: 1px solid rgba(64, 221, 238, 0.4);
       cursor: pointer;
     }
+
+    /* ─── Spacetime app — shared HUD styles (mirrors special-app) ─── */
+    #spacetime-app #st-hud { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
+    #spacetime-app .st-view-hud { position: absolute; inset: 0; pointer-events: none; }
+    #spacetime-app .st-view-hud > * { pointer-events: none; }
+    #spacetime-app #st-hud::after {
+      content: ''; position: absolute; inset: 0;
+      border: 1px solid rgba(var(--sp-accent-rgb), 0.08);
+      margin: 16px; pointer-events: none;
+    }
+    #spacetime-app .corner { position: absolute; width: 28px; height: 28px; border-color: var(--sp-accent); border-style: solid; opacity: 0.4; }
+    #spacetime-app .corner-tl { top: 18px; left: 18px; border-width: 2px 0 0 2px; }
+    #spacetime-app .corner-tr { top: 18px; right: 18px; border-width: 2px 2px 0 0; }
+    #spacetime-app .corner-bl { bottom: 18px; left: 18px; border-width: 0 0 2px 2px; }
+    #spacetime-app .corner-br { bottom: 18px; right: 18px; border-width: 0 2px 2px 0; }
+    #spacetime-app #sp2-hud-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 24px 38px 0 38px;
+    }
+    #spacetime-app #sp2-hud-top-left { padding-top: 38px; }
+    #spacetime-app .hud-system-title { font-size: 14px; letter-spacing: 5px; color: var(--sp-accent); opacity: 0.75; margin-bottom: 7px; }
+    #spacetime-app .hud-coords { font-family: 'Share Tech Mono', monospace; font-size: 14px; color: rgba(var(--sp-accent-rgb), 0.55); letter-spacing: 1px; }
+    #spacetime-app .hud-coords .label { color: rgba(var(--sp-accent-rgb), 0.35); margin-right: 6px; font-size: 11px; letter-spacing: 2px; }
+    #spacetime-app #sp2-status-container { padding-top: 38px; }
+    #spacetime-app .status-indicator { display: flex; align-items: center; gap: 8px; }
+    #spacetime-app .status-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--sp-accent); box-shadow: 0 0 6px var(--sp-accent);
+      animation: sp2-pulse 2s ease-in-out infinite;
+    }
+    #spacetime-app #sp2-hud-bottom {
+      position: absolute; bottom: 28px; left: 38px; right: 38px;
+      display: flex; gap: 32px; font-family: 'Share Tech Mono', monospace;
+    }
+    #spacetime-app .gauge { display: flex; flex-direction: column; gap: 2px; }
+    #spacetime-app .gauge-label { font-size: 10px; letter-spacing: 2px; color: rgba(var(--sp-accent-rgb), 0.35); }
+    #spacetime-app .gauge-value { font-size: 15px; letter-spacing: 1px; color: rgba(var(--sp-accent-rgb), 0.7); }
+    #spacetime-app #sp2-view-description {
+      position: absolute; bottom: 62px; left: 38px; max-width: 500px;
+    }
+    #spacetime-app #sp2-view-description p {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px; line-height: 1.6; letter-spacing: 0.5px;
+      color: rgba(var(--sp-accent-rgb), 0.65);
+    }
+    /* Shared slider style for Spacetime controls */
+    #spacetime-app .st-slider {
+      width: 120px; height: 3px;
+      -webkit-appearance: none; appearance: none;
+      background: rgba(var(--sp-accent-rgb), 0.25);
+      border-radius: 2px; outline: none; cursor: pointer;
+    }
+    #spacetime-app .st-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 11px; height: 11px; border-radius: 50%;
+      background: var(--sp-accent);
+      border: 1px solid rgba(var(--sp-accent-rgb), 0.5);
+      cursor: pointer;
+    }
+    /* Tab-level intro overlay */
+    #spacetime-app #st-intro-overlay {
+      position: absolute; inset: 0;
+      background: rgba(2, 6, 14, 0.92);
+      backdrop-filter: blur(10px);
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: auto; z-index: 40;
+      animation: st-intro-fade-in 0.4s ease-out;
+    }
+    @keyframes st-intro-fade-in {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    #spacetime-app #st-intro-card {
+      max-width: 620px; padding: 36px 42px;
+      background: rgba(var(--sp-accent-rgb), 0.04);
+      border: 1px solid rgba(var(--sp-accent-rgb), 0.35);
+      font-family: 'Share Tech Mono', monospace;
+      color: rgba(var(--sp-accent-rgb), 0.85);
+    }
+    #spacetime-app #st-intro-title {
+      font-size: 18px; letter-spacing: 6px; color: var(--sp-accent);
+      margin-bottom: 20px;
+    }
+    #spacetime-app #st-intro-body {
+      font-size: 14px; line-height: 1.7; letter-spacing: 0.5px;
+      color: rgba(var(--sp-accent-rgb), 0.8);
+      margin-bottom: 24px;
+    }
+    #spacetime-app #st-intro-body b {
+      color: var(--sp-accent);
+    }
+    #spacetime-app #st-intro-body p { margin: 0 0 12px 0; }
+    #spacetime-app #st-intro-btn {
+      background: rgba(var(--sp-accent-rgb), 0.12);
+      border: 1px solid rgba(var(--sp-accent-rgb), 0.5);
+      color: var(--sp-accent);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px; letter-spacing: 3px;
+      padding: 10px 28px; cursor: pointer;
+      transition: all 0.2s;
+    }
+    #spacetime-app #st-intro-btn:hover {
+      background: rgba(var(--sp-accent-rgb), 0.22);
+      border-color: var(--sp-accent);
+    }
+    /* Preset scenario buttons */
+    #spacetime-app .st-presets {
+      display: flex; flex-direction: column; gap: 3px; margin-top: 4px;
+    }
+    #spacetime-app .preset-btn {
+      background: rgba(var(--sp-accent-rgb), 0.06);
+      border: 1px solid rgba(var(--sp-accent-rgb), 0.20);
+      color: rgba(var(--sp-accent-rgb), 0.60);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9px; letter-spacing: 2px;
+      padding: 4px 10px; cursor: pointer;
+      transition: all 0.15s;
+      text-align: right;
+    }
+    #spacetime-app .preset-btn:hover {
+      color: rgba(var(--sp-accent-rgb), 0.9);
+      border-color: rgba(var(--sp-accent-rgb), 0.40);
+    }
+    #spacetime-app .preset-btn.active {
+      background: rgba(var(--sp-accent-rgb), 0.18);
+      border-color: var(--sp-accent);
+      color: var(--sp-accent);
+    }
+    /* Metaphor caveat — a small dismissible note on rubber-sheet views */
+    #spacetime-app .st-caveat {
+      position: absolute; top: 92px; left: 24px;
+      max-width: 280px;
+      background: var(--sp-bg);
+      border: 1px solid rgba(var(--sp-accent-rgb), 0.2);
+      padding: 10px 32px 10px 12px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px; line-height: 1.5; letter-spacing: 0.5px;
+      color: rgba(var(--sp-accent-rgb), 0.75);
+      pointer-events: auto; z-index: 15;
+      backdrop-filter: blur(6px);
+    }
+    #spacetime-app .st-caveat.hidden { display: none; }
+    #spacetime-app .st-caveat-close {
+      position: absolute; top: 4px; right: 6px;
+      background: none; border: none; cursor: pointer;
+      color: rgba(var(--sp-accent-rgb), 0.5);
+      font-size: 14px; padding: 2px 6px;
+    }
+    #spacetime-app .st-caveat-close:hover { color: var(--sp-accent); }
 
     /* View switcher nav — top left */
     /* View switcher — vertical nav (left side) */
@@ -1970,7 +2290,7 @@
     #special-app #sp2-view-description p {
       font-family: 'Share Tech Mono', monospace;
       font-size: 13px; line-height: 1.6; letter-spacing: 0.5px;
-      color: rgba(var(--sp-accent-rgb), 0.35);
+      color: rgba(var(--sp-accent-rgb), 0.65);
     }
 
     /* CSS2D Labels */
@@ -2144,6 +2464,11 @@
 
       /* Show mobile d-pad */
       #mobile-dpad { display: flex !important; }
+      /* ...but hide it on views where it overlaps the HUD */
+      body.app-spacetime #mobile-dpad,
+      body.app-special #mobile-dpad {
+        display: none !important;
+      }
     }
 
   </style>
@@ -2158,6 +2483,7 @@
     <button class="app-switch-btn active" data-app="space">Space Sim</button>
     <button class="app-switch-btn" data-app="surface">Surface</button>
     <button class="app-switch-btn" data-app="ocean">Ocean</button>
+    <button class="app-switch-btn" data-app="spacetime">Spacetime</button>
     <button class="app-switch-btn" data-app="special">Special</button>
   </div>
 
@@ -2739,6 +3065,501 @@
   </div>
 
   <!-- ════════════════════════════════════════════════════════════════════
+       SPACETIME APP
+       ════════════════════════════════════════════════════════════════════ -->
+  <div id="spacetime-app" class="theme-blackhole" style="display:none">
+    <div id="st-hud">
+      <div class="corner corner-tl"></div>
+      <div class="corner corner-tr"></div>
+      <div class="corner corner-bl"></div>
+      <div class="corner corner-br"></div>
+
+      <!-- First-visit intro overlay -->
+      <div id="st-intro-overlay">
+        <div id="st-intro-card">
+          <div id="st-intro-title">SPACETIME</div>
+          <div id="st-intro-body">
+            <p>Eight views of curved spacetime &mdash; the geometry that <em>is</em> gravity, per Einstein's general relativity.</p>
+            <p>Most views use a <b>rubber-sheet grid</b> as a metaphor for spatial curvature. This is a 2D slice of a 4D reality; real spacetime also curves in time (clocks run slower near mass). The grid can't show that. Treat it as a mental model, not ground truth.</p>
+            <p>Starting view: <b>Life of a Binary</b> &mdash; the full story of two black holes from stable orbit to merger. Chapter nav at the top lets you skip.</p>
+          </div>
+          <button id="st-intro-btn">BEGIN &rarr;</button>
+        </div>
+      </div>
+
+      <!-- View switcher -->
+      <div id="st-view-nav">
+        <button id="st-nav-collapse">&#x2715;</button>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:rgba(var(--sp-accent-rgb),0.45);padding:4px 14px 6px;text-transform:uppercase;pointer-events:none">Views</div>
+        <button class="st-view-btn active" data-view="blackhole">BLACK HOLE</button>
+        <button class="st-view-btn" data-view="binarySystem">BINARY SYSTEM</button>
+        <button class="st-view-btn" data-view="alcubierre">WARP DRIVE</button>
+        <button class="st-view-btn" data-view="lensing">LENSING</button>
+        <button class="st-view-btn" data-view="inspiral">INSPIRAL</button>
+        <button class="st-view-btn" data-view="frameDrag">FRAME DRAG</button>
+        <button class="st-view-btn" data-view="polarization">POLARIZATION</button>
+        <button class="st-view-btn" data-view="lifeBinary">LIFE OF A BINARY</button>
+        <button class="st-view-btn" data-view="redshift">REDSHIFT</button>
+      </div>
+      <button id="st-nav-expand">&#x25B6;</button>
+
+      <!-- ═══ BLACK HOLE HUD ═══ -->
+      <div class="st-view-hud" data-view="blackhole">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">BLACK HOLE</div>
+            <div class="hud-coords">
+              <span class="label">STATUS</span><span>OBSERVING</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>ACCRETION DISK ACTIVE</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">TYPE</span>
+            <span class="gauge-value">Schwarzschild</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">RENDERING</span>
+            <span class="gauge-value">Ray-marched</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">ACCRETION</span>
+            <span class="gauge-value">Keplerian disk</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">LENSING</span>
+            <span class="gauge-value">Photon ring visible</span>
+          </div>
+        </div>
+
+        <!-- Disk tilt slider -->
+        <div style="position:absolute;bottom:80px;right:24px;pointer-events:auto;z-index:15;display:flex;align-items:center;gap:10px;">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.6);text-transform:uppercase;">Disk Tilt</span>
+          <input id="sp2-bh-disk-tilt" type="range" min="0" max="100" value="15" class="st-slider">
+          <span id="sp2-bh-disk-tilt-label" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(var(--sp-accent-rgb),0.8);min-width:32px;">15°</span>
+        </div>
+
+        <!-- Fire-photon hint -->
+        <div style="position:absolute;bottom:130px;right:24px;pointer-events:none;z-index:15;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.45);text-transform:uppercase;">
+          Click scene to fire photon &#x2192;
+        </div>
+
+        <div id="sp2-view-description"><p>A black hole is not a vacuum cleaner &mdash; it&#x2019;s a <em>region of spacetime from which no light can reach you</em>. The dark disk at the center isn&#x2019;t &#x201C;where the hole is.&#x201D; It&#x2019;s the set of directions in which light rays fail to escape. The thin bright ring just outside is the photon sphere &mdash; photons that briefly orbit the black hole before either falling in or escaping. The accretion disk appears warped over the top because gravity bends the light from its back side up over the shadow. This is the <em>Interstellar</em> Gargantua render, done in real time via ray-marching through a Schwarzschild metric.</p></div>
+      </div>
+
+      <!-- ═══ BINARY SYSTEM HUD ═══ -->
+      <div class="st-view-hud" data-view="binarySystem" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">BINARY STAR SPACETIME</div>
+            <div class="hud-coords">
+              <span class="label">PHASE</span><span id="sp2-binary-phase">0.0&deg;</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>ORBITING</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">STAR A MASS</span>
+            <span class="gauge-value" id="sp2-binary-mass-a">15 M&#x2609;</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">STAR B MASS</span>
+            <span class="gauge-value" id="sp2-binary-mass-b">4 M&#x2609;</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">SEPARATION</span>
+            <span class="gauge-value"><span id="sp2-binary-sep">12</span> units</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">ANG. FREQ.</span>
+            <span class="gauge-value" id="sp2-binary-omega">&mdash;</span>
+          </div>
+        </div>
+
+        <!-- Parameter sliders -->
+        <div style="position:absolute;bottom:160px;right:24px;pointer-events:auto;z-index:15;display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.6);text-transform:uppercase;">Star A</span>
+            <input id="sp2-binary-mass-a-slider" type="range" min="5" max="30" step="1" value="15" class="st-slider">
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.6);text-transform:uppercase;">Star B</span>
+            <input id="sp2-binary-mass-b-slider" type="range" min="2" max="15" step="1" value="4" class="st-slider">
+          </div>
+          <!-- Preset scenarios -->
+          <div class="st-presets" data-preset-group="binary">
+            <button class="preset-btn active" data-a="15" data-b="4">EXTREME MASS RATIO</button>
+            <button class="preset-btn" data-a="10" data-b="10">EQUAL MASS</button>
+            <button class="preset-btn" data-a="30" data-b="15">HEAVY BINARY</button>
+            <button class="preset-btn" data-a="5" data-b="5">LIGHT BINARY</button>
+          </div>
+        </div>
+
+        <div style="position:absolute;bottom:112px;right:24px;pointer-events:auto;z-index:15;display:flex;align-items:center;gap:8px;">
+          <label for="sp2-spacetime-gw" style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.6);text-transform:uppercase;cursor:pointer;">Grav Waves</label>
+          <input id="sp2-spacetime-gw" type="checkbox" checked style="accent-color:rgba(64,221,238,0.9);cursor:pointer;">
+        </div>
+
+        <div style="position:absolute;bottom:80px;right:24px;pointer-events:auto;z-index:15;display:flex;align-items:center;gap:10px;">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.6);text-transform:uppercase;">Speed</span>
+          <input id="sp2-spacetime-speed" type="range" min="0" max="2500" value="100" style="
+            width: 120px; height: 3px; -webkit-appearance: none; appearance: none;
+            background: rgba(var(--sp-accent-rgb), 0.25); border-radius: 2px; outline: none; cursor: pointer;
+          ">
+          <span id="sp2-spacetime-speed-label" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(var(--sp-accent-rgb),0.8);min-width:32px;">1.0x</span>
+        </div>
+
+        <div class="st-caveat" data-caveat="rubber-sheet">
+          <button class="st-caveat-close" title="Dismiss">&times;</button>
+          The grid is a <b>2D metaphor</b> &mdash; real spacetime is 4D (three space + one time). This view shows a spatial slice. Gravity comes from <em>time</em> curvature too, which the grid can&#x2019;t depict.
+        </div>
+
+        <div id="sp2-view-description"><p>Two stars, locked in gravitational embrace. Each one bends the geometry of space around it; together they trace a cosmic waltz around their shared center of mass. The heavier star barely moves while the lighter one sweeps a wider arc. When the <b>Grav Waves</b> toggle is on, ripples radiate outward at twice the orbital frequency &mdash; the quadrupole pinwheel signature that LIGO detectors are tuned to catch. Adjust the masses with the sliders and watch the orbit retune.</p></div>
+      </div>
+
+      <!-- ═══ ALCUBIERRE HUD ═══ -->
+      <div class="st-view-hud" data-view="alcubierre" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">ALCUBIERRE WARP DRIVE</div>
+            <div class="hud-coords">
+              <span class="label">FRAME</span><span>Ship&#x2019;s rest frame</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>SPACE FLOW ACTIVE</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">BUBBLE RADIUS</span>
+            <span class="gauge-value"><span id="sp2-warp-radius">6.0</span> units</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">WALL PROFILE</span>
+            <span class="gauge-value">Gaussian (illustrative)</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">REQUIRED ENERGY</span>
+            <span class="gauge-value" style="color:#ff8060">negative &mdash; not known to exist</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">METRIC</span>
+            <span class="gauge-value">Alcubierre (1994)</span>
+          </div>
+        </div>
+
+        <div style="position:absolute;bottom:80px;right:24px;pointer-events:auto;z-index:15;display:flex;align-items:center;gap:10px;">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.6);text-transform:uppercase;">Speed</span>
+          <input id="sp2-alcubierre-speed" type="range" min="0" max="2500" value="100" style="
+            width: 120px; height: 3px; -webkit-appearance: none; appearance: none;
+            background: rgba(var(--sp-accent-rgb), 0.25); border-radius: 2px; outline: none; cursor: pointer;
+          ">
+          <span id="sp2-alcubierre-speed-label" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(var(--sp-accent-rgb),0.8);min-width:32px;">1.0x</span>
+        </div>
+
+        <div id="sp2-view-description"><p>In 1994, Miguel Alcubierre wrote down a solution to Einstein&#x2019;s equations that would let a ship effectively exceed the speed of light &mdash; not by moving <em>through</em> space, but by warping space around it. In front of the bubble, space contracts. Behind, it expands. Inside, spacetime is flat &mdash; the ship drifts weightlessly while the universe rearranges itself to move the bubble. The catch: the metric requires <b>negative energy density in macroscopic quantities</b>, which has never been observed and is not known to be physically possible. This view sits firmly in &#x201C;beautiful mathematics, probably not engineering.&#x201D;</p></div>
+      </div>
+
+      <!-- ═══ LENSING HUD ═══ -->
+      <div class="st-view-hud" data-view="lensing" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">GRAVITATIONAL LENSING</div>
+            <div class="hud-coords">
+              <span class="label">STATUS</span><span>OBSERVING</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>LIGHT DEFLECTION ACTIVE</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">LENS TYPE</span>
+            <span class="gauge-value">Point mass</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">EFFECT</span>
+            <span class="gauge-value">Einstein ring</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">DEFLECTION</span>
+            <span class="gauge-value">&alpha; = 4GM/rc&sup2;</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">PREDICTION</span>
+            <span class="gauge-value">Einstein (1915)</span>
+          </div>
+        </div>
+
+        <div style="position:absolute;bottom:80px;right:24px;pointer-events:auto;z-index:15;display:flex;align-items:center;gap:10px;">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.6);text-transform:uppercase;">Strength</span>
+          <input id="sp2-lensing-strength" type="range" min="0" max="500" value="100" style="
+            width: 120px; height: 3px; -webkit-appearance: none; appearance: none;
+            background: rgba(var(--sp-accent-rgb), 0.25); border-radius: 2px; outline: none; cursor: pointer;
+          ">
+          <span id="sp2-lensing-strength-label" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(var(--sp-accent-rgb),0.8);min-width:32px;">1.0x</span>
+        </div>
+
+        <div id="sp2-view-description"><p>Light doesn&#x2019;t walk a straight line past a mass &mdash; it bends. A distant galaxy behind a foreground mass appears warped into arcs, duplicates, or, in the case of perfect alignment, a complete <b>Einstein ring</b>. Arthur Eddington confirmed this in 1919 by photographing stars near the sun during a solar eclipse, vindicating Einstein&#x2019;s prediction and making him world-famous overnight. Today, astronomers measure dark matter by how much it bends the light from the galaxies behind it &mdash; the lensing map <em>is</em> the mass map. Drag the camera; adjust strength to see the shadow and distortion grow.</p></div>
+      </div>
+
+      <!-- ═══ INSPIRAL HUD ═══ -->
+      <div class="st-view-hud" data-view="inspiral" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">GRAVITATIONAL WAVE INSPIRAL</div>
+            <div class="hud-coords">
+              <span class="label">PHASE</span><span id="sp2-inspiral-phase">INSPIRAL</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>GW EMISSION ACTIVE</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">MASSES</span>
+            <span class="gauge-value">8 + 8 M&#x2609;</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">SIGNAL</span>
+            <span class="gauge-value">Chirp (h&times;f &uarr;)</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">RADIATION</span>
+            <span class="gauge-value">Quadrupole</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">DETECTION</span>
+            <span class="gauge-value">LIGO (2015)</span>
+          </div>
+        </div>
+
+        <div style="position:absolute;bottom:80px;right:24px;pointer-events:auto;z-index:15;display:flex;align-items:center;gap:10px;">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.6);text-transform:uppercase;">Speed</span>
+          <input id="sp2-inspiral-speed" type="range" min="0" max="2500" value="100" style="
+            width: 120px; height: 3px; -webkit-appearance: none; appearance: none;
+            background: rgba(var(--sp-accent-rgb), 0.25); border-radius: 2px; outline: none; cursor: pointer;
+          ">
+          <span id="sp2-inspiral-speed-label" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(var(--sp-accent-rgb),0.8);min-width:32px;">1.0x</span>
+        </div>
+
+        <div id="sp2-view-description"><p>When two black holes fall toward each other, they shake spacetime itself. On September 14, 2015, for the first time in history, we <em>heard</em> it &mdash; LIGO detected a fifth-of-a-second chirp that rose in pitch and loudness as two 30-solar-mass black holes spiraled together 1.3 billion light years away. In that last moment, three solar masses of rest energy evaporated into gravitational radiation &mdash; briefly making the merger brighter, in GWs, than every star in the observable universe combined. Watch the cycle: slow inspiral, violent merger, ringdown to a single spinning black hole, repeat.</p></div>
+      </div>
+
+      <!-- ═══ FRAME DRAG HUD ═══ -->
+      <div class="st-view-hud" data-view="frameDrag" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">FRAME DRAGGING</div>
+            <div class="hud-coords">
+              <span class="label">METRIC</span><span>Kerr</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>SPACETIME ROTATION</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">MASS</span>
+            <span class="gauge-value">12 M&#x2609;</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">EFFECT</span>
+            <span class="gauge-value">Lense-Thirring</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">CONFIRMED</span>
+            <span class="gauge-value">Gravity Probe B (2011)</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">PREDICTION</span>
+            <span class="gauge-value">Thirring &amp; Lense (1918)</span>
+          </div>
+        </div>
+
+        <div style="position:absolute;bottom:80px;right:24px;pointer-events:auto;z-index:15;display:flex;align-items:center;gap:10px;">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.6);text-transform:uppercase;">Spin</span>
+          <input id="sp2-framedrag-spin-slider" type="range" min="0" max="100" value="100" class="st-slider">
+          <span id="sp2-framedrag-spin-label" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(var(--sp-accent-rgb),0.8);min-width:32px;">1.00</span>
+        </div>
+
+        <div id="sp2-view-description"><p>A spinning mass doesn&#x2019;t just curve spacetime &mdash; it <em>drags</em> it. If you hovered near a rotating black hole you could not remain still; the geometry itself would sweep you around, as if space were a viscous fluid caught on a spinning drum. The effect is tiny for Earth &mdash; just 39 milli-arcseconds per year &mdash; but NASA&#x2019;s Gravity Probe B measured it with four of the most perfectly round objects ever made, confirming it in 2011. Slide spin from 0 to 1 and watch the grid shift from Schwarzschild (static, symmetric) to Kerr (twisted spiral).</p></div>
+      </div>
+
+      <!-- ═══ POLARIZATION HUD ═══ -->
+      <div class="st-view-hud" data-view="polarization" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">GW POLARIZATION</div>
+            <div class="hud-coords">
+              <span class="label">MODE</span><span id="sp2-polarization-mode">+ plus</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>TRANSVERSE-TRACELESS STRAIN</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">WAVE DIRECTION</span>
+            <span class="gauge-value">+Z (into page)</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">MODES</span>
+            <span class="gauge-value">h&#x208A; , h&#x2093;</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">NATURE</span>
+            <span class="gauge-value">Quadrupole (spin-2)</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">RAW STRAIN</span>
+            <span class="gauge-value">~10&#x207B;&sup2;&sup1; (real)</span>
+          </div>
+        </div>
+
+        <div id="sp2-polarization-modes">
+          <button class="mode-btn active" data-mode="plus">+ PLUS</button>
+          <button class="mode-btn" data-mode="cross">&times; CROSS</button>
+          <button class="mode-btn" data-mode="both">BOTH (CIRCULAR)</button>
+        </div>
+
+        <div id="sp2-view-description"><p>Gravitational waves are often drawn like water ripples spreading outward &mdash; but that&#x2019;s wrong. They are <b>transverse</b>: they stretch and squash space <em>sideways</em> to their direction of travel, with two independent polarization modes. The &#x201C;plus&#x201D; mode stretches along horizontal/vertical axes; the &#x201C;cross&#x201D; mode rotates 45°. A ring of freely-floating particles is the textbook way to see it &mdash; watch the ring rhythmically oblate and prolate as the wave passes through. That 90° rotational symmetry is a fingerprint of the graviton&#x2019;s spin-2 nature: photons take a full 360° to return to the same pattern, gravitons only 180°.</p></div>
+      </div>
+
+      <!-- ═══ REDSHIFT HUD ═══ -->
+      <div class="st-view-hud" data-view="redshift" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">GRAVITATIONAL REDSHIFT</div>
+            <div class="hud-coords">
+              <span class="label">EFFECT</span><span>Time dilation</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>CLOCKS OUT OF SYNC</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">TOP CLOCK (FAR)</span>
+            <span class="gauge-value" id="sp2-redshift-top-rate">&mdash;</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">BOTTOM CLOCK (DEEP)</span>
+            <span class="gauge-value" id="sp2-redshift-bot-rate">&mdash;</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">BOTTOM RUNS</span>
+            <span class="gauge-value" id="sp2-redshift-ratio">&mdash;</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">CONFIRMED</span>
+            <span class="gauge-value">Pound-Rebka (1960)</span>
+          </div>
+        </div>
+
+        <div id="sp2-view-description"><p>Gravity doesn&#x2019;t just bend space &mdash; it slows time. A clock sitting deeper in a gravity well ticks slower than one at higher altitude. This isn&#x2019;t a trick of the eye; it&#x2019;s the actual rate of time passing. A photon climbing out of the well loses energy as it rises, shifting from blue toward red &mdash; the <b>gravitational redshift</b>. Pound and Rebka measured this in 1960 in a 22-meter elevator shaft at Harvard. GPS satellites need to correct for it every day, or your phone&#x2019;s location would drift by ~10 km in 24 hours. This view breaks the rubber-sheet metaphor on purpose: look at the <em>clocks</em>, not the grid &mdash; time curvature is what gravity really is.</p></div>
+      </div>
+
+      <!-- ═══ LIFE OF A BINARY HUD ═══ -->
+      <div class="st-view-hud" data-view="lifeBinary" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">LIFE OF A BINARY</div>
+            <div class="hud-coords">
+              <span class="label">PHASE</span><span id="sp2-lifebinary-phase">FORMATION</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>EVOLVING</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chapter nav centered at top -->
+        <div id="sp2-lifebinary-chapters">
+          <button class="chapter-btn active" data-chapter="0">I. FORMATION</button>
+          <button class="chapter-btn" data-chapter="1">II. INSPIRAL</button>
+          <button class="chapter-btn" data-chapter="2">III. MERGER</button>
+          <button class="chapter-btn" data-chapter="3">IV. RINGDOWN</button>
+          <button class="chapter-btn" data-chapter="4">V. SETTLED</button>
+        </div>
+        <div id="sp2-lifebinary-progress">
+          <div id="sp2-lifebinary-progress-fill" style="width: 0%;"></div>
+        </div>
+        <div id="sp2-lifebinary-chapter-label">I. Formation</div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">MASSES</span>
+            <span class="gauge-value">10 + 10 M&#x2609;</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">EVOLUTION</span>
+            <span class="gauge-value">Continuous cycle</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">GW PATTERN</span>
+            <span class="gauge-value">Quadrupole cos(2&phi;)</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">ENDPOINT</span>
+            <span class="gauge-value">Kerr BH remnant</span>
+          </div>
+        </div>
+
+        <div id="sp2-view-description"><p>Two stars, locked in gravity&#x2019;s grip, tell a story that ends in black hole. <b>I. Formation:</b> stable partners, barely radiating &mdash; it could stay this way for eons. <b>II. Inspiral:</b> gravitational waves leak away orbital energy. The stars fall inward; the dance accelerates. <b>III. Merger:</b> they collide, and in a fraction of a second emit more power as gravitational radiation than every star in the observable universe combined. <b>IV. Ringdown:</b> the newborn Kerr black hole rings like a bell &mdash; exponentially decaying distortions as it settles. <b>V. Settled:</b> a quiet, spinning black hole with an accretion disk, waiting to someday eat another companion. Click any chapter to jump.</p></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
        SPECIAL APP
        ════════════════════════════════════════════════════════════════════ -->
   <div id="special-app" class="theme-pyramid" style="display:none">
@@ -2761,8 +3582,6 @@
         <button class="sp2-view-btn" data-view="saturn5">SATURN V</button>
         <button class="sp2-view-btn" data-view="pangaea">PANGAEA</button>
         <button class="sp2-view-btn" data-view="collider">COLLIDER</button>
-        <button class="sp2-view-btn" data-view="spacetime">SPACETIME</button>
-        <button class="sp2-view-btn" data-view="alcubierre">WARP DRIVE</button>
       </div>
       <button id="sp2-nav-expand">▶</button>
 
@@ -3204,119 +4023,6 @@
         </div>
 
         <div id="sp2-view-description"><p>Compact Muon Solenoid (CMS) — one of two general-purpose detectors at CERN's Large Hadron Collider. Proton-proton collisions at √s = 13.6 TeV produce showers of particles whose trajectories curve in the 3.8T solenoidal magnetic field. Charged particles spiral through silicon trackers, photons and electrons deposit energy in the electromagnetic calorimeter (ECAL), hadrons penetrate the hadronic calorimeter (HCAL), and muons reach the outermost detection layers. Fire events to observe dijets, Z→μμ, H→γγ, and more.</p></div>
-      </div>
-
-      <!-- ═══ SPACETIME HUD ═══ -->
-      <div class="sp2-view-hud" data-view="spacetime" style="display:none">
-        <div id="sp2-hud-top">
-          <div id="sp2-hud-top-left">
-            <div class="hud-system-title">SPACETIME CURVATURE SIMULATION</div>
-            <div class="hud-coords">
-              <span class="label">STATUS</span><span>OBSERVING</span>
-            </div>
-          </div>
-          <div id="sp2-status-container">
-            <div class="status-indicator">
-              <div class="status-dot"></div>
-              <span>GRAVITATIONAL FIELD ACTIVE</span>
-            </div>
-          </div>
-        </div>
-
-        <div id="sp2-hud-bottom">
-          <div class="gauge">
-            <span class="gauge-label">MASS</span>
-            <span class="gauge-value">10 M&#x2609;</span>
-          </div>
-          <div class="gauge">
-            <span class="gauge-label">METRIC</span>
-            <span class="gauge-value">Schwarzschild</span>
-          </div>
-          <div class="gauge">
-            <span class="gauge-label">EVENT HORIZON</span>
-            <span class="gauge-value">29.5 km</span>
-          </div>
-          <div class="gauge">
-            <span class="gauge-label">DISTANCE</span>
-            <span class="gauge-value" id="sp2-spacetime-distance">&mdash;</span>
-          </div>
-        </div>
-
-        <div style="position:absolute;bottom:112px;right:24px;pointer-events:auto;z-index:15;display:flex;align-items:center;gap:8px;">
-          <label for="sp2-spacetime-gw" style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.6);text-transform:uppercase;cursor:pointer;">Grav Waves</label>
-          <input id="sp2-spacetime-gw" type="checkbox" checked style="accent-color:rgba(64,221,238,0.9);cursor:pointer;">
-        </div>
-
-        <div style="position:absolute;bottom:80px;right:24px;pointer-events:auto;z-index:15;display:flex;align-items:center;gap:10px;">
-          <span style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.6);text-transform:uppercase;">Speed</span>
-          <input id="sp2-spacetime-speed" type="range" min="0" max="2500" value="100" style="
-            width: 120px;
-            height: 3px;
-            -webkit-appearance: none;
-            appearance: none;
-            background: rgba(var(--sp-accent-rgb), 0.25);
-            border-radius: 2px;
-            outline: none;
-            cursor: pointer;
-          ">
-          <span id="sp2-spacetime-speed-label" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(var(--sp-accent-rgb),0.8);min-width:32px;">1.0x</span>
-        </div>
-
-        <div id="sp2-view-description"><p>Spacetime curvature &mdash; a binary star system orbiting their common barycenter. Both masses warp the fabric of spacetime, with the heavier star creating a deeper well while barely moving, and the lighter companion sweeping a wide arc. The grid deforms under the superposed gravitational fields of both objects in real time.</p></div>
-      </div>
-
-      <!-- ═══ ALCUBIERRE HUD ═══ -->
-      <div class="sp2-view-hud" data-view="alcubierre" style="display:none">
-        <div id="sp2-hud-top">
-          <div id="sp2-hud-top-left">
-            <div class="hud-system-title">ALCUBIERRE WARP DRIVE</div>
-            <div class="hud-coords">
-              <span class="label">STATUS</span><span>WARP FIELD ACTIVE</span>
-            </div>
-          </div>
-          <div id="sp2-status-container">
-            <div class="status-indicator">
-              <div class="status-dot"></div>
-              <span>EXOTIC MATTER SUSTAINED</span>
-            </div>
-          </div>
-        </div>
-
-        <div id="sp2-hud-bottom">
-          <div class="gauge">
-            <span class="gauge-label">BUBBLE RADIUS</span>
-            <span class="gauge-value">5.0 units</span>
-          </div>
-          <div class="gauge">
-            <span class="gauge-label">WALL THICKNESS</span>
-            <span class="gauge-value">&sigma; = 3</span>
-          </div>
-          <div class="gauge">
-            <span class="gauge-label">ENERGY DENSITY</span>
-            <span class="gauge-value" style="color:#ff6040">&lt; 0 (exotic)</span>
-          </div>
-          <div class="gauge">
-            <span class="gauge-label">METRIC</span>
-            <span class="gauge-value">Alcubierre (1994)</span>
-          </div>
-        </div>
-
-        <div style="position:absolute;bottom:80px;right:24px;pointer-events:auto;z-index:15;display:flex;align-items:center;gap:10px;">
-          <span style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.6);text-transform:uppercase;">Speed</span>
-          <input id="sp2-alcubierre-speed" type="range" min="0" max="2500" value="100" style="
-            width: 120px;
-            height: 3px;
-            -webkit-appearance: none;
-            appearance: none;
-            background: rgba(var(--sp-accent-rgb), 0.25);
-            border-radius: 2px;
-            outline: none;
-            cursor: pointer;
-          ">
-          <span id="sp2-alcubierre-speed-label" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(var(--sp-accent-rgb),0.8);min-width:32px;">1.0x</span>
-        </div>
-
-        <div id="sp2-view-description"><p>Alcubierre warp drive (1994) &mdash; a theoretical solution to Einstein's field equations that allows faster-than-light travel by warping spacetime itself. A "warp bubble" contracts space in front of the ship (orange) and expands it behind (blue). The ship inside the bubble sits in flat spacetime and experiences no acceleration. The metric requires exotic matter with negative energy density &mdash; a fundamental obstacle that remains unresolved. The grid shows the York expansion scalar: the rate at which spatial volume changes.</p></div>
       </div>
 
       <!-- Shared detail panel (all views) -->

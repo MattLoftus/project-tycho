@@ -531,6 +531,9 @@ export function animate() {
   updateBhUniforms();
   bhPass.uniforms.time.value += 0.048 * ts;
 
+  // Advance any active fired photon trajectories
+  updatePhotons(0);
+
   // ── Flythrough descent ──
   if (flythroughState && flythroughState.active) {
     const elapsed = performance.now() - flythroughState.startTime;
@@ -598,6 +601,111 @@ export function dispose() {
 
 export function setQuality(q) {
   if (bhPass) bhPass.uniforms.quality.value = q;
+}
+
+export function setDiskTilt(radians) {
+  if (bhPass) bhPass.uniforms.diskTilt.value = radians;
+}
+
+// ─── Click-to-fire photon ───────────────────────────────────────────────────
+// Integrates a photon trajectory through a Newtonian approximation of the
+// Schwarzschild deflection and renders it as an additively-blended line
+// that streaks through the scene. Visual only, but physically motivated.
+
+const activePhotons = [];
+const PHOTON_C = 30;              // "speed of light" in units/sec (visual)
+const R_S = 2;                    // Schwarzschild radius of the BH (visual)
+const PHOTON_STEPS = 200;
+
+function integrateGeodesic(impactParam, color) {
+  // Shoot a photon from (-40, 0, impactParam) toward +X
+  // Integrate its position under Newtonian deflection
+  // Use modified force: a = 1.5 r_s c² / r² (GR weak-field correction factor)
+  const pos = new THREE.Vector3(-40, 0, impactParam);
+  const vel = new THREE.Vector3(1, 0, 0);
+  const dt = 0.08;
+  const M = 1.5 * R_S * R_S;  // strength factor
+
+  const positions = [];
+  for (let i = 0; i < PHOTON_STEPS; i++) {
+    positions.push(pos.clone());
+    const r2 = pos.x * pos.x + pos.y * pos.y + pos.z * pos.z;
+    const r = Math.sqrt(r2);
+    if (r < R_S * 1.5) break;  // captured
+    if (pos.x > 40 || pos.x < -45 || Math.abs(pos.z) > 40) break;  // escaped
+
+    // Acceleration toward the BH, inverse square
+    const ax = -pos.x * M / (r2 * r);
+    const ay = -pos.y * M / (r2 * r);
+    const az = -pos.z * M / (r2 * r);
+    vel.x += ax * dt; vel.y += ay * dt; vel.z += az * dt;
+    // Re-normalize to constant photon speed (c)
+    const vmag = Math.sqrt(vel.x * vel.x + vel.y * vel.y + vel.z * vel.z);
+    vel.multiplyScalar(1 / vmag);
+    pos.addScaledVector(vel, dt * PHOTON_C);
+  }
+
+  return positions;
+}
+
+export function firePhoton() {
+  if (!scene) return;
+  // Random impact parameter each fire — ± a range, biased away from direct hit
+  const sign = Math.random() > 0.5 ? 1 : -1;
+  const b = sign * (R_S * (2.0 + Math.random() * 5));  // 2-7 Schwarzschild radii
+
+  // Colors vary to add variety
+  const hues = [0x60d0ff, 0xffa840, 0x80ff80, 0xff80c0, 0xffffff];
+  const color = hues[Math.floor(Math.random() * hues.length)];
+
+  const points = integrateGeodesic(b, color);
+  if (points.length < 2) return;
+
+  const geo = new THREE.BufferGeometry().setFromPoints(points);
+  const mat = new THREE.LineBasicMaterial({
+    color,
+    transparent: true,
+    opacity: 1.0,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+  const line = new THREE.Line(geo, mat);
+  line.renderOrder = 100;
+  scene.add(line);
+
+  // Animate: reveal the line progressively, then fade out
+  activePhotons.push({
+    line,
+    mat,
+    count: points.length,
+    revealProgress: 0,
+    fadeProgress: 0,
+    startTime: performance.now() * 0.001,
+  });
+}
+
+function updatePhotons(dt) {
+  for (let i = activePhotons.length - 1; i >= 0; i--) {
+    const p = activePhotons[i];
+    const elapsed = performance.now() * 0.001 - p.startTime;
+    // Reveal over 0.6s
+    if (p.revealProgress < 1) {
+      p.revealProgress = Math.min(1, elapsed / 0.6);
+      const visible = Math.floor(p.revealProgress * p.count);
+      p.line.geometry.setDrawRange(0, Math.max(2, visible));
+    }
+    // Start fading after 2s
+    if (elapsed > 2.0) {
+      const fadeT = (elapsed - 2.0) / 1.2;
+      p.mat.opacity = Math.max(0, 1 - fadeT);
+      if (fadeT >= 1) {
+        scene.remove(p.line);
+        p.line.geometry.dispose();
+        p.mat.dispose();
+        activePhotons.splice(i, 1);
+      }
+    }
+  }
 }
 
 export function focusOn(mesh) {

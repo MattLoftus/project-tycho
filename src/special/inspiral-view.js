@@ -3,14 +3,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js'
 import { createComposer } from '../post.js'
 import { createCameraMovement } from '../camera-movement.js'
-import { createAlcubierreModel } from './alcubierre-model.js'
+import { createInspiralModel } from './inspiral-model.js'
 
 /**
- * Alcubierre Warp Drive view — a warp bubble traverses a flat spacetime
- * grid, contracting space in front and expanding it behind.
+ * Gravitational Wave Inspiral view — two objects spiral inward,
+ * merge, and ring down while emitting expanding gravitational waves.
  */
 
-export function createAlcubierreView() {
+export function createInspiralView() {
   let scene_, camera_, controls_, renderer_
   let composer_, bloomPass_, cinematicPass_
   let labelRenderer_
@@ -26,48 +26,45 @@ export function createAlcubierreView() {
       clock_ = new THREE.Clock()
 
       scene_ = new THREE.Scene()
-      scene_.background = new THREE.Color(0x030408)
+      scene_.background = new THREE.Color(0x020408)
 
       camera_ = new THREE.PerspectiveCamera(
         50, window.innerWidth / window.innerHeight, 0.1, 500
       )
-      camera_.position.set(18, 14, 22)
+      camera_.position.set(22, 16, 22)
 
       controls_ = new OrbitControls(camera_, renderer.domElement)
       controls_.enableDamping = true
       controls_.dampingFactor = 0.05
-      controls_.target.set(0, 0, 0)
+      controls_.target.set(0, -1, 0)
       controls_.minDistance = 8
       controls_.maxDistance = 120
 
       camMove_ = createCameraMovement(camera_, controls_)
 
-      // ── Lighting ──
-      scene_.add(new THREE.AmbientLight(0x304050, 2.0))
-
-      const key = new THREE.DirectionalLight(0x5060a0, 2.0)
+      // Lighting
+      scene_.add(new THREE.AmbientLight(0x304060, 2.0))
+      const key = new THREE.DirectionalLight(0x4060a0, 2.0)
       key.position.set(15, 25, 20)
       scene_.add(key)
-
-      const fill = new THREE.DirectionalLight(0x403020, 1.0)
+      const fill = new THREE.DirectionalLight(0x304080, 1.0)
       fill.position.set(-10, 5, -15)
       scene_.add(fill)
+      const centerLight = new THREE.PointLight(0x4080cc, 60, 25)
+      centerLight.position.set(0, -1, 0)
+      scene_.add(centerLight)
 
-      // ── Model ──
-      model_ = createAlcubierreModel()
+      // Model
+      model_ = createInspiralModel()
       scene_.add(model_.grid)
-      scene_.add(model_.ship)
-      scene_.add(model_.wake)
+      scene_.add(model_.objA)
+      scene_.add(model_.objB)
+      scene_.add(model_.merged)
       scene_.add(model_.starfield)
 
-      // Light the ship
-      const shipLight = new THREE.PointLight(0x4080cc, 60, 15)
-      shipLight.position.set(0, 2, 0)
-      scene_.add(shipLight)
-
       // Speed slider
-      const slider = document.getElementById('sp2-alcubierre-speed')
-      const label = document.getElementById('sp2-alcubierre-speed-label')
+      const slider = document.getElementById('sp2-inspiral-speed')
+      const label = document.getElementById('sp2-inspiral-speed-label')
       if (slider) {
         slider.addEventListener('input', () => {
           speedMultiplier_ = slider.value / 100
@@ -75,7 +72,7 @@ export function createAlcubierreView() {
         })
       }
 
-      // ── CSS2D label renderer ──
+      // CSS2D label renderer
       labelRenderer_ = new CSS2DRenderer()
       labelRenderer_.setSize(window.innerWidth, window.innerHeight)
       labelRenderer_.domElement.style.position = 'absolute'
@@ -85,24 +82,23 @@ export function createAlcubierreView() {
       const appContainer = document.getElementById('spacetime-app') || document.getElementById('special-app')
       appContainer?.appendChild(labelRenderer_.domElement)
 
-      // ── Post-processing ──
+      // Post-processing
       const post = createComposer(renderer, scene_, camera_)
       composer_        = post.composer
       bloomPass_       = post.bloomPass
       cinematicPass_   = post.cinematicPass
 
-      // Warp drive: wide, hazy bloom to evoke motion
-      bloomPass_.strength  = 0.75
-      bloomPass_.threshold = 0.22
-      bloomPass_.radius    = 0.85
+      // Inspiral-specific: bloom surges during merger, tinted teal
+      bloomPass_.strength  = 0.95
+      bloomPass_.threshold = 0.2
+      bloomPass_.radius    = 0.75
 
-      // Warm/cool split color grading
-      cinematicPass_.uniforms.liftR.value = 0.95
-      cinematicPass_.uniforms.liftG.value = 0.93
-      cinematicPass_.uniforms.liftB.value = 1.05
-      cinematicPass_.uniforms.gainR.value = 1.02
-      cinematicPass_.uniforms.gainG.value = 0.97
-      cinematicPass_.uniforms.gainB.value = 0.96
+      cinematicPass_.uniforms.liftR.value = 0.90
+      cinematicPass_.uniforms.liftG.value = 0.94
+      cinematicPass_.uniforms.liftB.value = 1.08
+      cinematicPass_.uniforms.gainR.value = 0.95
+      cinematicPass_.uniforms.gainG.value = 0.98
+      cinematicPass_.uniforms.gainB.value = 1.06
       cinematicPass_.uniforms.vignetteIntensity.value = 0.35
       cinematicPass_.uniforms.grainIntensity.value = 0.03
     },
@@ -114,6 +110,13 @@ export function createAlcubierreView() {
 
       model_.update(simTime_)
 
+      // Update phase indicator
+      const phaseEl = document.getElementById('sp2-inspiral-phase')
+      if (phaseEl) {
+        const labels = ['INSPIRAL', 'MERGER', 'RINGDOWN', 'RESETTING']
+        phaseEl.textContent = labels[model_.phase] || 'INSPIRAL'
+      }
+
       if (camMove_) camMove_.update(dt)
       cinematicPass_.uniforms.time.value = performance.now() * 0.001
       controls_.update()
@@ -123,9 +126,7 @@ export function createAlcubierreView() {
       return { camera: camera_ }
     },
 
-    getClickTargets() {
-      return []
-    },
+    getClickTargets() { return [] },
 
     resize() {
       if (!camera_ || !composer_) return

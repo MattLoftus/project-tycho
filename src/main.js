@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import * as spaceApp from './space-app.js';
 import * as surfaceApp from './surface-app.js';
 import * as oceanApp from './ocean-app.js';
+import * as spacetimeApp from './spacetime-app.js';
 import * as specialApp from './special-app.js';
 import { inject } from '@vercel/analytics';
 
@@ -10,8 +11,9 @@ inject();
 const apps = {
   space:   { module: spaceApp,   container: 'space-app',   exposure: 1.2 },
   surface: { module: surfaceApp, container: 'surface-app', exposure: 1.15 },
-  ocean:   { module: oceanApp,   container: 'ocean-app',   exposure: 1.0 },
-  special: { module: specialApp, container: 'special-app', exposure: 1.1 },
+  ocean:     { module: oceanApp,     container: 'ocean-app',     exposure: 1.0 },
+  spacetime: { module: spacetimeApp, container: 'spacetime-app', exposure: 1.1 },
+  special:   { module: specialApp,   container: 'special-app',   exposure: 1.1 },
 };
 let activeApp = null;
 
@@ -40,6 +42,11 @@ function switchApp(name) {
   document.querySelectorAll('.app-switch-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.app === name);
   });
+  // Tag body with active app name so CSS can respond (e.g. hide mobile d-pad)
+  document.body.classList.forEach(c => {
+    if (c.startsWith('app-')) document.body.classList.remove(c);
+  });
+  document.body.classList.add('app-' + name);
 }
 
 // Switcher buttons

@@ -180,71 +180,39 @@ function buildShip() {
   const ringTube = 0.08   // ring tube radius
   const ringSegs = 32
 
-  function addRing(xPos) {
+  function addRingAssembly(xPos) {
+    // Outer torus
     const torusGeo = new THREE.TorusGeometry(ringR, ringTube, 12, ringSegs)
-    torusGeo.rotateY(Math.PI / 2) // face along X axis
+    torusGeo.rotateY(Math.PI / 2)
     const ring = new THREE.Mesh(torusGeo, ringMat)
     ring.position.x = xPos
     group.add(ring)
 
-    // Second thinner ring slightly offset for depth
+    // Inner torus for depth
     const innerGeo = new THREE.TorusGeometry(ringR * 0.85, ringTube * 0.6, 10, ringSegs)
     innerGeo.rotateY(Math.PI / 2)
     const inner = new THREE.Mesh(innerGeo, ringMat)
     inner.position.x = xPos
     group.add(inner)
 
-    // Struts connecting hull to ring (4 radial)
-    for (let i = 0; i < 4; i++) {
-      const angle = (i / 4) * Math.PI * 2 + Math.PI / 4 // offset 45°
-      const strutLen = ringR - hullR - 0.05
-      const strutGeo = new THREE.CylinderGeometry(0.025, 0.025, strutLen, 6)
-      const strut = new THREE.Mesh(strutGeo, strutMat)
-      strut.position.x = xPos
-      strut.position.y = Math.cos(angle) * (hullR + strutLen / 2)
-      strut.position.z = Math.sin(angle) * (hullR + strutLen / 2)
-      strut.rotation.x = -angle + Math.PI / 2
-      // Align strut radially: rotate so it points outward from hull
-      strut.lookAt(
-        xPos + strut.position.x, // hack: just keep it vertical-ish
-        Math.cos(angle) * ringR,
-        Math.sin(angle) * ringR
-      )
-      group.add(strut)
-    }
-  }
-
-  addRing(hullLen / 2 + 0.1)   // front ring
-  addRing(-hullLen / 2 - 0.1)  // rear ring
-
-  // Fix strut orientation: simpler approach — position + orient manually
-  // Remove the lookAt struts above and redo with proper radial orientation
-  // Actually, let me just use a simpler strut approach:
-  group.children = group.children.filter(c =>
-    !(c.geometry?.type === 'CylinderGeometry' && c.geometry?.parameters?.radiusTop === 0.025)
-  )
-
-  function addStruts(xPos) {
+    // 4 radial struts connecting hull to ring
     for (let i = 0; i < 4; i++) {
       const angle = (i / 4) * Math.PI * 2 + Math.PI / 4
       const strutLen = ringR - hullR
       const strutGeo = new THREE.CylinderGeometry(0.025, 0.025, strutLen, 6)
       const strut = new THREE.Mesh(strutGeo, strutMat)
-      // Position at midpoint between hull surface and ring
       const midR = hullR + strutLen / 2
       strut.position.set(xPos, Math.cos(angle) * midR, Math.sin(angle) * midR)
-      // Rotate to point radially outward
-      strut.rotation.set(0, 0, 0)
       strut.rotation.x = angle
       group.add(strut)
     }
   }
 
-  addStruts(hullLen / 2 + 0.1)
-  addStruts(-hullLen / 2 - 0.1)
+  addRingAssembly(hullLen / 2 + 0.1)   // front
+  addRingAssembly(-hullLen / 2 - 0.1)  // rear
 
   // Position ship slightly above the grid surface (inside flat bubble)
-  group.position.y = 0.5
+  group.position.y = 0.15
 
   return { group, ringMat }
 }
@@ -278,11 +246,68 @@ function buildStarfield() {
   }))
 }
 
+// ─── Wake particles — stream behind the bubble in -X ─────────────────────────
+
+const WAKE_COUNT = 200
+const WAKE_SPEED = 8
+const WAKE_SPREAD = 4  // lateral spread (Y/Z)
+
+function buildWake() {
+  const positions = new Float32Array(WAKE_COUNT * 3)
+  const colors = new Float32Array(WAKE_COUNT * 3)
+  // Store base offsets for each particle
+  const offsets = new Float32Array(WAKE_COUNT * 3) // x-phase, y-offset, z-offset
+
+  for (let i = 0; i < WAKE_COUNT; i++) {
+    offsets[i * 3]     = Math.random() * 40 // x phase (spread along trail)
+    offsets[i * 3 + 1] = (Math.random() - 0.5) * WAKE_SPREAD
+    offsets[i * 3 + 2] = (Math.random() - 0.5) * WAKE_SPREAD
+
+    colors[i * 3]     = 0.3
+    colors[i * 3 + 1] = 0.6
+    colors[i * 3 + 2] = 0.9
+  }
+
+  const geo = new THREE.BufferGeometry()
+  const posAttr = new THREE.BufferAttribute(positions, 3)
+  posAttr.setUsage(THREE.DynamicDrawUsage)
+  geo.setAttribute('position', posAttr)
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
+
+  const points = new THREE.Points(geo, new THREE.PointsMaterial({
+    size: 0.2,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.35,
+    sizeAttenuation: true,
+    depthWrite: false,
+  }))
+
+  return { points, posAttr, offsets }
+}
+
+function updateWake(wake, time) {
+  const parr = wake.posAttr.array
+  for (let i = 0; i < WAKE_COUNT; i++) {
+    const phase = wake.offsets[i * 3]
+    const yOff  = wake.offsets[i * 3 + 1]
+    const zOff  = wake.offsets[i * 3 + 2]
+
+    // Particle streams in -X from behind the bubble (x < -BUBBLE_R)
+    const x = -BUBBLE_R - ((time * WAKE_SPEED + phase) % 40)
+    parr[i * 3]     = x
+    parr[i * 3 + 1] = yOff * (1 + Math.abs(x) * 0.02) // spread widens with distance
+    parr[i * 3 + 2] = zOff * (1 + Math.abs(x) * 0.02)
+  }
+  wake.posAttr.needsUpdate = true
+}
+
 // ─── Export ──────────────────────────────────────────────────────────────────
 
 export function createAlcubierreModel() {
   const grid = buildGrid()
   const ship = buildShip()
+  const wake = buildWake()
   const starfield = buildStarfield()
 
   // Initial Z-line positions
@@ -291,10 +316,12 @@ export function createAlcubierreModel() {
   return {
     grid: grid.group,
     ship: ship.group,
+    wake: wake.points,
     starfield,
 
     update(time) {
       updateZLines(grid.zLines, time * FLOW_SPEED)
+      updateWake(wake, time)
 
       ship.ringMat.emissiveIntensity = 1.8
 
