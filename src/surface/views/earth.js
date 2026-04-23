@@ -12,8 +12,6 @@ export const REGIONS = {
     label:    'GRAND CANYON',
     subtitle: 'COLORADO PLATEAU · ARIZONA',
     z: 11, baseX: 384, baseY: 800, grid: 4, sceneH: 40,
-    camPos:    [0, 55, 240],
-    camTarget: [0, -5, 100],   // canyon center, not the plateau at origin
     // Warm sandstone palette — no ice or snow at top, this is a desert canyon
     palette: [
       [0.20, 0.12, 0.08],  // dark schist / canyon floor
@@ -33,7 +31,6 @@ export const REGIONS = {
     label:    'HIMALAYAS',
     subtitle: 'MOUNT EVEREST MASSIF · NEPAL',
     z: 9, baseX: 377, baseY: 212, grid: 4, sceneH: 52,
-    camPos: [0, 80, 200],
     // Cool rock → permanent snow cap (appropriate for the Everest massif)
     palette: [
       [0.10, 0.09, 0.08],  // dark rock base
@@ -53,8 +50,6 @@ export const REGIONS = {
     label:    'KILIMANJARO',
     subtitle: 'EAST AFRICAN RIFT · TANZANIA',
     z: 10, baseX: 618, baseY: 514, grid: 4, sceneH: 35,
-    camPos:    [0, 70, 180],
-    camTarget: [0, 0, 20],
     palette: [
       [0.22, 0.18, 0.10],  // savanna lowland — dry grass brown
       [0.35, 0.32, 0.18],  // lower slopes — scrub olive
@@ -73,8 +68,6 @@ export const REGIONS = {
     label:    'SOGNEFJORDEN',
     subtitle: 'VESTLAND · WESTERN NORWAY',
     z: 10, baseX: 530, baseY: 282, grid: 4, sceneH: 30,
-    camPos:    [0, 65, 160],
-    camTarget: [10, 0, -20],
     palette: [
       [0.04, 0.08, 0.14],  // deep fjord water — dark blue-black
       [0.12, 0.20, 0.14],  // valley floor — dark green
@@ -307,7 +300,9 @@ function buildTerrain(scene, raw, size, sceneH = 40, palette = DEFAULT_PALETTE) 
     return (smooth[idx] - minR) * scale - sceneH / 2
   }
 
-  return { mesh, material: mat, sampleHeight }
+  const heightData = { smooth, size, minR, maxR, scale, sceneH }
+
+  return { mesh, material: mat, sampleHeight, heightData }
 }
 
 // ─── Feature markers ──────────────────────────────────────────────────────────
@@ -370,43 +365,135 @@ function updateMarkers(markers, dt) {
 }
 
 // ─── River ribbon ────────────────────────────────────────────────────────────
-// Colorado River path through tiles (z=11, x=384-387, y=800-803)
-// Tile bounds: lon -112.5 → -111.797, lat 35.99 → 36.596
-// River enters Marble Canyon from NE (~36.47N), flows south then turns west
-const COLORADO_RIVER = [
-  { lat: 36.47,  lon: -111.83 },  // Nankoweap area — northern Marble Canyon entry
-  { lat: 36.34,  lon: -111.86 },  // flowing south through Marble Canyon
-  { lat: 36.22,  lon: -111.89 },  // approaching canyon elbow
-  { lat: 36.12,  lon: -111.92 },  // near Little Colorado confluence — turning west
-  { lat: 36.07,  lon: -111.98 },  // Desert View area, now flowing west
-  { lat: 36.07,  lon: -112.08 },  // inner gorge heading west
-  { lat: 36.10,  lon: -112.13 },  // Phantom Ranch
-  { lat: 36.07,  lon: -112.19 },  // Bright Angel / Indian Garden
-  { lat: 36.10,  lon: -112.29 },  // Hermit area
-  { lat: 36.17,  lon: -112.40 },  // Bass camp
-  { lat: 36.22,  lon: -112.48 },  // western extent of tiles
+// Guide polyline — only provides the L-shape topology of the Colorado River
+// through tile region (z=11, baseX=384, baseY=800, grid=4).
+// Tile bounds: lat ~35.95-36.55, lon ~-112.50 to -111.80.
+// The ribbon points are extracted from the heightmap itself (canyon floor
+// pixels) — this guide just tells the snap algorithm the river's rough
+// direction and shape so the densified samples trace the actual channel
+// rather than taking a shortcut across a ridge.
+//
+// Key real-world features captured here:
+//   • N-S arm (Marble Canyon) enters on the EAST edge near lat 36.38
+//     (not the N edge — the river is east of the tile at lat 36.55).
+//   • Southward hook at Ruby/Serpentine rapids (~36.03°N, -112.27°W).
+//   • Northward curve through Elves Chasm before the western exit.
+const COLORADO_RIVER_GUIDE = [
+  { lat: 36.38,  lon: -111.800 }, // E edge — entering Marble Canyon
+  { lat: 36.330, lon: -111.818 }, // Nankoweap
+  { lat: 36.280, lon: -111.825 },
+  { lat: 36.230, lon: -111.828 },
+  { lat: 36.200, lon: -111.830 }, // Little Colorado confluence
+  { lat: 36.160, lon: -111.880 },
+  { lat: 36.115, lon: -111.965 },
+  { lat: 36.099, lon: -112.094 }, // Phantom Ranch / Bright Angel
+  { lat: 36.085, lon: -112.194 }, // Hermit
+  { lat: 36.050, lon: -112.240 },
+  { lat: 36.033, lon: -112.272 }, // Ruby
+  { lat: 36.025, lon: -112.280 }, // Serpentine — southernmost
+  { lat: 36.055, lon: -112.320 },
+  { lat: 36.110, lon: -112.370 }, // Bass / Shinumo
+  { lat: 36.123, lon: -112.379 }, // Elves Chasm
+  { lat: 36.170, lon: -112.419 }, // Blacktail
+  { lat: 36.200, lon: -112.460 }, // Matkatamiba area
+  { lat: 36.230, lon: -112.490 }, // near W edge
 ]
 
-function buildRiverRibbon(scene, bounds, sampleHeight) {
-  const pts = COLORADO_RIVER.map(({ lat, lon }) => {
-    const p = latlonToScene(lat, lon, bounds)
-    p.y = sampleHeight(p.x, p.z) + 0.8   // ride just above terrain surface
-    return p
-  })
+// Walk the heightmap: find every pixel below a low-elevation threshold
+// (these are the actual canyon floor), then for each densified guide
+// point, snap to the nearest such pixel by pixel-space Euclidean distance.
+// This gives a ribbon that genuinely follows the lowest continuous path
+// through the canyon, even if the guide is off by kilometers.
+function extractCanyonFloor(heightData, guidePts, nSamples = 120) {
+  const { smooth, size, minR, maxR, scale, sceneH } = heightData
+  const range = maxR - minR
 
-  const curve   = new THREE.CatmullRomCurve3(pts)
-  const tubeGeo = new THREE.TubeGeometry(curve, 120, 0.45, 7, false)
-  const tubeMat = new THREE.MeshBasicMaterial({
-    color: 0x1a6aff, transparent: true, opacity: 0.82,
-  })
-  scene.add(new THREE.Mesh(tubeGeo, tubeMat))
+  // The river has a 300-500m elevation range across the tile; the rim is
+  // ~1500m above the river floor. A threshold of 20% of total range
+  // captures the full river including the higher-elevation upstream arm
+  // while still excluding most rim and plateau pixels.
+  let thresholdFrac = 0.20
+  let floor = collectBelow(smooth, size, minR, range, thresholdFrac)
+  if (floor.length < 500) { thresholdFrac = 0.30; floor = collectBelow(smooth, size, minR, range, thresholdFrac) }
+  if (floor.length < 200) return []
 
-  // Subtle glow halo — wider, very translucent
-  const haloGeo = new THREE.TubeGeometry(curve, 120, 1.2, 7, false)
-  const haloMat = new THREE.MeshBasicMaterial({
-    color: 0x3090ff, transparent: true, opacity: 0.18, depthWrite: false,
-  })
-  scene.add(new THREE.Mesh(haloGeo, haloMat))
+  let totalLen = 0
+  for (let i = 1; i < guidePts.length; i++) totalLen += guidePts[i].distanceTo(guidePts[i - 1])
+
+  const samples = []
+  for (let i = 0; i <= nSamples; i++) {
+    const target = (i / nSamples) * totalLen
+    let acc = 0
+    for (let j = 1; j < guidePts.length; j++) {
+      const segLen = guidePts[j].distanceTo(guidePts[j - 1])
+      if (acc + segLen >= target || j === guidePts.length - 1) {
+        const u = segLen > 0 ? (target - acc) / segLen : 0
+        samples.push(guidePts[j - 1].clone().lerp(guidePts[j], u))
+        break
+      }
+      acc += segLen
+    }
+  }
+
+  const out = []
+  const seen = new Set()
+  for (const p of samples) {
+    const tc = (p.x / 300 + 0.5) * (size - 1)
+    const tr = (p.z / 300 + 0.5) * (size - 1)
+    let best = null, bestD = Infinity
+    for (const f of floor) {
+      const dc = f.col - tc, dr = f.row - tr
+      const d = dc * dc + dr * dr
+      if (d < bestD) { bestD = d; best = f }
+    }
+    if (!best) continue
+    const key = best.col * size + best.row
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(new THREE.Vector3(
+      (best.col / (size - 1) - 0.5) * 300,
+      (best.h - minR) * scale - sceneH / 2 + 0.35,
+      (best.row / (size - 1) - 0.5) * 300,
+    ))
+  }
+  return out
+}
+
+function collectBelow(smooth, size, minR, range, frac) {
+  const thr = minR + range * frac
+  const out = []
+  for (let i = 0; i < smooth.length; i++) {
+    if (smooth[i] < thr) out.push({ col: i % size, row: (i / size) | 0, h: smooth[i] })
+  }
+  return out
+}
+
+function buildRiverRibbon(scene, bounds, heightData) {
+  const guide = COLORADO_RIVER_GUIDE.map(({ lat, lon }) => latlonToScene(lat, lon, bounds))
+  const pts   = extractCanyonFloor(heightData, guide, 140)
+  if (pts.length < 6) return
+
+  const curve = new THREE.CatmullRomCurve3(pts, false, 'centripetal', 0.5)
+
+  // Main tube — opaque where terrain doesn't block it.
+  const tubeGeo = new THREE.TubeGeometry(curve, 560, 1.0, 12, false)
+  scene.add(new THREE.Mesh(tubeGeo, new THREE.MeshBasicMaterial({
+    color: 0x1f94ff, transparent: true, opacity: 1.0,
+  })))
+
+  // Always-visible overlay so the full river reads through the plateau.
+  const overlayGeo = new THREE.TubeGeometry(curve, 560, 0.85, 10, false)
+  const overlay = new THREE.Mesh(overlayGeo, new THREE.MeshBasicMaterial({
+    color: 0x8cd4ff, transparent: true, opacity: 0.55,
+    depthTest: false, depthWrite: false,
+  }))
+  overlay.renderOrder = 9999
+  scene.add(overlay)
+
+  const haloGeo = new THREE.TubeGeometry(curve, 560, 2.4, 10, false)
+  scene.add(new THREE.Mesh(haloGeo, new THREE.MeshBasicMaterial({
+    color: 0x60c8ff, transparent: true, opacity: 0.24, depthWrite: false,
+  })))
 }
 
 // ─── View factory ─────────────────────────────────────────────────────────────
@@ -424,16 +511,19 @@ export function createEarthView(regionKey) {
 
       const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.5, 2000)
       camCtrl_ = new CameraController(camera, renderer.domElement)
-      const region0 = REGIONS[regionKey]
-      if (region0.camPos) {
-        const [cx, cy, cz] = region0.camPos
-        camCtrl_.camera.position.set(cx, cy, cz)
+
+      // Standardized framing — camera always looks at terrain center.
+      // Grand Canyon needs a higher / more overhead framing so the
+      // L-shaped canyon floor (where the Colorado River sits) is visible
+      // around the Kaibab Plateau — a low oblique angle is blocked by
+      // the plateau top.
+      if (regionKey === 'grandcanyon') {
+        camCtrl_.camera.position.set(0, 210, 60)
+      } else {
+        camCtrl_.camera.position.set(0, 95, 165)
       }
-      if (region0.camTarget) {
-        const [tx, ty, tz] = region0.camTarget
-        camCtrl_.controls.target.set(tx, ty, tz)
-        camCtrl_.camera.lookAt(tx, ty, tz)
-      }
+      camCtrl_.controls.target.set(0, 0, 0)
+      camCtrl_.camera.lookAt(0, 0, 0)
 
       composer_ = new EffectComposer(renderer)
       composer_.addPass(new RenderPass(scene_, camera))
@@ -476,7 +566,7 @@ export function createEarthView(regionKey) {
 
       // River ribbon — Grand Canyon only
       if (regionKey === 'grandcanyon') {
-        buildRiverRibbon(scene_, bounds, terrain_.sampleHeight)
+        buildRiverRibbon(scene_, bounds, terrain_.heightData)
       }
 
       initMarsHUD(region, featuresWithPos, 'EARTH SURFACE SURVEY')
@@ -494,7 +584,7 @@ export function createEarthView(regionKey) {
     },
 
     animate() {
-      if (!composer_) return
+      if (!composer_ || !terrain_) return
       const dt = clock_.getDelta()
       terrain_.material.uniforms.uTime.value = clock_.elapsedTime
       if (markers_?.length) updateMarkers(markers_, dt)

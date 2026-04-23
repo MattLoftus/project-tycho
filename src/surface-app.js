@@ -3,7 +3,7 @@ import * as proceduralView from './surface/views/procedural.js'
 import { createSurfaceProceduralView } from './surface/views/procedural.js'
 import { createMarsView }  from './surface/views/mars.js'
 import { createEarthView } from './surface/views/earth.js'
-import { createPhotoView, setResolutionOffset, getResolutionOffset } from './surface/views/everest-v2.js'
+import { createPhotoView, setResolutionOffset, getResolutionOffset } from './surface/views/satellite.js'
 import { updateHUD, showDepositDetail } from './surface/hud.js'
 
 let _renderer = null
@@ -187,7 +187,7 @@ export function init(renderer) {
     initialized = true
   }
 
-  switchView('procedural')
+  switchView('grandcanyonv2')
 }
 
 export function dispose() {

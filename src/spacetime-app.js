@@ -1,12 +1,12 @@
 import * as THREE from 'three'
 import { createSpacetimeView } from './special/spacetime-view.js'
 import { createAlcubierreView } from './special/alcubierre-view.js'
+import { createAlcubierreV2View } from './special/alcubierre-v2-view.js'
 import { createLensingView } from './special/lensing-view.js'
 import { createInspiralView } from './special/inspiral-view.js'
 import { createFrameDragView } from './special/framedrag-view.js'
 import { createPolarizationView } from './special/polarization-view.js'
 import { createLifeBinaryView } from './special/lifebinary-view.js'
-import { createRedshiftView } from './special/redshift-view.js'
 import * as blackholeModule from './views/blackhole.js'
 
 let _renderer = null
@@ -64,12 +64,12 @@ const viewFactories = {
   blackhole: createBlackholeView,
   binarySystem: createSpacetimeView,
   alcubierre: createAlcubierreView,
+  alcubierreV2: createAlcubierreV2View,
   lensing: createLensingView,
   inspiral: createInspiralView,
   frameDrag: createFrameDragView,
   polarization: createPolarizationView,
   lifeBinary: createLifeBinaryView,
-  redshift: createRedshiftView,
 }
 const viewInstances = {}
 
@@ -77,12 +77,12 @@ const viewThemes = {
   blackhole: 'theme-blackhole',
   binarySystem: 'theme-spacetime',
   alcubierre: 'theme-alcubierre',
+  alcubierreV2: 'theme-alcubierre-v2',
   lensing: 'theme-lensing',
   inspiral: 'theme-inspiral',
   frameDrag: 'theme-framedrag',
   polarization: 'theme-polarization',
   lifeBinary: 'theme-lifebinary',
-  redshift: 'theme-redshift',
 }
 
 let lastCamera = null
@@ -148,36 +148,10 @@ export async function init(renderer) {
       }
     }
 
-    // Metaphor caveat dismiss buttons — remember across sessions
-    document.querySelectorAll('#spacetime-app .st-caveat').forEach(el => {
-      const key = 'st-caveat-' + (el.dataset.caveat || 'default')
-      if (localStorage.getItem(key) === 'dismissed') el.classList.add('hidden')
-      const closeBtn = el.querySelector('.st-caveat-close')
-      closeBtn?.addEventListener('click', () => {
-        el.classList.add('hidden')
-        localStorage.setItem(key, 'dismissed')
-      })
-    })
-
-    // First-visit intro overlay
-    const intro = document.getElementById('st-intro-overlay')
-    const introBtn = document.getElementById('st-intro-btn')
-    if (intro && localStorage.getItem('st-intro-seen') === 'yes') {
-      intro.remove()
-    } else if (intro && introBtn) {
-      introBtn.addEventListener('click', () => {
-        intro.style.animation = 'none'
-        intro.style.transition = 'opacity 0.4s'
-        intro.style.opacity = '0'
-        setTimeout(() => intro.remove(), 400)
-        localStorage.setItem('st-intro-seen', 'yes')
-      })
-    }
-
     initialized = true
   }
 
-  await switchView(activeViewName || 'lifeBinary')
+  await switchView(activeViewName || 'blackhole')
 }
 
 export function dispose() {

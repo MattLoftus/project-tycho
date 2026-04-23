@@ -127,7 +127,7 @@ function buildGrid() {
 // Thin struts connect the hull to the rings. Rings glow to suggest
 // they're the source of the bubble.
 
-function buildShip() {
+export function buildShip() {
   const group = new THREE.Group()
 
   const hullMat = new THREE.MeshStandardMaterial({

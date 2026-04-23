@@ -52,10 +52,13 @@ export function createLensingView() {
       scene_.add(new THREE.AmbientLight(0x202030, 1.0))
 
       // ── Model ──
+      // No opaque lens sphere in the scene — it would sit at origin and
+      // render as a black disc, which the Schwarzschild displacement then
+      // smears into a thick dark annulus around the Einstein radius.
+      // The shader's own tiny central shadow marks the lens position.
       model_ = createLensingModel()
       scene_.add(model_.starfield)
       scene_.add(model_.galaxy)
-      scene_.add(model_.lens)
 
       // ── Post-processing: render → lensing → bloom ──
       // Custom composer so lensing runs before bloom
@@ -74,15 +77,18 @@ export function createLensingView() {
       )
       composer_.addPass(bloomPass_)
 
-      // Strength slider
+      // Strength slider — 1.0x = true Schwarzschild deflection (Einstein ring
+      // forms at r = θ_E). Higher values exaggerate for illustration.
       const slider = document.getElementById('sp2-lensing-strength')
       const label = document.getElementById('sp2-lensing-strength-label')
       if (slider) {
-        slider.addEventListener('input', () => {
+        const apply = () => {
           const val = slider.value / 100
-          lensingPass_.uniforms.lensStrength.value = val * 0.15
+          lensingPass_.uniforms.lensStrength.value = val
           if (label) label.textContent = val.toFixed(1) + 'x'
-        })
+        }
+        slider.addEventListener('input', apply)
+        apply()
       }
     },
 

@@ -17,8 +17,6 @@ const REGIONS = {
     // satZ=14 → 16x16 tiles → 4096x4096 texture (~9.5 m/pixel)
     satZ: 14,
     sceneH: 52,
-    camPos:    [0, 80, 180],
-    camTarget: [10, 0, 30],
     features: [
       { name: 'Mount Everest',   type: 'Summit',  lat: 27.988, lon: 86.925, depth: '---', width: '8,849 m' },
       { name: 'Lhotse',          type: 'Summit',  lat: 27.962, lon: 86.933, depth: '---', width: '8,516 m' },
@@ -37,8 +35,6 @@ const REGIONS = {
     satZ: 13,
     sceneH: 26,
     blurRadius: 3,
-    camPos:    [0, 55, 240],
-    camTarget: [0, -5, 100],
     features: [
       { name: 'South Rim',        type: 'Rim',    lat: 36.06, lon: -112.14, depth: '1,800 m', width: '16 km'  },
       { name: 'North Rim',        type: 'Rim',    lat: 36.20, lon: -112.06, depth: '2,450 m', width: '---'    },
@@ -55,8 +51,6 @@ const REGIONS = {
     satZ: 14,
     sceneH: 36,
     blurRadius: 2,
-    camPos:    [30, 70, 120],
-    camTarget: [50, 0, -70],
     features: [
       { name: 'El Capitan',      type: 'Cliff',     lat: 37.734, lon: -119.637, depth: '---', width: '900 m'   },
       { name: 'Half Dome',       type: 'Summit',    lat: 37.746, lon: -119.533, depth: '---', width: '2,693 m' },
@@ -74,8 +68,6 @@ const REGIONS = {
     satZ: 13,
     sceneH: 28,
     blurRadius: 3,
-    camPos:    [30, 60, 100],
-    camTarget: [50, 0, -80],
     features: [
       { name: 'Geiranger',           type: 'Village',   lat: 62.096, lon: 7.206, depth: '---', width: '---'    },
       { name: 'Seven Sisters Falls', type: 'Waterfall', lat: 62.108, lon: 7.092, depth: '---', width: '250 m'  },
@@ -92,8 +84,6 @@ const REGIONS = {
     satZ: 14,
     sceneH: 30,
     blurRadius: 2,
-    camPos:    [0, 70, 150],
-    camTarget: [10, 0, -20],
     features: [
       { name: 'Wizard Island',   type: 'Volcano',  lat: 42.946, lon: -122.158, depth: '---', width: '2,113 m' },
       { name: 'Phantom Ship',    type: 'Rock',     lat: 42.925, lon: -122.070, depth: '---', width: '---'     },
@@ -111,8 +101,6 @@ const REGIONS = {
     satZ: 12,
     sceneH: 24,
     blurRadius: 2,
-    camPos:    [-20, 60, 160],
-    camTarget: [10, 0, -30],
     features: [
       { name: 'Mauna Kea',    type: 'Summit',  lat: 19.821, lon: -155.468, depth: '---', width: '4,207 m' },
       { name: 'Kilauea',      type: 'Volcano', lat: 19.421, lon: -155.287, depth: '---', width: '1,247 m' },
@@ -129,8 +117,6 @@ const REGIONS = {
     satZ: 13,
     sceneH: 32,
     blurRadius: 2,
-    camPos:    [20, 65, 140],
-    camTarget: [30, 0, -40],
     features: [
       { name: 'Torres del Paine', type: 'Summit',  lat: -50.942, lon: -72.960, depth: '---', width: '2,884 m' },
       { name: 'Grey Glacier',     type: 'Glacier', lat: -50.980, lon: -73.230, depth: '---', width: '6 km'    },
@@ -148,8 +134,6 @@ const REGIONS = {
     satZ: 13,
     sceneH: 36,
     blurRadius: 2,
-    camPos:    [10, 75, 160],
-    camTarget: [20, 0, -30],
     features: [
       { name: 'Sassolungo',       type: 'Summit',  lat: 46.516, lon: 11.730, depth: '---', width: '3,181 m' },
       { name: 'Marmolada',        type: 'Glacier', lat: 46.435, lon: 11.853, depth: '---', width: '3,343 m' },
@@ -166,8 +150,6 @@ const REGIONS = {
     satZ: 14,
     sceneH: 40,
     blurRadius: 2,
-    camPos:    [0, 80, 160],
-    camTarget: [15, 0, -20],
     features: [
       { name: 'Matterhorn',     type: 'Summit',  lat: 45.977, lon: 7.659, depth: '---', width: '4,478 m' },
       { name: 'Gorner Glacier', type: 'Glacier', lat: 45.960, lon: 7.800, depth: '---', width: '14 km'   },
@@ -185,8 +167,6 @@ const REGIONS = {
     satZ: 12,
     sceneH: 28,
     blurRadius: 2,
-    camPos:    [10, 65, 140],
-    camTarget: [20, 0, -40],
     features: [
       { name: 'Landmannalaugar',  type: 'Geothermal', lat: 63.993, lon: -19.059, depth: '---', width: '---'     },
       { name: 'Hekla',            type: 'Volcano',    lat: 63.983, lon: -19.700, depth: '---', width: '1,491 m' },
@@ -203,8 +183,6 @@ const REGIONS = {
     satZ: 14,
     sceneH: 35,
     blurRadius: 2,
-    camPos:    [20, 65, 130],
-    camTarget: [40, 0, -50],
     features: [
       { name: 'Avatar Hallelujah Mt', type: 'Pillar',  lat: 29.347, lon: 110.404, depth: '---', width: '1,080 m' },
       { name: 'Tianzi Mountain',      type: 'Summit',  lat: 29.378, lon: 110.432, depth: '---', width: '1,262 m' },
@@ -222,8 +200,6 @@ const REGIONS = {
     satZ: 13,
     sceneH: 32,
     blurRadius: 2,
-    camPos:    [0, 70, 160],
-    camTarget: [10, 0, -20],
     features: [
       { name: 'Dead Sea',       type: 'Lake',   lat: 31.50, lon: 35.48, depth: '-430 m', width: '17 km'  },
       { name: 'Masada',         type: 'Fortress',lat: 31.316, lon: 35.354, depth: '---', width: '59 m'   },
@@ -240,8 +216,6 @@ const REGIONS = {
     satZ: 14,
     sceneH: 22,
     blurRadius: 2,
-    camPos:    [0, 55, 130],
-    camTarget: [10, 0, -20],
     features: [
       { name: 'Caldera Rim',     type: 'Cliff',    lat: 36.415, lon: 25.430, depth: '---', width: '300 m'   },
       { name: 'Nea Kameni',      type: 'Volcano',  lat: 36.400, lon: 25.396, depth: '---', width: '127 m'   },
@@ -258,8 +232,6 @@ const REGIONS = {
     satZ: 14,
     sceneH: 18,
     blurRadius: 2,
-    camPos:    [0, 50, 120],
-    camTarget: [10, 0, -10],
     features: [
       { name: 'Mount Otemanu',    type: 'Summit',  lat: -16.496, lon: -151.743, depth: '---', width: '727 m'   },
       { name: 'Matira Point',     type: 'Coast',   lat: -16.535, lon: -151.727, depth: '---', width: '---'     },
@@ -276,8 +248,6 @@ const REGIONS = {
     satZ: 13,
     sceneH: 20,
     blurRadius: 3,
-    camPos:    [0, 60, 150],
-    camTarget: [10, 0, -30],
     features: [
       { name: 'Sossusvlei',         type: 'Pan',    lat: -24.730, lon: 15.290, depth: '---', width: '---'     },
       { name: 'Dune 45',            type: 'Dune',   lat: -24.726, lon: 15.474, depth: '---', width: '170 m'  },
@@ -294,8 +264,6 @@ const REGIONS = {
     satZ: 14,
     sceneH: 32,
     blurRadius: 2,
-    camPos:    [0, 70, 150],
-    camTarget: [10, 0, -10],
     features: [
       { name: 'Fuji Summit',       type: 'Summit',  lat: 35.361, lon: 138.727, depth: '---', width: '3,776 m' },
       { name: 'Hoei Crater',       type: 'Crater',  lat: 35.340, lon: 138.735, depth: '---', width: '---'     },
@@ -312,8 +280,6 @@ const REGIONS = {
     satZ: 14,
     sceneH: 26,
     blurRadius: 2,
-    camPos:    [0, 60, 140],
-    camTarget: [15, 0, -20],
     features: [
       { name: 'Göreme Valley',     type: 'Valley',  lat: 38.643, lon: 34.830, depth: '---', width: '---'     },
       { name: 'Uçhisar Castle',    type: 'Summit',  lat: 38.633, lon: 34.810, depth: '---', width: '1,350 m' },
@@ -587,15 +553,11 @@ export function createPhotoView(regionKey) {
       const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.5, 2000)
       camCtrl_ = new CameraController(camera, renderer.domElement)
 
-      if (region.camPos) {
-        const [cx, cy, cz] = region.camPos
-        camCtrl_.camera.position.set(cx, cy, cz)
-      }
-      if (region.camTarget) {
-        const [tx, ty, tz] = region.camTarget
-        camCtrl_.controls.target.set(tx, ty, tz)
-        camCtrl_.camera.lookAt(tx, ty, tz)
-      }
+      // Standardized framing for all photo views — camera looks at terrain
+      // center from a ~28° pitch, plane fills the frame with minimal sky.
+      camCtrl_.camera.position.set(0, 95, 165)
+      camCtrl_.controls.target.set(0, 0, 0)
+      camCtrl_.camera.lookAt(0, 0, 0)
 
       // Post-processing — subtle bloom for snow/rock highlights
       composer_ = new EffectComposer(renderer)

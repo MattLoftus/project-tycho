@@ -1778,6 +1778,11 @@
       --sp-accent-rgb: 224, 144, 48;
       --sp-bg: rgba(6, 4, 2, 0.82);
     }
+    #spacetime-app.theme-alcubierre-v2 {
+      --sp-accent: #7ad8ff;
+      --sp-accent-rgb: 122, 216, 255;
+      --sp-bg: rgba(2, 6, 12, 0.82);
+    }
     #spacetime-app.theme-lensing {
       --sp-accent: #c0a0ff;
       --sp-accent-rgb: 192, 160, 255;
@@ -1810,14 +1815,6 @@
       --sp-accent: #70c8ff;
       --sp-accent-rgb: 112, 200, 255;
       --sp-bg: rgba(2, 4, 8, 0.82);
-    }
-    #spacetime-app.theme-redshift {
-      --sp-accent: #ff9860;
-      --sp-accent-rgb: 255, 152, 96;
-      --sp-bg: rgba(8, 4, 2, 0.82);
-    }
-    #spacetime-app .st-view-btn[data-view="redshift"]::after {
-      background: linear-gradient(90deg, #4da8ff 0%, #ff8040 100%);
     }
     /* Life of a Binary — chapter nav & progress bar */
     #sp2-lifebinary-chapters {
@@ -1862,7 +1859,9 @@
       pointer-events: none; z-index: 15;
     }
     /* Polarization mode toggle buttons */
-    #sp2-polarization-modes {
+    /* Selector must out-specify `#spacetime-app .st-view-hud > *`
+       (1,1,0) which otherwise zeroes out pointer-events on this container. */
+    #spacetime-app #sp2-polarization-modes {
       position:absolute; bottom:80px; right:24px; pointer-events:auto; z-index:15;
       display:flex; gap:4px;
     }
@@ -1932,6 +1931,10 @@
     }
     #spacetime-app .st-view-btn[data-view="alcubierre"]::after {
       background: linear-gradient(90deg, transparent 0%, #e09030 45%, #e09030 55%, transparent 100%);
+    }
+    #spacetime-app .st-view-btn[data-view="alcubierreV2"]::after {
+      background: radial-gradient(circle at 50% 50%, #7ad8ff 0%, #7ad8ff 22%, transparent 24%),
+                  linear-gradient(90deg, transparent 0%, #3070a0 30%, transparent 50%, #ffa060 70%, transparent 100%);
     }
     #spacetime-app .st-view-btn[data-view="lensing"]::after {
       background: radial-gradient(circle, transparent 15%, #c0a0ff 28%, #c0a0ff 42%, transparent 55%);
@@ -2004,6 +2007,25 @@
       font-size: 13px; line-height: 1.6; letter-spacing: 0.5px;
       color: rgba(var(--sp-accent-rgb), 0.65);
     }
+    /* Shared toggle-button style for Spacetime per-view controls */
+    #spacetime-app .st-toggle-btn {
+      background: rgba(var(--sp-accent-rgb), 0.08);
+      border: 1px solid rgba(var(--sp-accent-rgb), 0.25);
+      color: rgba(var(--sp-accent-rgb), 0.55);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px; letter-spacing: 2px;
+      padding: 5px 10px; cursor: pointer;
+      transition: all 0.15s;
+    }
+    #spacetime-app .st-toggle-btn:hover {
+      color: rgba(var(--sp-accent-rgb), 0.85);
+      border-color: rgba(var(--sp-accent-rgb), 0.45);
+    }
+    #spacetime-app .st-toggle-btn.active {
+      background: rgba(var(--sp-accent-rgb), 0.18);
+      border-color: var(--sp-accent);
+      color: var(--sp-accent);
+    }
     /* Shared slider style for Spacetime controls */
     #spacetime-app .st-slider {
       width: 120px; height: 3px;
@@ -2017,52 +2039,6 @@
       background: var(--sp-accent);
       border: 1px solid rgba(var(--sp-accent-rgb), 0.5);
       cursor: pointer;
-    }
-    /* Tab-level intro overlay */
-    #spacetime-app #st-intro-overlay {
-      position: absolute; inset: 0;
-      background: rgba(2, 6, 14, 0.92);
-      backdrop-filter: blur(10px);
-      display: flex; align-items: center; justify-content: center;
-      pointer-events: auto; z-index: 40;
-      animation: st-intro-fade-in 0.4s ease-out;
-    }
-    @keyframes st-intro-fade-in {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-    #spacetime-app #st-intro-card {
-      max-width: 620px; padding: 36px 42px;
-      background: rgba(var(--sp-accent-rgb), 0.04);
-      border: 1px solid rgba(var(--sp-accent-rgb), 0.35);
-      font-family: 'Share Tech Mono', monospace;
-      color: rgba(var(--sp-accent-rgb), 0.85);
-    }
-    #spacetime-app #st-intro-title {
-      font-size: 18px; letter-spacing: 6px; color: var(--sp-accent);
-      margin-bottom: 20px;
-    }
-    #spacetime-app #st-intro-body {
-      font-size: 14px; line-height: 1.7; letter-spacing: 0.5px;
-      color: rgba(var(--sp-accent-rgb), 0.8);
-      margin-bottom: 24px;
-    }
-    #spacetime-app #st-intro-body b {
-      color: var(--sp-accent);
-    }
-    #spacetime-app #st-intro-body p { margin: 0 0 12px 0; }
-    #spacetime-app #st-intro-btn {
-      background: rgba(var(--sp-accent-rgb), 0.12);
-      border: 1px solid rgba(var(--sp-accent-rgb), 0.5);
-      color: var(--sp-accent);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 12px; letter-spacing: 3px;
-      padding: 10px 28px; cursor: pointer;
-      transition: all 0.2s;
-    }
-    #spacetime-app #st-intro-btn:hover {
-      background: rgba(var(--sp-accent-rgb), 0.22);
-      border-color: var(--sp-accent);
     }
     /* Preset scenario buttons */
     #spacetime-app .st-presets {
@@ -2087,28 +2063,6 @@
       border-color: var(--sp-accent);
       color: var(--sp-accent);
     }
-    /* Metaphor caveat — a small dismissible note on rubber-sheet views */
-    #spacetime-app .st-caveat {
-      position: absolute; top: 92px; left: 24px;
-      max-width: 280px;
-      background: var(--sp-bg);
-      border: 1px solid rgba(var(--sp-accent-rgb), 0.2);
-      padding: 10px 32px 10px 12px;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px; line-height: 1.5; letter-spacing: 0.5px;
-      color: rgba(var(--sp-accent-rgb), 0.75);
-      pointer-events: auto; z-index: 15;
-      backdrop-filter: blur(6px);
-    }
-    #spacetime-app .st-caveat.hidden { display: none; }
-    #spacetime-app .st-caveat-close {
-      position: absolute; top: 4px; right: 6px;
-      background: none; border: none; cursor: pointer;
-      color: rgba(var(--sp-accent-rgb), 0.5);
-      font-size: 14px; padding: 2px 6px;
-    }
-    #spacetime-app .st-caveat-close:hover { color: var(--sp-accent); }
-
     /* View switcher nav — top left */
     /* View switcher — vertical nav (left side) */
     #special-app #sp2-view-nav {
@@ -2767,34 +2721,9 @@
       <div id="view-nav">
         <button id="sv-nav-collapse" title="Collapse nav">&#x25C0;</button>
         <div class="nav-group">
-          <div class="nav-group-label">SIMULATION</div>
-          <div class="nav-group-items"><div class="nav-group-items-inner">
-            <button class="view-btn active" data-view="procedural">PROCEDURAL</button>
-            <button class="view-btn" data-view="glacial">GLACIAL</button>
-            <button class="view-btn" data-view="volcanicSurface">VOLCANIC</button>
-          </div></div>
-        </div>
-        <div class="nav-group">
-          <div class="nav-group-label">MARS</div>
-          <div class="nav-group-items"><div class="nav-group-items-inner">
-            <button class="view-btn" data-view="valles">VALLES MARINERIS</button>
-            <button class="view-btn" data-view="olympus">OLYMPUS MONS</button>
-            <button class="view-btn" data-view="hellas">HELLAS BASIN</button>
-          </div></div>
-        </div>
-        <div class="nav-group">
-          <div class="nav-group-label">EARTH</div>
-          <div class="nav-group-items"><div class="nav-group-items-inner">
-            <button class="view-btn" data-view="grandcanyon">GRAND CANYON</button>
-            <button class="view-btn" data-view="himalayas">HIMALAYAS</button>
-            <button class="view-btn" data-view="kilimanjaro">KILIMANJARO</button>
-            <button class="view-btn" data-view="sognefjord">SOGNEFJORDEN</button>
-          </div></div>
-        </div>
-        <div class="nav-group">
           <div class="nav-group-label">SATELLITE · AMERICAS</div>
           <div class="nav-group-items"><div class="nav-group-items-inner">
-            <button class="view-btn" data-view="grandcanyonv2">GRAND CANYON</button>
+            <button class="view-btn active" data-view="grandcanyonv2">GRAND CANYON</button>
             <button class="view-btn" data-view="yosemite">YOSEMITE</button>
             <button class="view-btn" data-view="craterlake">CRATER LAKE</button>
             <button class="view-btn" data-view="hawaii">HAWAI&#x02BB;I</button>
@@ -2831,6 +2760,31 @@
           <div class="nav-group-label">SATELLITE · AFRICA</div>
           <div class="nav-group-items"><div class="nav-group-items-inner">
             <button class="view-btn" data-view="namibia">NAMIB DESERT</button>
+          </div></div>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">MARS</div>
+          <div class="nav-group-items"><div class="nav-group-items-inner">
+            <button class="view-btn" data-view="valles">VALLES MARINERIS</button>
+            <button class="view-btn" data-view="olympus">OLYMPUS MONS</button>
+            <button class="view-btn" data-view="hellas">HELLAS BASIN</button>
+          </div></div>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">EARTH</div>
+          <div class="nav-group-items"><div class="nav-group-items-inner">
+            <button class="view-btn" data-view="grandcanyon">GRAND CANYON</button>
+            <button class="view-btn" data-view="himalayas">HIMALAYAS</button>
+            <button class="view-btn" data-view="kilimanjaro">KILIMANJARO</button>
+            <button class="view-btn" data-view="sognefjord">SOGNEFJORDEN</button>
+          </div></div>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">SIMULATION</div>
+          <div class="nav-group-items"><div class="nav-group-items-inner">
+            <button class="view-btn" data-view="procedural">PROCEDURAL</button>
+            <button class="view-btn" data-view="glacial">GLACIAL</button>
+            <button class="view-btn" data-view="volcanicSurface">VOLCANIC</button>
           </div></div>
         </div>
       </div>
@@ -2944,20 +2898,9 @@
       <div id="oc-view-nav">
         <button id="oc-nav-collapse" title="Collapse nav">&#x25C0;</button>
         <div class="nav-group">
-          <div class="nav-group-label">SIMULATION</div>
-          <div class="nav-group-items"><div class="nav-group-items-inner">
-            <button class="view-btn active" data-view="procedural">PROCEDURAL</button>
-            <button class="view-btn" data-view="abyssal">ABYSSAL PLAIN</button>
-            <button class="view-btn" data-view="volcanic">VOLCANIC RIDGE</button>
-            <button class="view-btn" data-view="shelf">CONTINENTAL SHELF</button>
-            <button class="view-btn" data-view="hydrothermal">HYDROTHERMAL FIELD</button>
-            <button class="view-btn" data-view="arctic">ARCTIC SEAFLOOR</button>
-          </div></div>
-        </div>
-        <div class="nav-group">
           <div class="nav-group-label">PACIFIC</div>
           <div class="nav-group-items"><div class="nav-group-items-inner">
-            <button class="view-btn" data-view="mariana">MARIANA TRENCH</button>
+            <button class="view-btn active" data-view="mariana">MARIANA TRENCH</button>
             <button class="view-btn" data-view="hawaiian">HAWAIIAN CHAIN</button>
             <button class="view-btn" data-view="philippine">PHILIPPINE TRENCH</button>
             <button class="view-btn" data-view="tonga">TONGA TRENCH</button>
@@ -2983,6 +2926,17 @@
           <div class="nav-group-label">SHALLOW</div>
           <div class="nav-group-items"><div class="nav-group-items-inner">
             <button class="view-btn" data-view="reef">CORAL REEF</button>
+          </div></div>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">SIMULATION</div>
+          <div class="nav-group-items"><div class="nav-group-items-inner">
+            <button class="view-btn" data-view="procedural">PROCEDURAL</button>
+            <button class="view-btn" data-view="abyssal">ABYSSAL PLAIN</button>
+            <button class="view-btn" data-view="volcanic">VOLCANIC RIDGE</button>
+            <button class="view-btn" data-view="shelf">CONTINENTAL SHELF</button>
+            <button class="view-btn" data-view="hydrothermal">HYDROTHERMAL FIELD</button>
+            <button class="view-btn" data-view="arctic">ARCTIC SEAFLOOR</button>
           </div></div>
         </div>
       </div>
@@ -3074,19 +3028,6 @@
       <div class="corner corner-bl"></div>
       <div class="corner corner-br"></div>
 
-      <!-- First-visit intro overlay -->
-      <div id="st-intro-overlay">
-        <div id="st-intro-card">
-          <div id="st-intro-title">SPACETIME</div>
-          <div id="st-intro-body">
-            <p>Eight views of curved spacetime &mdash; the geometry that <em>is</em> gravity, per Einstein's general relativity.</p>
-            <p>Most views use a <b>rubber-sheet grid</b> as a metaphor for spatial curvature. This is a 2D slice of a 4D reality; real spacetime also curves in time (clocks run slower near mass). The grid can't show that. Treat it as a mental model, not ground truth.</p>
-            <p>Starting view: <b>Life of a Binary</b> &mdash; the full story of two black holes from stable orbit to merger. Chapter nav at the top lets you skip.</p>
-          </div>
-          <button id="st-intro-btn">BEGIN &rarr;</button>
-        </div>
-      </div>
-
       <!-- View switcher -->
       <div id="st-view-nav">
         <button id="st-nav-collapse">&#x2715;</button>
@@ -3094,12 +3035,12 @@
         <button class="st-view-btn active" data-view="blackhole">BLACK HOLE</button>
         <button class="st-view-btn" data-view="binarySystem">BINARY SYSTEM</button>
         <button class="st-view-btn" data-view="alcubierre">WARP DRIVE</button>
+        <button class="st-view-btn" data-view="alcubierreV2">WARP DRIVE II</button>
         <button class="st-view-btn" data-view="lensing">LENSING</button>
         <button class="st-view-btn" data-view="inspiral">INSPIRAL</button>
         <button class="st-view-btn" data-view="frameDrag">FRAME DRAG</button>
         <button class="st-view-btn" data-view="polarization">POLARIZATION</button>
         <button class="st-view-btn" data-view="lifeBinary">LIFE OF A BINARY</button>
-        <button class="st-view-btn" data-view="redshift">REDSHIFT</button>
       </div>
       <button id="st-nav-expand">&#x25B6;</button>
 
@@ -3223,11 +3164,6 @@
           <span id="sp2-spacetime-speed-label" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(var(--sp-accent-rgb),0.8);min-width:32px;">1.0x</span>
         </div>
 
-        <div class="st-caveat" data-caveat="rubber-sheet">
-          <button class="st-caveat-close" title="Dismiss">&times;</button>
-          The grid is a <b>2D metaphor</b> &mdash; real spacetime is 4D (three space + one time). This view shows a spatial slice. Gravity comes from <em>time</em> curvature too, which the grid can&#x2019;t depict.
-        </div>
-
         <div id="sp2-view-description"><p>Two stars, locked in gravitational embrace. Each one bends the geometry of space around it; together they trace a cosmic waltz around their shared center of mass. The heavier star barely moves while the lighter one sweeps a wider arc. When the <b>Grav Waves</b> toggle is on, ripples radiate outward at twice the orbital frequency &mdash; the quadrupole pinwheel signature that LIGO detectors are tuned to catch. Adjust the masses with the sliders and watch the orbit retune.</p></div>
       </div>
 
@@ -3277,6 +3213,55 @@
         </div>
 
         <div id="sp2-view-description"><p>In 1994, Miguel Alcubierre wrote down a solution to Einstein&#x2019;s equations that would let a ship effectively exceed the speed of light &mdash; not by moving <em>through</em> space, but by warping space around it. In front of the bubble, space contracts. Behind, it expands. Inside, spacetime is flat &mdash; the ship drifts weightlessly while the universe rearranges itself to move the bubble. The catch: the metric requires <b>negative energy density in macroscopic quantities</b>, which has never been observed and is not known to be physically possible. This view sits firmly in &#x201C;beautiful mathematics, probably not engineering.&#x201D;</p></div>
+      </div>
+
+      <!-- ═══ ALCUBIERRE V2 HUD ═══ -->
+      <div class="st-view-hud" data-view="alcubierreV2" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">SPACETIME CONDUIT &mdash; WARP DRIVE II</div>
+            <div class="hud-coords">
+              <span class="label">FRAME</span><span>Ship&#x2019;s rest frame</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>CONDUIT FLOW NOMINAL</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">FRONT RING</span>
+            <span class="gauge-value">Contraction intake</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">THROAT</span>
+            <span class="gauge-value">Compressed metric</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">REAR RING</span>
+            <span class="gauge-value">Expansion outflow</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">METRIC</span>
+            <span class="gauge-value">Alcubierre (1994)</span>
+          </div>
+        </div>
+
+        <div style="position:absolute;bottom:80px;right:24px;pointer-events:auto;z-index:15;display:flex;align-items:center;gap:10px;">
+          <button id="sp2-alcubierre-v2-particles" class="st-toggle-btn active" aria-pressed="true">PARTICLES</button>
+          <span style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.6);text-transform:uppercase;margin-left:14px;">Flow</span>
+          <input id="sp2-alcubierre-v2-speed" type="range" min="0" max="1000" value="100" style="
+            width: 120px; height: 3px; -webkit-appearance: none; appearance: none;
+            background: rgba(var(--sp-accent-rgb), 0.25); border-radius: 2px; outline: none; cursor: pointer;
+          ">
+          <span id="sp2-alcubierre-v2-speed-label" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(var(--sp-accent-rgb),0.8);min-width:32px;">1.0x</span>
+        </div>
+
+        <div id="sp2-view-description"><p>The same Alcubierre ship, but now you see the <b>conduit</b>. Ahead of the ship, a wide cross-section of spacetime funnels toward the front ring &mdash; visibly compressed as it squeezes through. Inside the hull the grid is at its most contracted. Behind the rear ring, the fabric flares violently outward: space expands. The grid squares tell the story &mdash; lines scroll in world coordinates, so the squares shrink where space is contracted and stretch where it expands. Same 1994 metric as WARP DRIVE; same caveat about negative energy. This is just a second way of seeing it.</p></div>
       </div>
 
       <!-- ═══ LENSING HUD ═══ -->
@@ -3463,45 +3448,6 @@
         </div>
 
         <div id="sp2-view-description"><p>Gravitational waves are often drawn like water ripples spreading outward &mdash; but that&#x2019;s wrong. They are <b>transverse</b>: they stretch and squash space <em>sideways</em> to their direction of travel, with two independent polarization modes. The &#x201C;plus&#x201D; mode stretches along horizontal/vertical axes; the &#x201C;cross&#x201D; mode rotates 45°. A ring of freely-floating particles is the textbook way to see it &mdash; watch the ring rhythmically oblate and prolate as the wave passes through. That 90° rotational symmetry is a fingerprint of the graviton&#x2019;s spin-2 nature: photons take a full 360° to return to the same pattern, gravitons only 180°.</p></div>
-      </div>
-
-      <!-- ═══ REDSHIFT HUD ═══ -->
-      <div class="st-view-hud" data-view="redshift" style="display:none">
-        <div id="sp2-hud-top">
-          <div id="sp2-hud-top-left">
-            <div class="hud-system-title">GRAVITATIONAL REDSHIFT</div>
-            <div class="hud-coords">
-              <span class="label">EFFECT</span><span>Time dilation</span>
-            </div>
-          </div>
-          <div id="sp2-status-container">
-            <div class="status-indicator">
-              <div class="status-dot"></div>
-              <span>CLOCKS OUT OF SYNC</span>
-            </div>
-          </div>
-        </div>
-
-        <div id="sp2-hud-bottom">
-          <div class="gauge">
-            <span class="gauge-label">TOP CLOCK (FAR)</span>
-            <span class="gauge-value" id="sp2-redshift-top-rate">&mdash;</span>
-          </div>
-          <div class="gauge">
-            <span class="gauge-label">BOTTOM CLOCK (DEEP)</span>
-            <span class="gauge-value" id="sp2-redshift-bot-rate">&mdash;</span>
-          </div>
-          <div class="gauge">
-            <span class="gauge-label">BOTTOM RUNS</span>
-            <span class="gauge-value" id="sp2-redshift-ratio">&mdash;</span>
-          </div>
-          <div class="gauge">
-            <span class="gauge-label">CONFIRMED</span>
-            <span class="gauge-value">Pound-Rebka (1960)</span>
-          </div>
-        </div>
-
-        <div id="sp2-view-description"><p>Gravity doesn&#x2019;t just bend space &mdash; it slows time. A clock sitting deeper in a gravity well ticks slower than one at higher altitude. This isn&#x2019;t a trick of the eye; it&#x2019;s the actual rate of time passing. A photon climbing out of the well loses energy as it rises, shifting from blue toward red &mdash; the <b>gravitational redshift</b>. Pound and Rebka measured this in 1960 in a 22-meter elevator shaft at Harvard. GPS satellites need to correct for it every day, or your phone&#x2019;s location would drift by ~10 km in 24 hours. This view breaks the rubber-sheet metaphor on purpose: look at the <em>clocks</em>, not the grid &mdash; time curvature is what gravity really is.</p></div>
       </div>
 
       <!-- ═══ LIFE OF A BINARY HUD ═══ -->

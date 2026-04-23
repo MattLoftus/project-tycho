@@ -320,6 +320,11 @@ export function createMarsView(regionKey) {
       const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.5, 2000)
       camCtrl_ = new CameraController(camera, renderer.domElement)
 
+      // Standardized framing — camera always looks at terrain center.
+      camCtrl_.camera.position.set(0, 95, 165)
+      camCtrl_.controls.target.set(0, 0, 0)
+      camCtrl_.camera.lookAt(0, 0, 0)
+
       composer_ = new EffectComposer(renderer)
       composer_.addPass(new RenderPass(scene_, camera))
       composer_.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.6, 0.5, 0.82))

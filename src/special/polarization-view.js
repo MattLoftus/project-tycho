@@ -26,36 +26,39 @@ export function createPolarizationView() {
       scene_ = new THREE.Scene()
       scene_.background = new THREE.Color(0x020408)
 
-      // Camera — oblique "3/4 view" of the ring with wave coming from behind
+      // Camera — looking along the +Z axis from an oblique angle so the
+      // binary source reads in the foreground and the stack of test rings
+      // recedes into the distance along the direction of propagation.
       camera_ = new THREE.PerspectiveCamera(
-        50, window.innerWidth / window.innerHeight, 0.1, 500
+        48, window.innerWidth / window.innerHeight, 0.1, 500
       )
-      camera_.position.set(10, 7, 18)
+      camera_.position.set(18, 10, -8)
 
       controls_ = new OrbitControls(camera_, renderer.domElement)
       controls_.enableDamping = true
       controls_.dampingFactor = 0.05
-      controls_.target.set(0, 0, 0)
+      controls_.target.set(0, 0, 16)
       controls_.minDistance = 8
-      controls_.maxDistance = 80
+      controls_.maxDistance = 120
 
       camMove_ = createCameraMovement(camera_, controls_)
 
       // Lighting
-      scene_.add(new THREE.AmbientLight(0x304060, 2.0))
-      const key = new THREE.DirectionalLight(0x4060a0, 2.0)
-      key.position.set(10, 15, 10)
+      scene_.add(new THREE.AmbientLight(0x2a3650, 1.6))
+      const key = new THREE.DirectionalLight(0x6090c0, 2.4)
+      key.position.set(12, 18, 8)
       scene_.add(key)
-      const fill = new THREE.DirectionalLight(0x304080, 1.0)
-      fill.position.set(-10, 5, -10)
+      const fill = new THREE.DirectionalLight(0x304080, 0.9)
+      fill.position.set(-12, 4, -6)
       scene_.add(fill)
 
       // Model
       model_ = createPolarizationModel()
-      scene_.add(model_.ring)
-      scene_.add(model_.refRing)
-      scene_.add(model_.wave)
       scene_.add(model_.starfield)
+      scene_.add(model_.axisLine)
+      scene_.add(model_.wavefront)
+      scene_.add(model_.binary)
+      scene_.add(model_.rings)
 
       // Mode toggle buttons
       const modeLabels = { plus: '+ plus', cross: '× cross', both: 'circular (+, ×)' }

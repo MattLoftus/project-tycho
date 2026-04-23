@@ -11,6 +11,11 @@
     {
       "source": "/esri/:path*",
       "destination": "https://server.arcgisonline.com/:path*"
-    }
+    },
+    { "source": "/space",     "destination": "/index.html" },
+    { "source": "/surface",   "destination": "/index.html" },
+    { "source": "/ocean",     "destination": "/index.html" },
+    { "source": "/spacetime", "destination": "/index.html" },
+    { "source": "/special",   "destination": "/index.html" }
   ]
 }

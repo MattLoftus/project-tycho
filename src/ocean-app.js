@@ -148,7 +148,7 @@ export function init(renderer) {
     initialized = true
   }
 
-  switchView('procedural')
+  switchView('mariana')
 }
 
 export function dispose() {

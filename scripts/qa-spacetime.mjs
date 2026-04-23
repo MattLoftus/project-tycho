@@ -14,7 +14,6 @@ const VIEWS = [
   'inspiral',
   'frameDrag',
   'polarization',
-  'redshift',
 ]
 
 const browser = await chromium.launch({

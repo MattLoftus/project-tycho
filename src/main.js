@@ -9,13 +9,25 @@ import { inject } from '@vercel/analytics';
 inject();
 
 const apps = {
-  space:   { module: spaceApp,   container: 'space-app',   exposure: 1.2 },
-  surface: { module: surfaceApp, container: 'surface-app', exposure: 1.15 },
-  ocean:     { module: oceanApp,     container: 'ocean-app',     exposure: 1.0 },
-  spacetime: { module: spacetimeApp, container: 'spacetime-app', exposure: 1.1 },
-  special:   { module: specialApp,   container: 'special-app',   exposure: 1.1 },
+  space:     { module: spaceApp,     container: 'space-app',     exposure: 1.2,  title: 'Space Sim' },
+  surface:   { module: surfaceApp,   container: 'surface-app',   exposure: 1.15, title: 'Surface' },
+  ocean:     { module: oceanApp,     container: 'ocean-app',     exposure: 1.0,  title: 'Ocean' },
+  spacetime: { module: spacetimeApp, container: 'spacetime-app', exposure: 1.1,  title: 'Spacetime' },
+  special:   { module: specialApp,   container: 'special-app',   exposure: 1.1,  title: 'Special' },
 };
+const DEFAULT_APP = 'space';
 let activeApp = null;
+
+// ── URL routing ─────────────────────────────────────────────────────────────
+// Each top-level section gets a URL path (e.g. /spacetime). The path is the
+// app name; the root path "/" maps to the default app.
+function appFromPath(pathname) {
+  const slug = (pathname || '/').replace(/^\/+/, '').split('/')[0].toLowerCase();
+  return apps[slug] ? slug : DEFAULT_APP;
+}
+function pathForApp(name) {
+  return '/' + name;
+}
 
 // Shared renderer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -25,16 +37,24 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.2;
 document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-// App switching
-function switchApp(name) {
+// App switching. `pushUrl` controls whether we update history (user action) or
+// leave the URL alone (popstate / initial boot).
+function switchApp(name, pushUrl = true) {
+  if (!apps[name]) name = DEFAULT_APP;
   if (activeApp === name) return;
   if (activeApp) {
     apps[activeApp].module.dispose();
-    document.getElementById(apps[activeApp].container).style.display = 'none';
   }
   activeApp = name;
   renderer.toneMappingExposure = apps[name].exposure;
-  document.getElementById(apps[name].container).style.display = '';
+  // Hide EVERY other app container — not just the previously-active one.
+  // On a fresh page load with a non-default URL (e.g. /spacetime), the old
+  // "hide previous only" logic left the default app's markup visible because
+  // it had never been hidden by a prior switch.
+  for (const appName in apps) {
+    const el = document.getElementById(apps[appName].container);
+    if (el) el.style.display = appName === name ? '' : 'none';
+  }
   // Some apps have async init (e.g. special-app loading heightmaps)
   const result = apps[name].module.init(renderer);
   if (result && typeof result.catch === 'function') result.catch(console.error);
@@ -47,6 +67,15 @@ function switchApp(name) {
     if (c.startsWith('app-')) document.body.classList.remove(c);
   });
   document.body.classList.add('app-' + name);
+
+  // URL + title
+  document.title = `Project Tycho — ${apps[name].title}`;
+  if (pushUrl) {
+    const targetPath = pathForApp(name);
+    if (location.pathname !== targetPath) {
+      history.pushState({ app: name }, '', targetPath);
+    }
+  }
 }
 
 // Switcher buttons
@@ -54,8 +83,13 @@ document.querySelectorAll('.app-switch-btn').forEach(btn => {
   btn.addEventListener('click', () => switchApp(btn.dataset.app));
 });
 
-// Start with space sim
-switchApp('space');
+// Browser back/forward
+window.addEventListener('popstate', () => {
+  switchApp(appFromPath(location.pathname), false);
+});
+
+// Start from the current URL (falls back to default if unrecognised)
+switchApp(appFromPath(location.pathname), false);
 
 // Animation loop
 function animate() {

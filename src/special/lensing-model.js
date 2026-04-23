@@ -14,7 +14,6 @@ import * as THREE from 'three'
 
 const STAR_COUNT      = 8000    // dense field for lensing to act on
 const STAR_RADIUS     = 150
-const LENS_SPHERE_R   = 1.5    // visual size of the lensing mass
 
 // ─── Dense starfield ─────────────────────────────────────────────────────────
 
@@ -103,16 +102,6 @@ function buildGalaxyBand() {
   return group
 }
 
-// ─── Lens mass (dark sphere) ─────────────────────────────────────────────────
-
-function buildLensMass() {
-  const geo = new THREE.SphereGeometry(LENS_SPHERE_R, 48, 32)
-  const mat = new THREE.MeshBasicMaterial({
-    color: 0x000000,
-  })
-  return new THREE.Mesh(geo, mat)
-}
-
 // ─── Gravitational lensing shader ────────────────────────────────────────────
 //
 // Point-mass Schwarzschild lens equation:
@@ -125,7 +114,7 @@ export const LensingShader = {
   uniforms: {
     tDiffuse:      { value: null },
     lensCenter:    { value: new THREE.Vector2(0.5, 0.5) },
-    lensStrength:  { value: 0.15 },   // scaling factor on the deflection (slider-controlled)
+    lensStrength:  { value: 1.0 },    // slider-controlled; 1.0 = true Schwarzschild β = θ − θ_E²/θ
     lensRadius:    { value: 0.12 },   // Einstein radius (screen fraction)
     aspectRatio:   { value: 1.0 },
   },
@@ -180,12 +169,10 @@ export const LensingShader = {
 export function createLensingModel() {
   const starfield = buildStarfield()
   const galaxy = buildGalaxyBand()
-  const lens = buildLensMass()
 
   return {
     starfield,
     galaxy,
-    lens,
 
     update(time) {
       starfield.rotation.y = time * 0.002
