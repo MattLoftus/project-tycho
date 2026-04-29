@@ -7,6 +7,8 @@ import { createInspiralView } from './special/inspiral-view.js'
 import { createFrameDragView } from './special/framedrag-view.js'
 import { createPolarizationView } from './special/polarization-view.js'
 import { createLifeBinaryView } from './special/lifebinary-view.js'
+import { createLigoView } from './special/ligo-view.js'
+import { createPtaView } from './special/pta-view.js'
 import * as blackholeModule from './views/blackhole.js'
 
 let _renderer = null
@@ -70,6 +72,8 @@ const viewFactories = {
   frameDrag: createFrameDragView,
   polarization: createPolarizationView,
   lifeBinary: createLifeBinaryView,
+  ligo: createLigoView,
+  pta: createPtaView,
 }
 const viewInstances = {}
 
@@ -83,6 +87,8 @@ const viewThemes = {
   frameDrag: 'theme-framedrag',
   polarization: 'theme-polarization',
   lifeBinary: 'theme-lifebinary',
+  ligo: 'theme-ligo',
+  pta: 'theme-pta',
 }
 
 let lastCamera = null

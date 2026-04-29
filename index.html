@@ -1811,6 +1811,24 @@
       --sp-accent-rgb: 176, 128, 255;
       --sp-bg: rgba(4, 2, 8, 0.82);
     }
+    #spacetime-app.theme-ligo {
+      --sp-accent: #40e0c0;
+      --sp-accent-rgb: 64, 224, 192;
+    }
+    #sp2-ligo-speed::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #40e0c0; border: 1px solid rgba(0,0,0,0.4); cursor: pointer;
+    }
+    #spacetime-app.theme-pta {
+      --sp-accent: #ff90c0;
+      --sp-accent-rgb: 255, 144, 192;
+    }
+    #sp2-pta-pair-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #ff90c0; border: 1px solid rgba(0,0,0,0.4); cursor: pointer;
+    }
     #spacetime-app.theme-lifebinary {
       --sp-accent: #70c8ff;
       --sp-accent-rgb: 112, 200, 255;
@@ -1952,6 +1970,16 @@
     }
     #spacetime-app .st-view-btn[data-view="lifeBinary"]::after {
       background: linear-gradient(90deg, #70c8ff 0%, transparent 50%, #70c8ff 100%);
+    }
+    #spacetime-app .st-view-btn[data-view="ligo"]::after {
+      background: radial-gradient(circle at 50% 50%, #40e0c0 0%, #40e0c0 22%, transparent 24%);
+    }
+    #spacetime-app .st-view-btn[data-view="pta"]::after {
+      background:
+        radial-gradient(circle at 20% 30%, #ff90c0 0%, transparent 8%),
+        radial-gradient(circle at 65% 25%, #ff90c0 0%, transparent 8%),
+        radial-gradient(circle at 80% 70%, #ff90c0 0%, transparent 8%),
+        radial-gradient(circle at 30% 75%, #ff90c0 0%, transparent 8%);
     }
 
     #sp2-spacetime-speed::-webkit-slider-thumb {
@@ -3041,6 +3069,8 @@
         <button class="st-view-btn" data-view="frameDrag">FRAME DRAG</button>
         <button class="st-view-btn" data-view="polarization">POLARIZATION</button>
         <button class="st-view-btn" data-view="lifeBinary">LIFE OF A BINARY</button>
+        <button class="st-view-btn" data-view="ligo">LIGO</button>
+        <button class="st-view-btn" data-view="pta">PULSAR TIMING</button>
       </div>
       <button id="st-nav-expand">&#x25B6;</button>
 
@@ -3500,6 +3530,116 @@
         </div>
 
         <div id="sp2-view-description"><p>Two stars, locked in gravity&#x2019;s grip, tell a story that ends in black hole. <b>I. Formation:</b> stable partners, barely radiating &mdash; it could stay this way for eons. <b>II. Inspiral:</b> gravitational waves leak away orbital energy. The stars fall inward; the dance accelerates. <b>III. Merger:</b> they collide, and in a fraction of a second emit more power as gravitational radiation than every star in the observable universe combined. <b>IV. Ringdown:</b> the newborn Kerr black hole rings like a bell &mdash; exponentially decaying distortions as it settles. <b>V. Settled:</b> a quiet, spinning black hole with an accretion disk, waiting to someday eat another companion. Click any chapter to jump.</p></div>
+      </div>
+
+      <!-- ═══ LIGO HUD ═══ -->
+      <div class="st-view-hud" data-view="ligo" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">LIGO &mdash; DETECTING SPACETIME</div>
+            <div class="hud-coords">
+              <span class="label">PHASE</span><span id="sp2-ligo-phase">INSPIRAL</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>H1 + L1 LISTENING</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">DETECTOR 1</span>
+            <span class="gauge-value">H1 (Hanford WA)</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">DETECTOR 2</span>
+            <span class="gauge-value">L1 (Livingston LA)</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">ARMS</span>
+            <span class="gauge-value">4 km L-shape</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">REAL STRAIN</span>
+            <span class="gauge-value">~10&#x207B;&sup2;&sup1;</span>
+          </div>
+        </div>
+
+        <!-- Speed slider, mirrors inspiral pattern -->
+        <div style="position:absolute;bottom:80px;right:24px;pointer-events:auto;z-index:15;display:flex;align-items:center;gap:10px;">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.6);text-transform:uppercase;">Speed</span>
+          <input id="sp2-ligo-speed" type="range" min="0" max="300" value="100" style="
+            width: 120px; height: 3px; -webkit-appearance: none; appearance: none;
+            background: rgba(var(--sp-accent-rgb), 0.25); border-radius: 2px; outline: none; cursor: pointer;
+          ">
+          <span id="sp2-ligo-speed-label" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(var(--sp-accent-rgb),0.8);min-width:32px;">1.0x</span>
+        </div>
+
+        <!-- Strain plot canvas -->
+        <div style="position:absolute;bottom:160px;left:50%;transform:translateX(-50%);width:560px;height:78px;background:rgba(0,0,0,0.55);border:1px solid rgba(var(--sp-accent-rgb),0.35);box-shadow:0 0 24px rgba(var(--sp-accent-rgb),0.15);pointer-events:none;z-index:14;">
+          <div style="position:absolute;top:4px;left:8px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.55);text-transform:uppercase;">Strain h(t) at H1 &mdash; rolling</div>
+          <canvas id="sp2-ligo-strain-canvas" width="560" height="78" style="display:block;width:100%;height:100%;"></canvas>
+        </div>
+
+        <div id="sp2-view-description"><p>Each LIGO interferometer is a 4-km L. A laser beam splits, races down both arms, bounces off mirrors, and recombines. When a gravitational wave passes through &mdash; here, a chirp from a binary inspiral 1.3 billion light-years away &mdash; one arm stretches by ~10&#x207B;&sup1;&#x2078; m while the perpendicular arm squeezes by the same amount. That&#x2019;s 1/1000th of a proton&#x2019;s width, on a 4 km arm. The two sites (Hanford WA and Livingston LA) sit ~3000 km apart so a real signal arrives at one ~7&#x2013;10 ms before the other &mdash; cross-correlating the two streams (Allen-Romano 1999) is how we separate waves from local noise. Watch the L-arms: when the front sweeps past, the Y-arm and X-arm distort in opposite phase &mdash; the signature of a quadrupolar GW.</p></div>
+      </div>
+
+      <!-- ═══ PULSAR TIMING HUD ═══ -->
+      <div class="st-view-hud" data-view="pta" style="display:none">
+        <div id="sp2-hud-top">
+          <div id="sp2-hud-top-left">
+            <div class="hud-system-title">NANOGRAV &mdash; PULSAR TIMING ARRAY</div>
+            <div class="hud-coords">
+              <span class="label">PULSARS</span><span id="sp2-pta-pulsar-count">67</span>
+            </div>
+          </div>
+          <div id="sp2-status-container">
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              <span>15-YEAR DATASET</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="sp2-hud-bottom">
+          <div class="gauge">
+            <span class="gauge-label">FREQUENCY</span>
+            <span class="gauge-value">1&#x2013;30 nHz</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">SOURCES</span>
+            <span class="gauge-value">SMBH binaries</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">CORRELATION</span>
+            <span class="gauge-value">Hellings-Downs</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">SIGNIFICANCE</span>
+            <span class="gauge-value">~3-4&#x03C3; (2023)</span>
+          </div>
+        </div>
+
+        <!-- Pair-angle slider for HD curve -->
+        <div style="position:absolute;bottom:80px;right:24px;pointer-events:auto;z-index:15;display:flex;align-items:center;gap:10px;">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.6);text-transform:uppercase;">Pair Angle</span>
+          <input id="sp2-pta-pair-slider" type="range" min="0" max="180" value="60" style="
+            width: 140px; height: 3px; -webkit-appearance: none; appearance: none;
+            background: rgba(var(--sp-accent-rgb), 0.25); border-radius: 2px; outline: none; cursor: pointer;
+          ">
+          <span id="sp2-pta-pair-angle-label" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(var(--sp-accent-rgb),0.8);min-width:42px;">60&deg;</span>
+        </div>
+
+        <!-- HD curve canvas -->
+        <div style="position:absolute;bottom:160px;left:50%;transform:translateX(-50%);width:560px;height:120px;background:rgba(0,0,0,0.55);border:1px solid rgba(var(--sp-accent-rgb),0.35);box-shadow:0 0 24px rgba(var(--sp-accent-rgb),0.15);pointer-events:none;z-index:14;">
+          <div style="position:absolute;top:4px;left:8px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(var(--sp-accent-rgb),0.55);text-transform:uppercase;">Hellings-Downs Correlation vs Pulsar-Pair Angle</div>
+          <canvas id="sp2-pta-hd-canvas" width="560" height="120" style="display:block;width:100%;height:100%;"></canvas>
+        </div>
+
+        <div id="sp2-view-description"><p>Pulsars are nature&#x2019;s atomic clocks. By measuring the arrival times of radio pulses from 67 millisecond pulsars across the galaxy, NANOGrav turns the entire sky into a gravitational-wave detector tuned to nanohertz frequencies &mdash; periods of years to decades, sourced by the slow merger dance of supermassive black hole binaries in galaxy centers. The signature: pulse arrival times at any two pulsars correlate or anti-correlate depending on their angular separation on the sky, following the <b>Hellings-Downs curve</b> (Hellings &amp; Downs 1983). Same-direction pairs correlate strongly; pairs ~90&deg; apart anti-correlate. NANOGrav 15-yr (Agazie et al. 2023) reported the first 3-4&#x03C3; evidence of this characteristic pattern. Drag the slider to highlight a pair angle on the curve; click a pulsar dot to spotlight it.</p></div>
       </div>
 
     </div>
