@@ -1,6 +1,6 @@
 # Physics Review — Spacetime Tab
 
-*Reviewer: theoretical physicist (GR / astrophysics). All files reviewed under `src/special/` plus `src/views/blackhole.js` and `src/spacetime-app.js`.*
+*Reviewer: theoretical physicist (GR / astrophysics). All files reviewed under `src/scenes/` plus `src/views/blackhole.js` and `src/spacetime-app.js`.*
 
 ---
 

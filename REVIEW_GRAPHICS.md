@@ -1,6 +1,6 @@
 # Graphics Review — Spacetime Tab
 
-*Reviewer: senior WebGL / Three.js engineer. Confidence notes are inline. Scope: 6 views in `src/special/*` + shared `src/post.js` + `src/spacetime-app.js`, with `src/views/blackhole.js` as reference.*
+*Reviewer: senior WebGL / Three.js engineer. Confidence notes are inline. Scope: 6 views in `src/scenes/*` + shared `src/post.js` + `src/spacetime-app.js`, with `src/views/blackhole.js` as reference.*
 
 ## Executive Summary
 
@@ -260,11 +260,11 @@ Things I'd expect to see in a production-grade "Spacetime" visualizer that aren'
 
 ### Top 3 refactors worth doing (ranked by value/cost)
 
-1. **Ship the grid to the GPU.** Create `src/special/shared/gridShader.js` with a single vertex+fragment shader that takes well positions/masses/spin/gw as uniforms, and a `buildCurvedGrid(opts)` helper. Replace `buildDynamicGrid()` + `updateGrid()` in 4 files with one uniform-update call per frame. **Cost: 4–6 hours. Gain: 10× perf, grid resolution can double, unlocks Tier 2/3 visual upgrades.**
-   - Concrete file: new `src/special/shared/curved-grid.js` exporting `{buildCurvedGrid(opts), updateGridUniforms(grid, state)}`.
+1. **Ship the grid to the GPU.** Create `src/scenes/shared/gridShader.js` with a single vertex+fragment shader that takes well positions/masses/spin/gw as uniforms, and a `buildCurvedGrid(opts)` helper. Replace `buildDynamicGrid()` + `updateGrid()` in 4 files with one uniform-update call per frame. **Cost: 4–6 hours. Gain: 10× perf, grid resolution can double, unlocks Tier 2/3 visual upgrades.**
+   - Concrete file: new `src/scenes/shared/curved-grid.js` exporting `{buildCurvedGrid(opts), updateGridUniforms(grid, state)}`.
    - Deletions: `buildDynamicGrid()` + `updateGrid()` in `spacetime-model.js`, `inspiral-model.js`, `framedrag-model.js`.
 
-2. **Extract shared helpers.** Create `src/special/shared/starfield.js`, `src/special/shared/lights.js`, `src/special/shared/view-boilerplate.js` (the init/dispose skeleton as a factory). Reduces ~400 LoC across the 5 non-black-hole views. **Cost: 2 hours. Gain: maintenance, single-point tuning.**
+2. **Extract shared helpers.** Create `src/scenes/shared/starfield.js`, `src/scenes/shared/lights.js`, `src/scenes/shared/view-boilerplate.js` (the init/dispose skeleton as a factory). Reduces ~400 LoC across the 5 non-black-hole views. **Cost: 2 hours. Gain: maintenance, single-point tuning.**
    - Concrete: `createStandardSpacetimeScene({bg, cameraPos, target}) → {scene, camera, controls, lights}`.
 
 3. **Fix the bugs.** `marker_` shadowing in `spacetime-view.js:81` (30 seconds), dead `updateGauges` (30 sec), lensing aspect in schwarzschild-shadow calc (2 min), `time` uniform mod to prevent precision loss (2 min), `precision mediump` → `highp` in both cinematic shaders (30 sec). **Cost: 10 minutes. Gain: visible correctness.**
@@ -282,19 +282,19 @@ Things I'd expect to see in a production-grade "Spacetime" visualizer that aren'
 | File | Line | Change |
 |------|------|--------|
 | `src/spacetime-app.js` | 114–123 | `dispose()` should iterate `viewInstances` and dispose each, then clear. Currently only disposes active. |
-| `src/special/spacetime-view.js` | 81 | Remove `const` so `marker_` actually assigns to outer scope. |
-| `src/special/spacetime-view.js` | 190–196 | Delete dead `updateGauges()` function. |
-| `src/special/lensing-model.js` | 148–170 | Rewrite deflection with Einstein radius + double image. Compute `schwarzschild` in aspect-corrected space. |
+| `src/scenes/spacetime-view.js` | 81 | Remove `const` so `marker_` actually assigns to outer scope. |
+| `src/scenes/spacetime-view.js` | 190–196 | Delete dead `updateGauges()` function. |
+| `src/scenes/lensing-model.js` | 148–170 | Rewrite deflection with Einstein radius + double image. Compute `schwarzschild` in aspect-corrected space. |
 | `src/post.js` | 30, 104 | `precision mediump float` → `precision highp float`. |
 | `src/post.js` | 100–106 | Move bloom defaults `(0.8, 0.4, 0.85)` into named presets; each view picks one instead of overriding. |
-| `src/special/*-view.js` | `cinematicPass_.uniforms.time.value = performance.now() * 0.001` | `= (performance.now() % 1000000) * 0.001` to prevent precision loss. |
-| `src/special/spacetime-model.js` | 140–165 | Delete, import `buildStarfield` from `src/special/shared/starfield.js`. |
-| `src/special/alcubierre-model.js` | 222–247 | Same. |
-| `src/special/inspiral-model.js` | 139–164 | Same. |
-| `src/special/framedrag-model.js` | 111–136 | Same. |
-| `src/special/spacetime-model.js` | 55–108, 224–281 | Replace with shared GPU grid — see recommendation #1. |
-| `src/special/inspiral-model.js` | 52–105, 286–371 | Same. |
-| `src/special/framedrag-model.js` | 38–91, 168–219 | Same. |
+| `src/scenes/*-view.js` | `cinematicPass_.uniforms.time.value = performance.now() * 0.001` | `= (performance.now() % 1000000) * 0.001` to prevent precision loss. |
+| `src/scenes/spacetime-model.js` | 140–165 | Delete, import `buildStarfield` from `src/scenes/shared/starfield.js`. |
+| `src/scenes/alcubierre-model.js` | 222–247 | Same. |
+| `src/scenes/inspiral-model.js` | 139–164 | Same. |
+| `src/scenes/framedrag-model.js` | 111–136 | Same. |
+| `src/scenes/spacetime-model.js` | 55–108, 224–281 | Replace with shared GPU grid — see recommendation #1. |
+| `src/scenes/inspiral-model.js` | 52–105, 286–371 | Same. |
+| `src/scenes/framedrag-model.js` | 38–91, 168–219 | Same. |
 
 ---
 

@@ -219,16 +219,16 @@ The current 6-tab layout is a *technical* organization (one physics effect per t
 
 *Files reviewed:*
 - `/Users/Loftus/workspace/project-tycho/src/spacetime-app.js`
-- `/Users/Loftus/workspace/project-tycho/src/special/spacetime-model.js`
-- `/Users/Loftus/workspace/project-tycho/src/special/spacetime-view.js`
-- `/Users/Loftus/workspace/project-tycho/src/special/alcubierre-model.js`
-- `/Users/Loftus/workspace/project-tycho/src/special/alcubierre-view.js`
-- `/Users/Loftus/workspace/project-tycho/src/special/inspiral-model.js`
-- `/Users/Loftus/workspace/project-tycho/src/special/inspiral-view.js`
-- `/Users/Loftus/workspace/project-tycho/src/special/framedrag-model.js`
-- `/Users/Loftus/workspace/project-tycho/src/special/framedrag-view.js`
-- `/Users/Loftus/workspace/project-tycho/src/special/lensing-model.js`
-- `/Users/Loftus/workspace/project-tycho/src/special/lensing-view.js`
+- `/Users/Loftus/workspace/project-tycho/src/scenes/spacetime-model.js`
+- `/Users/Loftus/workspace/project-tycho/src/scenes/spacetime-view.js`
+- `/Users/Loftus/workspace/project-tycho/src/scenes/alcubierre-model.js`
+- `/Users/Loftus/workspace/project-tycho/src/scenes/alcubierre-view.js`
+- `/Users/Loftus/workspace/project-tycho/src/scenes/inspiral-model.js`
+- `/Users/Loftus/workspace/project-tycho/src/scenes/inspiral-view.js`
+- `/Users/Loftus/workspace/project-tycho/src/scenes/framedrag-model.js`
+- `/Users/Loftus/workspace/project-tycho/src/scenes/framedrag-view.js`
+- `/Users/Loftus/workspace/project-tycho/src/scenes/lensing-model.js`
+- `/Users/Loftus/workspace/project-tycho/src/scenes/lensing-view.js`
 - `/Users/Loftus/workspace/project-tycho/src/views/blackhole.js`
 - `/Users/Loftus/workspace/project-tycho/index.html` (Spacetime HUD markup, lines 2840-3145)
 - `/Users/Loftus/workspace/project-tycho/src/main.js`

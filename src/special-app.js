@@ -1,13 +1,13 @@
 import * as THREE from 'three'
-import { createPyramidView } from './special/pyramid-view.js'
-import { createTitanicView } from './special/titanic-view.js'
-import { createCellView } from './special/cell-view.js'
-import { createPompeiiView } from './special/pompeii-view.js'
-import { createChernobylView } from './special/chernobyl-view.js'
-import { createDNAView } from './special/dna-view.js'
-import { createSaturnVView } from './special/saturn5-view.js'
-import { createPangaeaView } from './special/pangaea-view.js'
-import { createColliderView } from './special/collider-view.js'
+import { createPyramidView } from './scenes/pyramid-view.js'
+import { createTitanicView } from './scenes/titanic-view.js'
+import { createCellView } from './scenes/cell-view.js'
+import { createPompeiiView } from './scenes/pompeii-view.js'
+import { createChernobylView } from './scenes/chernobyl-view.js'
+import { createDNAView } from './scenes/dna-view.js'
+import { createSaturnVView } from './scenes/saturn5-view.js'
+import { createPangaeaView } from './scenes/pangaea-view.js'
+import { createColliderView } from './scenes/collider-view.js'
 
 let _renderer = null
 let active = false
